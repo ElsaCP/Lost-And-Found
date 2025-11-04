@@ -1,0 +1,117 @@
+body {
+  background-color: #f8f9fa;
+  font-family: "Poppins", sans-serif;
+}
+
+/* ===== HEADER ===== */
+.header-riwayat {
+  margin-top: 85px;
+  padding: 0 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Panah kiri */
+.back-arrow-header {
+  font-size: 3rem;
+  color: #004b8d;
+  text-decoration: none;
+  transition: 0.3s ease;
+  display: flex;
+  align-items: center;
+  line-height: 1;
+}
+.back-arrow-header:hover {
+  color: #007bff;
+  transform: translateX(-5px);
+}
+
+/* Judul halaman */
+.title-riwayat {
+  font-weight: 700;
+  color: #212529;
+  font-size: 1.9rem;
+}
+
+/* Logo kanan atas */
+.logo-juanda2 {
+  height: 25px;
+  width: auto;
+  object-fit: contain;
+  opacity: 0.95;
+  margin-top: -5px;
+}
+
+/* ===== DETAIL LAPORAN ===== */
+.bg-light-blue {
+  background-color: #e7f1fb;
+  border-left: 4px solid #004b8d;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+/* Info barang */
+#infoBarang {
+  font-size: 16px;
+  line-height: 1.7;
+  text-align: justify;
+  margin-top: 15px;
+}
+
+#infoBarang img {
+  display: block;
+  margin: 0 auto 15px auto;
+  width: 200px;
+  border-radius: 8px;
+}
+
+#infoBarang .row-detail {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 4px;
+}
+
+#infoBarang .label {
+  width: 130px;
+  font-weight: 600;
+}
+
+#infoBarang .value {
+  flex: 1;
+  text-align: justify;
+}
+
+/* ===== STATUS ===== */
+.status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 6px;
+}
+.status-pending { background: #ffc107; }
+.status-verifikasi { background: #28a745; }
+.status-ditolak { background: #dc3545; }
+
+/* ===== TABEL ===== */
+.table-header-blue {
+  background-color: #004b8d;
+  color: #fff;
+}
+
+/* === Beri jarak bawah agar tidak nempel ke footer === */
+#kontenDetail {
+  margin-bottom: 80px; /* jarak tambahan sebelum footer */
+}
+/* Tambahan margin bawah lebih besar di layar besar */
+@media (min-width: 992px) {
+  #kontenDetail {
+    margin-bottom: 120px;
+  }
+}
+
+/* ===== WARNA DETAIL BERDASARKAN STATUS ===== */
+.detail-verifikasi { background: #e7f1fb; }
+.detail-pending { background: #fff3cd; }
+.detail-ditolak { background: #f8d7da; }

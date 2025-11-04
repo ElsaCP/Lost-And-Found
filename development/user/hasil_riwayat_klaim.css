@@ -1,0 +1,94 @@
+body {
+  background-color: #f8f9fa;
+}
+
+.card {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.card img {
+  height: 200px;
+  object-fit: cover;
+}
+
+.status {
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 8px;
+  display: inline-block;
+}
+
+.status.pending { background-color: #fff3cd; color: #856404; }
+.status.verifikasi { background-color: #d4edda; color: #155724; }
+.status.ditolak { background-color: #f8d7da; color: #721c24; }
+.status.selesai { background-color: #d1ecf1; color: #0c5460; }
+
+/* Panah kiri & logo kanan atas */
+.top-header-icons {
+  position: absolute;
+  top: 90px; /* sedikit di bawah navbar */
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 30px;
+  z-index: 1000;
+}
+
+/* Panah kiri */
+.arrow-left {
+  color: #004b8d;
+  font-size: 28px;
+  text-decoration: none;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.arrow-left:hover {
+  color: #007bff;
+  transform: translateX(-3px);
+}
+
+/* Logo Juanda 2 kanan */
+.logo-juanda2 {
+  height: 55px;
+  width: auto;
+  transition: transform 0.3s ease;
+}
+
+.logo-juanda2:hover {
+  transform: scale(1.05);
+}
+
+/* Responsif */
+@media (max-width: 768px) {
+  .top-header-icons {
+    top: 80px;
+    padding: 0 15px;
+  }
+
+  .arrow-left {
+    font-size: 24px;
+  }
+
+  .logo-juanda2 {
+    height: 45px;
+  }
+}
+
+/* Tombol Lihat Detail */
+.lihat-detail {
+  background-color: #004b8d;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 14px;
+  transition: 0.3s;
+}
+
+.lihat-detail:hover {
+  background-color: #007bff;
+  transform: translateY(-2px);
+}

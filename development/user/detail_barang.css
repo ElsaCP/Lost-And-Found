@@ -1,0 +1,107 @@
+body {
+  font-family: "Poppins", sans-serif;
+  background-color: #ffffff;
+  margin: 0;
+  padding: 0;
+}
+
+/* Header sejajar (panah + judul + logo juanda 2) */
+.header-detail {
+  margin-top: 120px;
+  margin-bottom: 30px;
+}
+ 
+.back-arrow-header {
+  font-size: 1.8rem;
+  color: #004b8d;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.back-arrow-header:hover {
+  color: #007bff;
+  transform: translateX(-5px);
+}
+
+.logo-juanda2 {
+  height: 70px;
+  width: auto;
+}
+
+/* Detail barang */
+.detail-section {
+  margin-bottom: 100px;
+}
+
+.detail-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 60px;
+  flex-wrap: wrap;
+}
+
+.detail-img {
+  flex: 1 1 350px;
+  text-align: center;
+}
+
+.detail-img img {
+  width: 100%;
+  max-width: 400px;
+  border: 1px solid #000;
+  border-radius: 10px;
+}
+
+.detail-info {
+  flex: 1 1 500px;
+}
+
+.detail-info h2 {
+  font-weight: 700;
+  font-size: 2rem;
+}
+
+.badge-kategori {
+  display: inline-block;
+  background: linear-gradient(90deg, #00fff7 0%, #6fffce 100%);
+  padding: 8px 25px;
+  border-radius: 25px;
+  font-weight: 600;
+  color: #000;
+  margin-top: 10px;
+  margin-bottom: 25px;
+  font-size: 1.1rem;
+}
+
+.detail-info p {
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+}
+
+.detail-info .icon {
+  color: #004b8d;
+  margin-right: 8px;
+}
+
+/* Tombol Klaim */
+.btn-klaim {
+  display: block;
+  margin: 30px auto 0 auto; /* tengah secara horizontal */
+  background: linear-gradient(90deg, #d8efef 0%, #22f6f9 100%);
+  color: #000;
+  font-weight: 600;
+  font-size: 1.2rem;
+  padding: 12px 50px;
+  border-radius: 15px;
+  border: none;
+  transition: 0.3s;
+  text-align: center;
+}
+
+.btn-klaim:hover {
+  background: linear-gradient(90deg, #00c6ff 0%, #00ffb0 100%);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+

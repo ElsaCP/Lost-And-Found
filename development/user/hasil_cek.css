@@ -1,0 +1,318 @@
+body {
+  background-color: #f5f8ff;
+  font-family: 'Poppins', sans-serif;
+  color: #333;
+  margin: 0;
+  padding-top: 90px;
+}
+
+/* Panah kembali */
+.back-arrow {
+  position: fixed;
+  top: 100px;
+  left: 40px;
+  font-size: 1.6rem;
+  color: #004b8d;
+  text-decoration: none;
+  z-index: 1000;
+  transition: 0.3s ease;
+}
+.back-arrow:hover {
+  color: #0d6efd;
+  transform: translateX(-6px);
+}
+
+/* ======================================
+   Header Laporan - Logo + Judul Kotak
+====================================== */
+
+/* Bungkus utama logo dan kotak */
+.judul {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+/* Logo di atas */
+.logo-juanda {
+  width: 200px;
+  height: auto;
+  display: block;
+  margin: 0 auto 10px;
+}
+
+/* Kotak di bawah logo (Data Pelapor dan Barang) */
+.judul-bawah {
+  background: linear-gradient(90deg, #004b8d, #5cb6f9);
+  border-radius: 10px;
+  padding: 12px 25px;
+  width: 100%;
+  max-width: 950px; /* sejajar dengan kontainer utama */
+  margin: 0 auto; /* biar posisinya center */
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+/* Teks di dalam kotak judul */
+.judul-bawah h2 {
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.3rem;
+  margin: 0;
+  text-align: left;
+}
+
+/* Responsif di HP */
+@media (max-width: 768px) {
+  .logo-juanda {
+    width: 150px;
+  }
+  .judul-bawah {
+    padding: 10px 18px;
+  }
+  .judul-bawah h2 {
+    font-size: 1.1rem;
+  }
+}
+
+/* Kontainer utama */
+.laporan-container {
+  max-width: 950px;
+  background: #fff;
+  border-radius: 15px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  padding: 40px;
+  margin-bottom: 60px;
+}
+
+/* Box Data Pelapor */
+.data-box {
+  background: #f9fcff;
+  border: 1.8px solid #cfe4ff;
+  border-radius: 10px;
+  padding: 25px 30px;
+  margin-top: 20px;
+}
+.data-box p {
+  margin-bottom: 10px;
+  text-align: justify;
+}
+
+/* ======================================
+   DETAIL LAPORAN TERKINI (Rata kiri & sejajar)
+====================================== */
+
+.laporan-detail {
+  width: 100%;
+  max-width: 950px;
+  margin: 0 auto;
+}
+
+/* Kotak judul biru panjang penuh */
+.judul-detail {
+  background: linear-gradient(90deg, #004b8d, #5cb6f9);
+  border-radius: 10px;
+  padding: 12px 25px;
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+/* Teks judul di dalam kotak */
+.judul-detail h4 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-align: left;
+}
+
+/* Isi detail laporan */
+.detail-box {
+  background: linear-gradient(to right, #eaf4ff, #dbeaff);
+  border-radius: 10px;
+  padding: 18px 25px;
+  margin-top: 12px;
+}
+.detail-box p {
+  margin-bottom: 6px;
+  text-align: justify;
+}
+.update-time {
+  color: #1e5fd7;
+  font-weight: 600;
+}
+
+/* Tabel sejajar dan serasi */
+.table {
+  width: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+  border: none;
+  margin-top: 15px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.table thead {
+  background-color: #004b8d;
+  color: #000000;
+  font-weight: 600;
+}
+.table tbody tr:nth-child(odd) {
+  background-color: #f8fbff; 
+}
+.table tbody tr:nth-child(even) {
+  background-color: #d8e8ff;
+}
+
+/* Responsif */
+@media (max-width: 768px) {
+  .judul-detail {
+    padding: 10px 18px;
+  }
+  .judul-detail h4 {
+    font-size: 1.05rem;
+  }
+}
+
+
+
+/* ==============================
+   Barang Serupa (Rata & Proporsional)
+============================== */
+
+/* Layout grid */
+.barang-serupa .row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: stretch;
+  gap: 18px;
+}
+
+/* 3 kartu sejajar di laptop */
+.barang-serupa .col-md-4 {
+  flex: 0 0 30%;
+  max-width: 30%;
+}
+
+/* Tablet: 2 kartu sejajar */
+@media (max-width: 992px) {
+  .barang-serupa .col-md-4 {
+    flex: 0 0 45%;
+    max-width: 45%;
+  }
+}
+
+/* HP: 1 kartu per baris */
+@media (max-width: 576px) {
+  .barang-serupa .col-md-4 {
+    flex: 0 0 90%;
+    max-width: 90%;
+  }
+}
+
+/* Kartu barang */
+.item-card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: #fff;
+  min-height: 280px;
+}
+.item-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.18);
+}
+
+/* Gambar lebih lebar dan proporsional */
+.item-card img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  object-position: center;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  background-color: #f0f6ff;
+}
+
+/* Isi kartu */
+.card-body {
+  padding: 12px 16px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-grow: 1;
+}
+.card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #004b8d;
+  margin-bottom: 6px;
+  text-align: left;
+}
+.text-muted {
+  font-size: 0.85rem;
+  text-align: left;
+  line-height: 1.3;
+}
+
+/* Tombol klaim barang */
+.btn-claim {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  width: 100%;
+  margin-top: auto;
+  align-self: flex-end;
+  transition: 0.3s;
+}
+.btn-claim:hover {
+  background-color: #005ec4;
+  color: #fff;
+}
+
+/* Lihat lainnya */
+.lihat-lainnya {
+  margin-top: 15px;
+}
+.lihat-lainnya a {
+  color: #004b8d;
+  font-size: 15px;
+  transition: 0.3s;
+}
+.lihat-lainnya a:hover {
+  color: #5aa4ef;
+}
+
+/* Responsif */
+@media (max-width: 768px) {
+  .laporan-container {
+    padding: 25px;
+  }
+  .judul {
+    flex-direction: column;
+    text-align: center;
+    padding: 15px 20px;
+  }
+  .judul h2 {
+    font-size: 1.1rem;
+    text-align: center;
+    margin-top: 8px;
+  }
+  .logo-juanda {
+    width: 120px;
+  }
+  .laporan-detail h4, .barang-serupa h4 {
+    font-size: 1.05rem;
+    padding: 8px 16px;
+  }
+  .back-arrow {
+    left: 20px;
+    top: 85px;
+  }
+}

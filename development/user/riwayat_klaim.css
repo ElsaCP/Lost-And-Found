@@ -1,0 +1,146 @@
+body {
+  background-color: #ffffff;
+  font-family: 'Poppins', sans-serif;
+  overflow-x: hidden;
+}
+
+/* --- Hero Section --- */
+.hero-section {
+  margin-top: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  position: relative;
+  background: linear-gradient(to bottom right, #f0f9ff, #e0f2fe);
+}
+
+.hero-box {
+  background: linear-gradient(to bottom right, #e0f7fa, #b2ebf2);
+  border-radius: 30px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  padding: 60px 50px;
+  width: 550px;
+  position: relative;
+  z-index: 2;
+}
+
+.hero-logo {
+  width: 230px;
+  max-width: 80%;
+}
+
+/* --- Judul dan Subjudul --- */
+.hero-title {
+  font-weight: 800;
+  font-size: 2.2rem;
+  color: #003366;
+  text-shadow: none !important; /* hilangkan bayangan teks */
+}
+
+.hero-subtitle {
+  font-size: 1rem;
+  color: #333;
+  margin: 10px 0 30px;
+}
+
+/* --- Form --- */
+.form-container {
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.form-container input {
+  border-radius: 10px;
+  padding: 12px 15px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+}
+
+.btn-cek {
+  background: linear-gradient(to right, #bae6fd, #06b6d4);
+  border: none;
+  border-radius: 10px;
+  padding: 12px 20px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  color: #000;
+  transition: 0.3s ease;
+  width: 100%;
+}
+
+.btn-cek:hover {
+  background: linear-gradient(to right, #7dd3fc, #0891b2);
+  color: #fff;
+}
+
+/* --- Elemen Hiasan --- */
+.lbesar, .lsedang, .lkecil {
+  position: absolute;
+  z-index: 1;
+  opacity: 0.8;
+}
+
+.lbesar {
+  width: 220px;
+  top: 20px;
+  left: 40px;
+  animation: float1 1s ease-in-out infinite alternate;
+}
+
+.lsedang {
+  width: 140px;
+  bottom: 50px;
+  right: 120px;
+  animation: float2 3s ease-in-out infinite alternate;
+}
+
+.lkecil {
+  width: 90px;
+  bottom: 30px;
+  left: 150px;
+  animation: float3 2s ease-in-out infinite alternate;
+}
+
+@keyframes float1 { from {transform: translateY(0);} to {transform: translateY(25px);} }
+@keyframes float2 { from {transform: translateY(0);} to {transform: translateY(-20px);} }
+@keyframes float3 { from {transform: translateY(0);} to {transform: translateY(15px);} }
+
+/* --- Tombol Panah Kembali --- */
+.back-arrow {
+  position: absolute;
+  top: 85px;
+  left: 35px;
+  font-size: 1.8rem;
+  color: #004b8d;
+  text-decoration: none;
+  font-weight: bold;
+  z-index: 100;
+  transition: all 0.3s ease;
+  opacity: 0;
+  animation: fadeIn 0.8s ease forwards;
+  animation-delay: 0.2s;
+}
+
+.back-arrow:hover {
+  color: #007bff;
+  transform: translateX(-5px);
+}
+
+@keyframes fadeIn { to { opacity: 1; } }
+
+/* --- Responsif --- */
+@media (max-width: 768px) {
+  .hero-box {
+    width: 90%;
+    padding: 40px 25px;
+  }
+  .hero-title { font-size: 1.8rem; }
+  .lbesar { width: 150px; top: 0; left: 0; }
+  .lsedang { width: 100px; right: 60px; }
+  .lkecil { width: 70px; left: 50px; }
+  .back-arrow { top: 75px; left: 20px; font-size: 1.6rem; }
+}

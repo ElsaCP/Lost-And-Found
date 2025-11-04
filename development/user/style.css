@@ -1,0 +1,242 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  }
+
+body {
+font-family: Arial, sans-serif;
+background-color: #FFFFFF;
+min-height: 100vh;
+overflow-x: hidden;
+padding-top: 70px;
+}
+
+
+.navbar {
+background: #0056a6;
+height: 70px;
+position: fixed;
+top: 0;
+width: 100%;
+z-index: 1000;
+}
+
+.navbar-brand {
+padding: 0;
+margin: 0;
+}
+
+.navbar-brand img {
+height: 40px; 
+width: auto;
+}
+
+.nav-link {
+color: #fff !important;
+margin-right: 15px;
+font-weight: 500;
+}
+.nav-link:hover {
+text-decoration: underline;
+color: #E0E0E0 !important;
+transform: translateY(-2px);
+}
+
+.logo-wrapper {
+position: relative;
+display: inline-block;
+width: 193px;   /* konsisten untuk login & forgot */
+height: 100px;
+}
+.logo-wrapper .rectangle-bg {
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+object-fit: contain;
+z-index: 1;
+}
+.logo-wrapper .logo-front {
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+max-height: 80%;
+width: auto;
+z-index: 2;
+}
+
+/* Profile Icon */
+.profile-icon {
+width: 40px;
+height: 40px;
+border-radius: 50%;
+background: #0056a6;
+display: flex;
+align-items: center;
+justify-content: center;
+cursor: pointer;
+}
+.profile-icon i {
+color: white;
+font-size: 30px;
+}
+
+/* Container */
+.login-container {
+position: relative;
+display: flex;
+justify-content: center;
+align-items: center;
+min-height: 80vh;
+}
+
+/* Login Box */
+.login-box {
+  background: #d9edf3;  /* tetap biru muda */
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+  width: 100%;
+  max-width: 600px;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+/* Forgot Password Box */
+.forgot-box {
+  background: #e0e0e0;  /* warna abu */
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+  width: 100%;
+  max-width: 600px;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+.login-box h2,
+.forgot-box h2 {
+font-weight: bold;
+margin-bottom: 25px;
+color: #000;
+}
+.forgot-box p {
+font-size: 15px;
+color: #333;
+margin-bottom: 25px;
+}
+
+/* Form Elements */
+.form-control {
+border-radius: 8px;
+box-shadow: 0px 1px 3px rgba(0,0,0,0.2);
+}
+.forgot-box .form-control {
+border-radius: 6px;
+border: 1px solid #999;
+}
+
+.forgot-password a {
+font-size: 0.9rem;
+color: #4a3aff;
+text-decoration: none;
+}
+
+/* Buttons */
+.btn-login, .btn-forgot {
+background: #0056b3;
+color: white;
+border: none;
+padding: 10px 20px;
+border-radius: 6px;
+cursor: pointer;
+font-weight: bold;
+transition: 0.3s;
+}
+.btn-login:hover, .btn-forgot:hover {
+background: #00408f;
+}
+
+/* Decorative Circles */
+.circle-decoration {
+position: absolute;
+z-index: 1;
+opacity: 1;
+pointer-events: none;
+}
+.circle-decoration img {
+width: 80%;
+height: 80%;
+object-fit: contain;
+}
+
+/* Circle Groups - Kanan Atas */
+.circle-1 { width:150px; height:130px; top:-20px; right:160px; animation: float 6s ease-in-out infinite; }
+.circle-2 { width:145px; height:145px; top:5%; right:100px; animation: float 7s ease-in-out infinite; animation-delay:1s; }
+.circle-3 { width:140px; height:145px; top:25%; right:155px; animation: float 8s ease-in-out infinite; animation-delay:2s; }
+.circle-4 { width:150px; height:130px; top:40%; right:70px; animation: float 7s ease-in-out infinite; animation-delay:1.5s; }
+
+/* Circle Groups - Kiri Bawah */
+.circle-5 { width:140px; height:140px; bottom:20%; left:170px; animation: float 6.5s ease-in-out infinite; animation-delay:0.5s; }
+.circle-6 { width:135px; height:135px; bottom:5%; left:85px; animation: float 8s ease-in-out infinite; animation-delay:2.5s; }
+.circle-7 { width:130px; height:130px; bottom:-10%; left:160px; animation: float 7.5s ease-in-out infinite; animation-delay:1.8s; }
+.circle-8 { width:135px; height:135px; bottom:-70px; left:250px; animation: float 6.8s ease-in-out infinite; animation-delay:0.8s; }
+
+/* Animation */
+@keyframes float {
+0%, 100% { transform: translateY(0); }
+50% { transform: translateY(-15px); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+.navbar-nav .nav-link { margin: 0.5rem 0; }
+.airport-logo { max-width: 300px; }
+.login-box, .forgot-box { padding: 20px; border: 1px solid #000000; }
+.login-title { font-size: 1.5rem; }
+.btn-login { padding: 0.4rem 1rem; font-size: 1rem; }
+.circle-decoration { width: 70px !important; height: 70px !important; }
+}
+
+/* Notifikasi */
+.notif-box {
+position: fixed;
+bottom: 30px;
+left: 50%;
+transform: translateX(-50%);
+background: #fff;
+border: 1px solid #ccc;
+padding: 12px 20px;
+border-radius: 6px;
+box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+font-size: 14px;
+color: #333;
+z-index: 2000;
+}
+
+/* Airport Logo (Juanda International Airport) */
+.airport-logo {
+  max-width: 170px;   /* kecilkan ukuran */
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto 20px; /* biar center dan ada jarak ke bawah */
+}
+
+/* tombol toggle password tidak mengubah tinggi input */
+.input-group .toggle-password {
+  border-radius: 0 8px 8px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* pastikan ikon tidak terlalu besar */
+.input-group .toggle-password i {
+  font-size: 1.1rem;
+}
