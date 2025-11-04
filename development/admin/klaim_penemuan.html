@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Penemuan - Klaim Barang</title>
+
+  <!-- CSS utama dari beranda + CSS khusus halaman ini -->
+  <link rel="stylesheet" href="beranda.css">
+  <link rel="stylesheet" href="daftar_penemuan.css">
+  <link rel="stylesheet" href="klaim_penemuan.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+
+<body>
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div>
+      <div class="logo-wrapper">
+        <img src="image/rectangle.png" alt="Background Sidebar" class="rectangle-bg">
+        <img src="image/logo.png" alt="Logo Bandara" class="logo-front">
+      </div>
+
+      <nav>
+        <a href="beranda.html"><i class="bi bi-speedometer2"></i> Beranda</a>
+
+        <a href="daftar_kehilangan.html"><i class="bi bi-question-circle"></i> Kehilangan</a>
+
+        <!-- Submenu Penemuan -->
+        <a href="#" class="active"><i class="bi bi-archive"></i> Penemuan</a>
+        <div class="submenu">
+          <a href="daftar_penemuan.html"><i class="bi bi-list-ul"></i> Daftar Barang</a>
+          <a href="tambah_penemuan.html"><i class="bi bi-plus-circle"></i> Tambah</a>
+          <a href="klaim_barang.html" class="active"><i class="bi bi-hand-thumbs-up"></i> Klaim Barang</a>
+        </div>
+
+        <a href="arsip.html"><i class="bi bi-folder"></i> Arsip</a>
+        <a href="pengaturan.html"><i class="bi bi-gear"></i> Pengaturan</a>
+      </nav>
+    </div>
+
+    <a href="logout.html" class="logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
+  </div>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo-wrapper">
+      <img src="image/rectangle2.png" alt="Rectangle Background" class="rectangle-bg">
+      <img src="image/image5.png" alt="Logo Header" class="logo-front">
+    </div>
+    <h2>Penemuan - Klaim Barang</h2>
+    <div class="profile-icon"><i class="bi bi-person-circle"></i></div>
+  </div>
+
+  <!-- KONTEN -->
+  <div class="content">
+    <!-- Bagian atas: judul & tombol tambah -->
+    <div class="header-klaim">
+      <a href="tambah_klaim_penemuan.html" class="btn-tambah">
+        <i class="bi bi-plus-lg"></i> Tambah Klaim Barang
+      </a>
+    </div>
+
+    <!-- Pencarian -->
+    <div class="search-bar">
+      <input type="text" placeholder="Search">
+    </div>
+
+    <!-- Tabel Klaim Barang -->
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Kode</th>
+            <th>Nama Barang</th>
+            <th>Nama Pengklaim</th>
+            <th>Status</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+  <td>LF-F001</td>
+  <td>Dompet Kulit Buaya</td>
+  <td>Angelina Werdita Leksono</td>
+  <td class="status pending">Pending</td>
+  <td class="aksi">
+    <button class="btn-detail" data-kode="LF-F001"><i class="bi bi-eye"></i></button>
+  </td>
+</tr>
+
+<tr>
+  <td>LF-F002</td>
+  <td>Airpods Samsung Putih</td>
+  <td>Marsanda Sofi Aminarti</td>
+  <td class="status ditolak">Ditolak</td>
+  <td class="aksi">
+    <button class="btn-detail" data-kode="LF-F002"><i class="bi bi-eye"></i></button>
+  </td>
+</tr>
+
+<tr>
+  <td>LF-F003</td>
+  <td>Handphone Samsung Putih</td>
+  <td>Dwi Amanda Yona</td>
+  <td class="status pending">Pending</td>
+  <td class="aksi">
+    <button class="btn-detail" data-kode="LF-F003"><i class="bi bi-eye"></i></button>
+  </td>
+</tr>
+
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Tombol kembali -->
+    <div class="back-btn">
+      <a href="beranda.html"><i class="bi bi-arrow-left"></i> Kembali</a>
+    </div>
+    <script src="klaim_penemuan.js"></script>
+  </div>
+</body>
+</html>

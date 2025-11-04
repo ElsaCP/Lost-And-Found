@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kehilangan - Daftar Laporan Barang</title>
+  <link rel="stylesheet" href="beranda.css">
+  <link rel="stylesheet" href="daftar_kehilangan.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+  <div class="sidebar">
+    <div>
+      <div class="logo-wrapper">
+        <img src="image/rectangle.png" alt="Background Sidebar" class="rectangle-bg">
+        <img src="image/logo.png" alt="Logo Bandara" class="logo-front">
+      </div>
+
+      <nav>
+        <a href="beranda.html"><i class="bi bi-speedometer2"></i> Beranda</a>
+        <a href="#" class="active"><i class="bi bi-question-circle"></i> Kehilangan</a>
+        <div class="submenu">
+          <a href="daftar_kehilangan.html" class="active"><i class="bi bi-list-ul"></i> Daftar Barang</a>
+          <a href="tambah_kehilangan.html"><i class="bi bi-plus-circle"></i> Tambah</a>
+        </div>
+        <a href="daftar_penemuan.html"><i class="bi bi-archive"></i> Penemuan</a>
+        <a href="arsip.html"><i class="bi bi-folder"></i> Arsip</a>
+        <a href="pengaturan.html"><i class="bi bi-gear"></i> Pengaturan</a>
+      </nav>
+    </div>
+
+    <a href="logout.html" class="logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
+  </div>
+
+  <div class="content">
+    <div class="header">
+      <div class="logo-wrapper">
+        <img src="image/rectangle2.png" alt="Rectangle Background" class="rectangle-bg">
+        <img src="image/image5.png" alt="Logo Header" class="logo-front">
+      </div>
+      <h2>Kehilangan - Daftar Laporan Barang</h2>
+      <div class="profile-icon">
+        <i class="bi bi-person-circle"></i>
+      </div>
+    </div>
+
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search...">
+    </div>
+
+    <table id="dataTable">
+    <thead>
+      <tr>
+        <th>Kode</th>
+        <th>Nama Barang</th>
+        <th>Jenis</th>
+        <th>Status</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>LF-L001</td>
+        <td>Dompet</td>
+        <td>Kehilangan</td>
+        <td>
+          <select>
+            <option>Pending</option>
+            <option selected>Verifikasi</option>
+            <option>Dalam Pencarian</option>
+            <option>Barang Ditemukan</option>
+            <option>Selesai</option>
+          </select>
+        </td>
+      <td class="aksi">
+        <button class="btn-view"><i class="bi bi-eye"></i></button>
+        <button class="btn-edit"><i class="bi bi-pencil"></i></button>
+        <button class="btn-delete"><i class="bi bi-trash"></i></button>
+        <button class="btn-verify"><i class="bi bi-check-circle-fill"></i></button>
+        <button class="btn-archive"><i class="bi bi-folder-fill"></i></button>
+      </td>
+      </tr>
+      <tr>
+        <td>LF-L002</td>
+        <td>Jam Tangan</td>
+        <td>Kehilangan</td>
+        <td>
+          <select>
+            <option>Pending</option>
+            <option selected>Verifikasi</option>
+            <option>Dalam Pencarian</option>
+            <option>Barang Ditemukan</option>
+            <option>Selesai</option>
+          </select>
+        </td>
+      <td class="aksi">
+        <button class="btn-view"><i class="bi bi-eye"></i></button>
+        <button class="btn-edit"><i class="bi bi-pencil"></i></button>
+        <button class="btn-delete"><i class="bi bi-trash"></i></button>
+        <button class="btn-verify"><i class="bi bi-check-circle-fill"></i></button>
+        <button class="btn-archive"><i class="bi bi-folder-fill"></i></button>
+      </td>
+      </tr>
+    </tbody>
+  </table>
+
+    <div class="back-btn">
+      <a href="beranda.html"><i class="bi bi-arrow-left"></i> Kembali</a>
+    </div>
+  </div>
+
+  <script src="daftar_kehilangan.js"></script>
+</body>
+</html>

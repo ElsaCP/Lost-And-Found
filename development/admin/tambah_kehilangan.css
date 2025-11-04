@@ -1,0 +1,240 @@
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden; 
+  font-family: 'Poppins', sans-serif;
+  background-color: #f8f9fc;
+}
+
+.main-container {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 196,5px; 
+  height: 100vh;
+  background-color: #0056a6;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: #fff;
+  overflow: hidden;
+  z-index: 5;
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 193px; /* pas dengan lebar sidebar 196.5px */
+  right: 0;
+  height: 70px;
+  background-color: #0056a6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px; /* jarak kanan kiri lebih proporsional */
+  color: #fff;
+  z-index: 10;
+  border: none;
+  margin: 0;
+  box-shadow: none;
+}
+
+/* Logo wrapper agar nyambung ke sidebar */
+.header .logo-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-left: -20px; /* dorong sedikit ke kiri biar rectangle nyatu dengan sidebar */
+}
+
+.header .logo-wrapper .rectangle-bg {
+  height: 60px;
+}
+
+.header .logo-wrapper .logo-front {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 50px;
+  width: auto;
+  z-index: 2;
+}
+
+/* Profil kanan agar tidak terlalu dekat teks tengah */
+.header .profile-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: -20px; /* sedikit dorong ke kanan */
+  cursor: pointer;
+}
+
+.header .profile-icon i {
+  font-size: 30px;
+  color: #fff;
+}
+
+/* === AREA KONTEN YANG BISA DIGULIR === */
+/* FIX supaya form bisa sampai kebawah */
+.content {
+  margin-left: 200px;      /* beri ruang untuk sidebar */
+  margin-top: 90px;  
+  height: calc(100vh - 90px); /* tinggi konten dikurangi header */
+  overflow-y: auto;         /* form bisa digeser ke bawah */
+  background: #f8f9fc;
+  padding: 20px 40px;
+}
+
+/* === FORM TAMBAH KEHILANGAN === */
+.container.tambah-kehilangan {
+  background: #fff;
+  border-radius: 12px;
+  padding: 50px 60px 60px 60px; /* tambah padding top dan bottom agar tombol terlihat */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  margin-bottom: 40px;
+  border: 1px solid #e0e0e0;
+  max-width: 850px;
+  margin-inline: auto;
+}
+
+.container.tambah-kehilangan h3 {
+  color: #0056a6;
+  font-weight: 700;
+  margin-bottom: 30px;
+  border-bottom: 3px solid #0056a6;
+  display: inline-block;
+  padding-bottom: 5px;
+}
+
+.container.tambah-kehilangan form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* LABEL & INPUT */
+.container.tambah-kehilangan form label {
+  font-weight: 500;
+  color: #222;
+  margin-top: 5px;
+}
+
+.container.tambah-kehilangan form .form-control,
+.container.tambah-kehilangan form .form-select,
+.container.tambah-kehilangan form textarea {
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  padding: 10px 12px;
+  transition: all 0.2s ease;
+  font-size: 15px;
+}
+
+.container.tambah-kehilangan form .form-control:focus,
+.container.tambah-kehilangan form .form-select:focus,
+.container.tambah-kehilangan form textarea:focus {
+  border-color: #0056a6;
+  box-shadow: 0 0 4px rgba(0, 86, 166, 0.3);
+  outline: none;
+}
+
+/* TOMBOL BAGIAN BAWAH */
+.container.tambah-kehilangan .button-group {
+  text-align: right;
+  margin-top: 25px;
+}
+
+.btn-save,
+.btn-cancel {
+  border: none;
+  border-radius: 10px;
+  padding: 10px 40px;
+  font-weight: 600;
+  font-size: 15px;
+  transition: all 0.3s ease;
+}
+
+.btn-save {
+  background-color: #0056a6;
+  color: #fff;
+}
+
+.btn-save:hover {
+  background-color: #004b8d;
+  transform: translateY(-2px);
+  box-shadow: 0 3px 8px rgba(0, 86, 166, 0.3);
+}
+
+.btn-cancel {
+  background-color: #b0b6bc;
+  color: #fff;
+  margin-right: 10px;
+}
+
+.btn-cancel:hover {
+  background-color: #939aa1;
+  transform: translateY(-2px);
+  box-shadow: 0 3px 8px rgba(147, 154, 161, 0.3);
+}
+
+/* TOMBOL "KEMBALI" */
+.kembali-wrapper {
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.kembali-link {
+  color: #0056a6;
+  font-weight: 500;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: 0.3s;
+}
+
+.kembali-link:hover {
+  text-decoration: underline;
+  color: #004b8d;
+}
+
+/* RESPONSIF */
+@media (max-width: 768px) {
+  .container.tambah-kehilangan {
+    padding: 25px;
+  }
+
+  .btn-save, .btn-cancel {
+    width: 100%;
+    margin: 5px 0;
+  }
+
+  .container.tambah-kehilangan .button-group {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .back-btn {
+    margin-top: 40px;
+    margin-left: 295px;
+    clear: both;
+  }
+
+  .back-btn a {
+    text-decoration: none;
+    color: #000;
+    font-weight: 500;
+  }
+
+  .back-btn a:hover {
+    text-decoration: underline;
+  }
+}

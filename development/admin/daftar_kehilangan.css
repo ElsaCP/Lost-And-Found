@@ -1,0 +1,110 @@
+.sidebar .logo-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;       
+  justify-content: center;   
+  width: 178px;
+  height: 59px;           
+  margin: 0 auto;           
+}
+.sidebar .logo-wrapper .rectangle-bg {
+  width: 180px;
+  height: 58px;              
+  display: block;
+}
+.sidebar .logo-wrapper .logo-front {
+  position: absolute;
+  top: 52%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100px;
+  height: auto;
+  z-index: 2;
+}
+
+.header {
+  background-color: #0056a6; 
+  height: 70px; 
+  display: flex;
+  align-items: center; 
+  justify-content: space-between; 
+  padding: 0px; 
+}
+
+.header .logo-wrapper .rectangle-bg {
+  height: 60px;
+}
+.header .logo-wrapper .logo-front {
+  height: 50px;
+}
+
+.header .logo-wrapper .logo-front {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 50px;
+  width: auto;
+  z-index: 2;
+}
+
+.submenu {
+  margin-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.submenu a {
+  font-size: 16px;
+}
+.submenu a.active {
+  background-color: #fff;
+  color: #0056a6;
+}
+
+#dataTable {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+#dataTable thead th {
+  background: #9fcaed;
+  font-weight: 600;
+}
+
+#dataTable tbody td {
+  font-size: 15px;
+}
+
+/* Tombol aksi */
+.aksi button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 18px;
+  transition: transform 0.2s;
+}
+
+.aksi button:hover {
+  transform: scale(1.1);
+}
+
+.btn-view i { color: #007bff; }
+.btn-edit i { color: #ff9800; }
+.btn-delete i { color: #e53935; }
+.btn-verify i { color: #2ecc71; }
+
+/* ======== TOMBOL KEMBALI ======== */
+.back-btn {
+  margin-top: 20px;
+}
+
+.back-btn a {
+  text-decoration: none;
+  font-size: 18px;
+  color: #000;
+}
+
+.back-btn a:hover {
+  text-decoration: underline;
+}

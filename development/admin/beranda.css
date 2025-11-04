@@ -1,0 +1,243 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  display: flex;
+  background: #f8f8f8;
+}
+
+.sidebar {
+  width: 193px;
+  background-color: #0056a6;
+  color: #fff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 7px 15px;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+  font-family: "Poppins", sans-serif;
+}
+
+.logo-wrapper .logo-front {
+  position: static;   
+  width: 150px;   
+  height: auto;
+}
+
+.sidebar .logo-wrapper .rectangle-bg {
+  width: 178px;          
+  opacity: 1;            
+  filter: brightness(1); 
+}
+
+.logo-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;    
+  justify-content: flex-start; 
+  gap: 10px;              
+}
+
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  margin-top: 50px;
+}
+
+.page-beranda .sidebar nav {
+  margin-top: -90px;
+}
+
+.sidebar nav a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 15px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #e5e5e5;
+  text-decoration: none;
+  border-radius: 10px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.sidebar nav a:hover,
+.sidebar nav a.active {
+  background-color: #ffffff;
+  color: #0056a6;
+  font-weight: 600;
+}
+
+/* Emoji as icon styling */
+.sidebar nav a::before {
+  font-size: 20px;
+}
+
+/* Logout */
+.sidebar .logout {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 40px;
+  font-size: 16px;
+  color: #fff;
+  text-decoration: none;
+  background: #004a93;
+  padding: 12px 15px;
+  border-radius: 10px;
+  transition: background 0.3s;
+}
+
+.sidebar .logout:hover {
+  background: #003c7a;
+}
+
+/* Main content */
+.content {
+  flex: 1;
+  padding: 20px;
+}
+
+/* HEADER sesuai gambar */
+.header {
+  background: #0056a6;  /* samakan warna */
+  height: 70px;        /* samakan tinggi */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0px;
+  position: relative;
+  border-radius: 0;        
+  margin: -20px -20px 20px -20px; /* tetap tarik keluar biar full */
+}
+
+.sidebar .logo-front {
+  position: absolute;
+  top: 55%;
+  left: 55%;
+  transform: translate(-50%, -55%);
+  width: 100px; /* kecilin logo di dalam rectangle */
+  height: auto;
+}
+
+/* Judul tengah */
+.header h2 {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 28px;
+  color: white;
+  font-weight: 600;
+}
+
+/* Profile kanan */
+/* === Header Logo (atas) === */
+.header .logo-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100px; /* sama dengan tinggi header */
+}
+
+.header .rectangle-bg {
+  height: 60px;  /* biar ada jarak dari tepi atas/bawah header */
+  width: auto;
+}
+
+.header .logo-front {
+  position: absolute;
+  height: 50px;
+  width: auto;
+}
+
+
+/* Search */
+.search-box {
+  margin: 30px 0;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #aaa;
+  font-size: 16px;
+}
+
+/* Table */
+table {
+  margin: 0 auto;
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+#dataTable {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+#dataTable thead th {
+  text-align: center;
+}
+
+thead {
+  background: #9fcaed;
+}
+
+th, td {
+  padding: 12px;
+  text-align: center;
+  border: 1px solid #ccc;
+}
+
+tbody tr:nth-child(even) {
+  background: #edf7ff;
+}
+
+.aksi button {
+  margin: 0 2px;
+  font-size: 18px;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+/* Profile Icon */
+.profile-icon {
+width: 60px;
+height: 40px;
+border-radius: 50%;
+background: #0056a6;
+display: flex;
+align-items: center;
+justify-content: center;
+cursor: pointer;
+}
+.profile-icon i {
+color: white;
+font-size: 30px;
+}
+
+.btn-view i { color: #007bff; }
+.btn-edit i { color: #ff9800; }
+.btn-delete i { color: #e53935; }
+.btn-verify i { color: #2ecc71; }
+/* ===== Tombol Arsip Tambahan ===== */
+.btn-archive i {
+  color: #0056a6; /* biru bandara */
+  margin-left: 8px; /* beri jarak dari tombol sebelumnya */
+  transition: color 0.2s, transform 0.2s;
+}
+
+.btn-archive:hover i {
+  color: #003c7a;
+  transform: scale(1.1);
+}

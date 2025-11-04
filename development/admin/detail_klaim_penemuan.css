@@ -1,0 +1,194 @@
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  background-color: #f8f8f8;
+}
+
+/* Submenu aktif */
+.sidebar .submenu a.active {
+  background-color: #fff;
+  color: #0b5394;
+  font-weight: 700;
+}
+
+/* ===== KONTENER DETAIL ===== */
+.detail-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  background-color: #fff;
+  width: 88%; /* sebelumnya 78%, biar kontainernya lebih lebar */
+  margin: 50px auto 30px auto; /* sebelumnya 90px auto 40px auto, biar jaraknya ke header lebih kecil */
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  padding: 40px 60px;
+  gap: 50px;
+}
+
+/* ===== KOLOM KIRI ===== */
+.left-column {
+  width: 38%;
+  text-align: center;
+  border-right: 2px solid #ddd;
+  padding-right: 40px;
+}
+
+.left-column img.item-img {
+  width: 260px;
+  height: 280px;
+  border-radius: 10px;
+  object-fit: cover;
+  margin-bottom: 15px;
+}
+
+.left-column h3 {
+  font-size: 19px;
+  font-weight: 700;
+  margin: 8px 0 4px 0;
+  color: #0b5394;
+}
+
+/* ===== KOLOM KANAN ===== */
+.right-column {
+  width: 62%;
+  padding-left: 45px;
+}
+
+.section {
+  margin-bottom: 30px;
+}
+
+.section h4 {
+  font-size: 18px;
+  color: #0b5394;
+  margin-bottom: 14px;
+  font-weight: 600;
+  border-left: 3px solid #2bc1f3;
+  padding-left: 10px;
+}
+
+/* ===== BARIS DATA ===== */
+.data-row {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.data-row span {
+  width: 210px;
+  font-weight: 500;
+  color: #333;
+  line-height: 1.6;
+  flex-shrink: 0;
+}
+
+.data-row p,
+.data-row button {
+  flex: 1;
+  margin: 0;
+  color: #111;
+  font-weight: 600;
+  line-height: 1.6;
+  word-wrap: break-word;
+  text-align: left;
+}
+
+/* ===== TOMBOL LIHAT GAMBAR ===== */
+.lihat-btn {
+  background-color: #a3c2f7;
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.3s;
+}
+
+.lihat-btn:hover {
+  background-color: #82a9ee;
+}
+
+/* ===== INPUT, SELECT & TEXTAREA ===== */
+#status, #catatan {
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  font-family: "Poppins", sans-serif;
+}
+
+#status {
+  width: 180px;
+}
+
+#catatan {
+  width: 100%;
+  height: 75px;
+  resize: none;
+  line-height: 1.6;
+}
+
+/* ====== TOMBOL (SAMA SEPERTI DETAIL KEHILANGAN) ====== */
+.button-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 25px;
+}
+
+.btn {
+  font-family: "Poppins", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+/* tombol kembali */
+.btn-secondary {
+  background-color: #e9ecef;
+  color: #000;
+}
+
+.btn-secondary:hover {
+  background-color: #d6d8db;
+}
+
+/* tombol update */
+.btn-primary {
+  background-color: #0852c0;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background-color: #0852c0;
+}
+
+/* === Sidebar submenu tanpa jarak antar item === */
+.sidebar .submenu a {
+  width: auto !important;
+  display: inline-flex !important;
+  align-items: center;
+  gap: 10px;
+
+  /* hilangkan jarak vertikal antar submenu */
+  margin: 0 0 0 -3px !important;   /* atas, kanan, bawah, kiri → hanya indent kiri */
+  padding: 11px 19px !important;
+
+  border-radius: 12px;
+  background: transparent;
+  color: #e7f1ff;
+  line-height: 1.25;
+  text-align: left;
+}
+
+.sidebar .submenu a.active {
+  background: #fff !important;
+  color: #0b5394 !important;
+  font-weight: 700;
+}
+

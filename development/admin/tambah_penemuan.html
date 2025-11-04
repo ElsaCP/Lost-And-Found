@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Penemuan - Tambah Barang</title>
+<script src="bootstrap/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="beranda.css"> 
+  <link rel="stylesheet" href="daftar_penemuan.css"> 
+  <link rel="stylesheet" href="tambah_penemuan.css"> 
+  <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+</head>
+
+<div class="sidebar">
+    <div>
+      <div class="logo-wrapper">
+        <img src="image/rectangle.png" alt="Background Sidebar" class="rectangle-bg">
+        <img src="image/logo.png" alt="Logo Bandara" class="logo-front">
+      </div>
+
+      <nav>
+        <a href="beranda.html"><i class="bi bi-speedometer2"></i> Beranda</a>
+
+        <a href="daftar_kehilangan.html"><i class="bi bi-question-circle"></i> Kehilangan</a>
+
+        <a href="#" class="active"><i class="bi bi-archive"></i> Penemuan</a>
+        <div class="submenu">
+          <a href="daftar_penemuan.html"><i class="bi bi-list-ul"></i> Daftar Barang</a>
+          <a href="tambah_penemuan.html" class="active"><i class="bi bi-plus-circle"></i> Tambah</a>
+          <a href="klaim_penemuan.html"><i class="bi bi-hand-thumbs-up"></i> Klaim Barang</a>
+        </div>
+
+        <a href="arsip.html"><i class="bi bi-folder"></i> Arsip</a>
+        <a href="pengaturan.html"><i class="bi bi-gear"></i> Pengaturan</a>
+      </nav>
+    </div>
+
+    <a href="logout.html" class="logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
+  </div>
+
+  <div class="header">
+    <div class="logo-wrapper">
+      <img src="image/rectangle2.png" alt="Rectangle Background" class="rectangle-bg">
+      <img src="image/image5.png" alt="Logo Header" class="logo-front">
+    </div>
+    <h2>Penemuan - Tambah Penemuan</h2>
+    <div class="profile-icon">
+      <i class="bi bi-person-circle"></i>
+    </div>
+  </div>
+
+<!-- KONTEN UTAMA -->
+<div class="content">
+  <div class="container tambah-penemuan">
+    <h3>Data Barang Temuan</h3>
+
+    <form>
+      <!-- Nama Penemu -->
+      <label>Nama Penemu</label>
+      <input type="text" class="form-control" placeholder="Masukkan nama penemu">
+
+      <!-- Nama Barang -->
+      <label>Nama Barang</label>
+      <input type="text" class="form-control" placeholder="Masukkan nama barang">
+
+      <!-- Jenis Barang -->
+      <label>Jenis Barang</label>
+      <select class="form-select">
+        <option selected disabled>Pilih jenis barang</option>
+        <option>Tas</option>
+        <option>Dompet</option>
+        <option>Elektronik</option>
+        <option>Lainnya</option>
+      </select>
+
+      <!-- Deskripsi Barang -->
+      <label>Deskripsi Barang</label>
+      <textarea class="form-control" rows="3" placeholder="Ciri-ciri khusus barang..."></textarea>
+
+      <!-- Lokasi Ditemukan -->
+      <label>Lokasi Ditemukan</label>
+      <select class="form-select">
+        <option selected disabled>Pilih lokasi</option>
+        <option>Terminal 1, Kedatangan</option>
+        <option>Terminal 2, Keberangkatan</option>
+        <option>Area Parkir</option>
+        <option>Lainnya</option>
+      </select>
+
+      <!-- Tanggal Ditemukan -->
+      <label>Tanggal Ditemukan</label>
+      <input type="date" class="form-control">
+
+      <!-- Foto Barang -->
+      <label>Foto Barang</label>
+      <input type="file" class="form-control">
+
+      <!-- Status Awal -->
+      <label>Status Awal</label>
+      <select class="form-select">
+        <option>Pending</option>
+        <option>Verifikasi</option>
+        <option>Selesai</option>
+      </select>
+
+        <div class="button-group">
+          <button type="button" class="btn-cancel" onclick="window.location.href='daftar_penemuan.html'">Batal</button>
+          <button type="submit" class="btn-save">Simpan</button>
+        </div>
+        </form>
+        </div>
+
+      <div class="back-btn">
+        <a href="beranda.html"><i class="bi bi-arrow-left"></i> Kembali</a>
+      </div>
+      </form>
+    </div>
+
+</body>
+</html>

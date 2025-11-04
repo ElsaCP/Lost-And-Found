@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pengaturan - Super Admin</title>
+
+  <!-- urutan penting agar sidebar/submenu konsisten -->
+  <link rel="stylesheet" href="beranda.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="ganti_password.css" />
+  <!-- CSS khusus halaman ini -->
+  <link rel="stylesheet" href="pengaturan_super_admin.css" />
+</head>
+
+<body class="page-superadmin">
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="sidebar short-sidebar">
+    <div class="logo-wrapper">
+      <img src="image/rectangle.png" alt="Background Sidebar" class="rectangle-bg"/>
+      <img src="image/logo.png" alt="Logo Bandara" class="logo-front"/>
+    </div>
+
+    <nav>
+      <a href="beranda.html"><i class="bi bi-speedometer2"></i> Beranda</a>
+      <a href="daftar_kehilangan.html"><i class="bi bi-question-circle"></i> Kehilangan</a>
+      <a href="daftar_penemuan.html"><i class="bi bi-archive"></i> Penemuan</a>
+      <a href="arsip.html"><i class="bi bi-folder"></i> Arsip</a>
+      <a href="#" class="active"><i class="bi bi-gear"></i> Pengaturan</a>
+
+      <!-- ⬇️ Submenu pengaturan: HANYA Super Admin -->
+      <div class="submenu">
+        <a href="pengaturan_super_admin.html" class="active">
+          <i class="bi bi-people"></i> Super Admin
+        </a>
+      </div>
+    </nav>
+
+    <a href="logout.html" class="logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
+  </aside>
+
+  <!-- ===== MAIN ===== -->
+  <main class="content">
+    <div class="header">
+      <div class="logo-wrapper">
+        <img src="image/rectangle2.png" alt="Rectangle Background" class="rectangle-bg"/>
+        <img src="image/image5.png" alt="Logo Header" class="logo-front"/>
+      </div>
+      <h2>Pengaturan – Super Admin</h2>
+      <div class="profile-icon"><i class="bi bi-person-circle"></i></div>
+    </div>
+
+    <section class="superadmin-container">
+      <div class="head-row">
+        <div class="title-wrap">
+          <h1 class="title">👥 Manajemen Admin</h1>
+          <p class="desc">Tambah, edit, nonaktifkan, atau hapus admin. Minimal harus ada 1 <b>Super Admin</b>.</p>
+        </div>
+        <button id="btnAddAdmin" class="btn primary">
+          <i class="bi bi-person-plus"></i> Tambah Admin Baru
+        </button>
+      </div>
+
+      <div class="tools-row">
+        <div class="search-box">
+          <i class="bi bi-search"></i>
+          <input id="searchInput" type="text" placeholder="Cari admin (nama/email/role)..." />
+        </div>
+        <div class="filters">
+          <select id="roleFilter">
+            <option value="">Semua Role</option>
+            <option>Super Admin</option>
+            <option>Admin</option>
+          </select>
+          <select id="statusFilter">
+            <option value="">Semua Status</option>
+            <option value="aktif">Aktif</option>
+            <option value="nonaktif">Nonaktif</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="adminList" class="admin-grid"><!-- cards render here --></div>
+    </section>
+
+    <!-- ===== MODAL ADD/EDIT ADMIN ===== -->
+    <div id="modalAdmin" class="modal hidden">
+      <div class="modal-content">
+        <span class="close-btn" id="closeModal">&times;</span>
+        <h2 id="modalTitle">Tambah Admin</h2>
+
+        <form id="adminForm" class="admin-form">
+          <input type="hidden" id="fId" />
+
+          <div class="two-col">
+            <div class="form-group">
+              <label for="fName">Nama Lengkap</label>
+              <input id="fName" type="text" placeholder="cth: Satria Pradana" required />
+            </div>
+            <div class="form-group">
+              <label for="fEmail">Email</label>
+              <input id="fEmail" type="email" placeholder="nama@domain.com" required />
+            </div>
+          </div>
+
+          <div class="two-col">
+            <div class="form-group">
+              <label for="fPhone">No. Telepon</label>
+              <input id="fPhone" type="tel" placeholder="08xxxxxxxxxx" />
+            </div>
+            <div class="form-group">
+              <label for="fRole">Role</label>
+              <select id="fRole" required>
+                <option>Super Admin</option>
+                <option>Admin</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="two-col">
+            <div class="form-group">
+              <label for="fStatus">Status</label>
+              <select id="fStatus" required>
+                <option value="aktif">Aktif</option>
+                <option value="nonaktif">Nonaktif</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="fAvatar">Foto (opsional)</label>
+              <input id="fAvatar" type="file" accept="image/*" />
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn ghost" id="btnCancel">Batal</button>
+            <button type="submit" class="btn primary"><i class="bi bi-save"></i> Simpan</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast" class="toast hidden"><i class="bi bi-check-circle"></i> Tersimpan.</div>
+  </main>
+
+  <!-- JS khusus halaman ini -->
+  <script src="pengaturan_super_admin.js"></script>
+</body>
+</html>

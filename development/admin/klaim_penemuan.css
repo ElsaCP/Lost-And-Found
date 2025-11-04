@@ -1,0 +1,271 @@
+@import url('daftar_penemuan.css');
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 196.5px; /* sama kayak di tambah_penemuan.css */
+  height: 100vh;
+  background-color: #0056a6;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* ini yang bikin logout di bawah */
+  color: #fff;
+  overflow: hidden;
+  z-index: 5;
+}
+
+/* === PERBAIKI HEADER SAMA SEPERTI DAFTAR PENEMUAN === */
+.header {
+  position: fixed;
+  top: 0;
+  left: 193px;
+  right: 0;
+  height: 70px;
+  background-color: #0056a6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  color: #fff;
+  z-index: 10;
+  border: none;
+  margin: 0;
+  box-shadow: none;
+}
+
+.header .logo-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-left: -20px;
+}
+
+.header .logo-wrapper .rectangle-bg {
+  height: 60px;
+}
+
+.header .logo-wrapper .logo-front {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 50px;
+  width: auto;
+  z-index: 2;
+}
+
+.header h2 {
+  font-size: 30px;
+  font-weight: 600;
+}
+
+.header .profile-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: -20px;
+  cursor: pointer;
+}
+
+.header .profile-icon i {
+  font-size: 30px;
+  color: #fff;
+}
+
+/* === KONTEN UTAMA === */
+.content {
+  margin-left: 230px;
+  margin-top: 90px;
+  padding: 30px 40px;
+  background: #f8f9fc;
+  min-height: calc(100vh - 90px);
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+
+/* Tombol Tambah Kecil di Pojok Kanan */
+.btn-tambah {
+  position: relative;   /* ubah dari absolute ke relative */
+  float: right;         /* geser ke kanan */
+  margin-top: -28px;     /* beri jarak sedikit dari atas */
+  margin-bottom: 15px;  /* beri jarak sebelum search bar */
+  background-color: #0056a6;
+  color: #fff;
+  font-weight: 500;
+  font-size: 14px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 5px rgba(0, 86, 166, 0.25);
+}
+
+.btn-tambah:hover {
+  background-color: #004b91;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 86, 166, 0.35);
+}
+
+
+.btn-tambah i {
+  font-size: 16px;
+}
+
+.btn-tambah:hover {
+  background-color: #004b91;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 86, 166, 0.35);
+}
+
+
+/* === SEARCH BAR === */
+.search-bar {
+  margin-bottom: 20px;
+}
+
+.search-bar input {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 15px;
+  outline: none;
+  transition: 0.2s ease;
+  box-sizing: border-box;
+}
+
+.search-bar input:focus {
+  border-color: #0056a6;
+  box-shadow: 0 0 4px rgba(0, 86, 166, 0.3);
+}
+
+/* === TABEL === */
+.table-container {
+  overflow-x: auto;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+  color: #333;
+}
+
+thead {
+  background-color: #d9e7ff;
+  color: #000;
+  font-weight: 600;
+  text-align: left;
+}
+
+thead th {
+  padding: 14px 16px;
+}
+
+tbody td {
+  padding: 12px 16px;
+  border-top: 1px solid #ddd;
+  vertical-align: middle;
+  background-color: #fff;
+}
+
+tbody tr:hover {
+  background-color: #f3f7ff;
+}
+
+/* === AKSI (IKON MATA) === */
+.aksi {
+  text-align: center;
+}
+
+.aksi button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  color: #0d6efd;
+  transition: 0.2s;
+}
+
+.aksi button:hover {
+  transform: scale(1.15);
+}
+
+/* === TOMBOL KEMBALI === */
+.back-btn {
+  margin-top: 25px;
+}
+
+.back-btn a {
+  text-decoration: none;
+  font-size: 17px;
+  color: black;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 500;
+  transition: 0.2s ease;
+}
+
+.back-btn a:hover {
+  text-decoration: underline;
+  color: #004b8d;
+}
+
+/* === RESPONSIF === */
+@media (max-width: 992px) {
+  .header-klaim {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .header-klaim .btn-tambah {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .search-bar input {
+    width: 100%;
+  }
+
+  table {
+    font-size: 14px;
+  }
+
+  thead th,
+  tbody td {
+    padding: 10px 12px;
+  }
+  /* === TOMBOL LOGOUT === */
+.logout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  text-decoration: none;
+  padding: 10px 0;
+  font-weight: 500;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.logout i {
+  font-size: 18px;
+}
+
+.logout:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+}
+
+}
