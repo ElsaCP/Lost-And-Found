@@ -6,15 +6,11 @@ main = Blueprint('main', __name__)
 
 @main.route('/')
 def home():
-    return render_template('indexx.html')
+    return render_template('user/indexx.html')
 
 @main.route('/cari-Barang')
 def caribarang():
-    return render_template('cari_barang.html')
-
-@main.route('/list-barang')
-def listbarang():
-    return render_template('indexx.html#listBarang')
+    return render_template('user/cari_barang.html')
 
 
 
