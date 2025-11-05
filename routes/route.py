@@ -12,5 +12,8 @@ def home():
 def caribarang():
     return render_template('user/cari_barang.html')
 
+@main.route('/')
+def login():
+    return render_template('admin/index.html')
 
 
