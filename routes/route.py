@@ -9,21 +9,19 @@ main = Blueprint('main', __name__)
 def home():
     return render_template('user/indexx.html')
 
+@main.route('/login')
+def login():
+    return render_template('admin/index.html')
+
 # Halaman cari barang
 @main.route('/cari-Barang')
 def caribarang():
     return render_template('user/cari_barang.html')
 
-<<<<<<< HEAD
 # Halaman form kehilangan
 @main.route('/form-kehilangan')
 def form_kehilangan():
     return render_template('user/form_kehilangan.html')
-=======
-@main.route('/')
-def login():
-    return render_template('admin/index.html')
->>>>>>> 860350ab458620531736395f0668595d74d02456
 
 # Halaman cek laporan
 @main.route('/cek-laporan')
