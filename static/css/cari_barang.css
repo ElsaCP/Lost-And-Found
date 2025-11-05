@@ -6,6 +6,135 @@ body {
   font-family: "Poppins", sans-serif;
 }
 
+/* ===== NAVBAR STYLE ===== */
+.navbar {
+  background: #0056a6;
+  height: 70px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+}
+
+/* LOGO */
+.navbar-brand img {
+  height: 100%;              /* Logo setinggi navbar */
+  max-height: 70px;
+  width: auto;
+  object-fit: contain;       /* Biar tidak terpotong */
+  transition: all 0.3s ease;
+}
+
+/* MENU LINKS */
+.nav-link {
+  color: #fff !important;
+  margin-right: 18px;
+  font-weight: 500;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.nav-link:hover {
+  text-decoration: underline;
+  color: #cce4ff !important;
+  transform: translateY(-1px);
+}
+
+/* ICON PROFILE */
+.profile-icon {
+  color: #fff;
+  font-size: 1.6rem;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.profile-icon:hover {
+  color: #cce4ff;
+  transform: scale(1.1);
+}
+
+/* HAMBURGER BUTTON */
+.navbar-toggler {
+  border: none;
+  background: none;
+  outline: none;
+  box-shadow: none !important;
+}
+
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='white' stroke-width='2' stroke-linecap='round' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
+
+/* ===== RESPONSIVE BREAKPOINTS ===== */
+
+/* Laptop & Tablet Landscape */
+@media (max-width: 992px) {
+  .navbar {
+    height: auto;
+    padding: 10px 20px;
+  }
+
+  .navbar-brand img {
+    height: 55px;
+  }
+
+  /* COLLAPSE MENU KECIL DI KANAN BAWAH TOGGLER */
+  .navbar-collapse {
+    background: #0056a6;
+    border-radius: 10px;
+    padding: 10px 15px;
+    position: absolute;
+    top: 60px;               /* sedikit di bawah navbar */
+    right: 10px;
+    width: 180px;            /* kecil */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    z-index: 999;
+    opacity: 0;
+    transform: scale(0.9);
+    transform-origin: top right;
+    transition: all 0.25s ease;
+  }
+
+  /* Saat collapse aktif */
+  .navbar-collapse.show {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .navbar-nav {
+    text-align: center;
+  }
+
+  .nav-link {
+    margin: 8px 0;
+    display: block;
+  }
+
+  .profile-icon {
+    display: block;
+    margin: 10px auto 5px auto;
+  }
+}
+
+/* Smartphone */
+@media (max-width: 576px) {
+  .navbar-brand img {
+    height: 45px;
+  }
+
+  .navbar-collapse {
+    width: 160px;
+    right: 8px;
+    top: 55px;
+  }
+
+  .nav-link {
+    font-size: 15px;
+  }
+
+  .profile-icon {
+    font-size: 1.4rem;
+  }
+}
+
 /* ===============================
    HERO SECTION WRAPPER
 ================================ */
@@ -359,4 +488,76 @@ body {
   .hero-box {
     margin-top: -45px; /* sedikit naik agar tetap di tengah visual */
   }
+}
+
+footer {
+  background: #0056a6;
+  color: white;
+  padding: 6px 20px; /* ✅ lebih pendek dari sebelumnya */
+  font-family: 'Poppins', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center; /* konten tetap di tengah vertikal */
+  flex-direction: column;
+}
+
+.footer-container {
+  max-width: 1300px;
+  width: 100%;
+}
+
+.footer-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px; /* ✅ jarak antar elemen lebih kecil */
+  margin-bottom: 10px; /* dikurangi agar tidak terlalu tinggi */
+}
+
+.footer-logo img {
+  height: 55px; /* ✅ sedikit lebih kecil */
+  margin-bottom: 5px;
+}
+
+.footer-address {
+  max-width: 320px;
+  font-size: 13px; /* sedikit kecil biar lebih ringkas */
+  line-height: 1.5;
+}
+
+.footer-contact {
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: justify;
+}
+
+.footer-icons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 15px; /* dikurangi agar tidak terlalu melebar */
+  font-size: 24px; /* ikon sedikit lebih kecil */
+}
+
+.footer-icons a {
+  color: white;
+  transition: color 0.3s, transform 0.2s;
+}
+
+.footer-icons a:hover {
+  color: #ffd700;
+  transform: scale(1.2);
+}
+
+.footer-divider {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 255);
+  margin: 10px 0; /* ✅ lebih pendek */
+}
+
+.footer-bottom {
+  font-size: 12px;
+  opacity: 0.9;
+  text-align: center;
 }
