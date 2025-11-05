@@ -15,7 +15,7 @@ def login():
 
 # Halaman cari barang
 @main.route('/cari-Barang')
-def caribarang():
+def cari_barang():
     return render_template('user/cari_barang.html')
 
 # Halaman form kehilangan
@@ -32,3 +32,7 @@ def cek_laporan():
 @main.route('/detail-barang/<id>')
 def detail_barang(id):
     return render_template('user/detail_barang.html', barang_id=id)
+
+@main.route('/riwayat-klaim')
+def riwayat_klaim():
+    return render_template('user/riwayat_klaim.html', barang_id=id)
