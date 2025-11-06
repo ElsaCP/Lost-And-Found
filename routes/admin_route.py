@@ -66,6 +66,85 @@ def beranda_admin():
     return render_template('beranda.html')
 
 # ======================
+# ROUTE: DAFTAR KEHILANGAN
+# ======================
+@admin_bp.route('/kehilangan/daftar')
+def daftar_kehilangan():
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_bp.login_admin'))
+    return render_template('daftar_kehilangan.html')
+
+@admin_bp.route('/kehilangan/tambah')
+def tambah_kehilangan():
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_bp.login_admin'))
+    return render_template('tambah_kehilangan.html')
+
+# ======================
+# ROUTE: PENEMUAN
+# ======================
+@admin_bp.route('/penemuan/daftar')
+def daftar_penemuan():
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_bp.login_admin'))
+    return render_template('daftar_penemuan.html')
+
+@admin_bp.route('/penemuan/tambah')
+def tambah_penemuan():
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_bp.login_admin'))
+    return render_template('tambah_penemuan.html')
+
+@admin_bp.route('/penemuan/klaim')
+def klaim_penemuan():
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_bp.login_admin'))
+    return render_template('klaim_penemuan.html')
+
+# ======================
+# ROUTE: SIMPAN PENEMUAN
+# ======================
+@admin_bp.route('/penemuan/simpan', methods=['POST'])
+def simpan_penemuan():
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_bp.login_admin'))
+
+    # Ambil data dari form
+    nama_barang = request.form.get('nama_barang')
+    lokasi = request.form.get('lokasi')
+    tanggal = request.form.get('tanggal')
+    deskripsi = request.form.get('deskripsi')
+    foto = request.files.get('foto')
+
+    # Kamu bisa tambah logika penyimpanan ke database di sini
+    # Contoh sederhana (sementara print ke console):
+    print(f"Nama barang: {nama_barang}")
+    print(f"Lokasi: {lokasi}")
+    print(f"Tanggal: {tanggal}")
+    print(f"Deskripsi: {deskripsi}")
+    print(f"Foto: {foto.filename if foto else 'tidak ada'}")
+
+    # Setelah tersimpan, arahkan balik ke daftar_penemuan
+    return redirect(url_for('admin_bp.daftar_penemuan'))
+
+
+# ======================
+# ROUTE: ARSIP & PENGATURAN
+# ======================
+@admin_bp.route('/arsip')
+def arsip():
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_bp.login_admin'))
+    return render_template('arsip.html')
+
+@admin_bp.route('/pengaturan')
+def pengaturan():
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_bp.login_admin'))
+    return render_template('pengaturan.html')
+
+
+# ======================
 # ROUTE: LOGOUT ADMIN
 # ======================
 @admin_bp.route('/logout')

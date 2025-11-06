@@ -19,8 +19,8 @@
   </div>
     <nav>
       <a href="beranda.html" class="active"><i class="bi bi-speedometer2"></i> Beranda</a>
-      <a href="daftar_kehilangan.html"><i class="bi bi-question-circle"></i> Kehilangan</a>
-      <a href="daftar_penemuan.html"><i class="bi bi-archive"></i> Penemuan</a>
+      <a href="{{ url_for('admin_bp.daftar_kehilangan') }}"><i class="bi bi-question-circle"></i> Kehilangan</a>
+      <a href="{{ url_for('admin_bp.daftar_penemuan') }}"><i class="bi bi-archive"></i> Penemuan</a>
       <a href="arsip.html"><i class="bi bi-folder"></i> Arsip</a>
       <a href="pengaturan.html"><i class="bi bi-gear"></i> Pengaturan</a>
     </nav>
