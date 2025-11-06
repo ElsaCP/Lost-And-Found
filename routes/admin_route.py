@@ -1,14 +1,12 @@
 from flask import Blueprint, render_template, request, jsonify, redirect, url_for, session
 
-# Inisialisasi Blueprint admin
 admin_bp = Blueprint(
     'admin_bp',
     __name__,
-    static_folder='../static_admin',      # folder static admin
-    static_url_path='/static_admin',      # URL untuk akses file statis
-    template_folder='../templates/admin'  # template untuk halaman admin
+    static_folder='../static_admin',
+    static_url_path='/static_admin',
+    template_folder='../templates/admin'
 )
-
 
 # ======================
 # ROUTE: HALAMAN LOGIN
@@ -16,26 +14,46 @@ admin_bp = Blueprint(
 @admin_bp.route('/login', methods=['GET', 'POST'])
 def login_admin():
     if request.method == 'GET':
-        # tampilkan halaman login
-        return render_template('indexx.html')
+        return render_template('index.html')
 
-    # === HANDLE POST REQUEST dari fetch (JS) ===
     data = request.get_json()
     email = data.get('email')
     password = data.get('password')
 
-    # Dummy akun login (sementara)
     valid_email = 'admin@gmail.com'
     valid_password = 'admin123'
 
-    # Validasi data
     if email == valid_email and password == valid_password:
-        # simpan session login
         session['admin_logged_in'] = True
         session['admin_email'] = email
         return jsonify({'success': True})
     else:
         return jsonify({'success': False, 'message': 'Email atau password salah!'})
+
+# ======================
+# ROUTE: LUPA PASSWORD
+# ======================
+@admin_bp.route('/forgot_password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'GET':
+        return render_template('forgot_password.html')
+
+    # Ambil data JSON dari fetch()
+    data = request.get_json()
+    email = data.get('email') if data else None
+
+    registered_email = 'admin@gmail.com'
+
+    if email == registered_email:
+        return jsonify({
+            'success': True,
+            'message': 'Link reset password telah dikirim ke email Anda!'
+        })
+    else:
+        return jsonify({
+            'success': False,
+            'message': 'Email tidak terdaftar!'
+        })
 
 
 # ======================
@@ -43,11 +61,9 @@ def login_admin():
 # ======================
 @admin_bp.route('/beranda')
 def beranda_admin():
-    # cek apakah sudah login
     if not session.get('admin_logged_in'):
         return redirect(url_for('admin_bp.login_admin'))
     return render_template('beranda.html')
-
 
 # ======================
 # ROUTE: LOGOUT ADMIN
