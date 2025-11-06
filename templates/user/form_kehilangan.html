@@ -10,8 +10,8 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
-  <link rel="stylesheet" href="indexx.css">
-  <link rel="stylesheet" href="form_kehilangan.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/indexx.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/form_kehilangan.css') }}">
 </head>
 
 <body>
@@ -19,19 +19,19 @@
   <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
     <div class="container-fluid">
       <a class="navbar-brand" href="#">
-        <img src="image/logo injourney.png" alt="Logo">
+        <img src="{{ url_for('static', filename='image/logo injourney.png')}}" alt="Logo">
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
         <ul class="navbar-nav align-items-center">
-          <li class="nav-item"><a class="nav-link active" href="indexx.html#hero">Beranda</a></li>
-          <li class="nav-item"><a class="nav-link" href="indexx.html#listBarang">List Barang</a></li>
-          <li class="nav-item"><a class="nav-link" href="indexx.html#panduan">Panduan</a></li>
+          <li class="nav-item"><a class="nav-link active" href="{{ url_for('main.home') }}#hero">Beranda</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('main.home') }}#listBarang">List Barang</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('main.home') }}#panduan">Panduan</a></li>
           <li class="nav-item"><a class="nav-link" href="#kontak">Kontak</a></li>
           <li class="nav-item ms-lg-3">
-            <a href="#loginAdmin" class="profile-icon"><i class="bi bi-person-circle"></i></a>
+            <a href="/login" class="profile-icon"><i class="bi bi-person-circle"></i></a>
           </li>
         </ul>
       </div>
@@ -47,7 +47,7 @@
 
   <!-- Logo Juanda -->
   <div class="juanda-logo text_center">
-    <img src="image/logo juanda 2.png" alt="Logo Juanda">
+    <img src="{{ url_for('static', filename='image/logo juanda 2.png')}}" alt="Logo Juanda">
   </div>
 </div>
 
@@ -58,7 +58,7 @@
     <h4 class="fw-bold mb-3 text-primary">Form Laporan Kehilangan</h4>
     <p class="text-secondary mb-4">Silakan isi dengan lengkap untuk melaporkan kehilangan barang Anda.</p>
 
-    <form id="laporForm" novalidate>
+    <form id="laporForm" enctype="multipart/form-data" novalidate>
       <h4 style="color:#0d69be">Data Diri</h4>
       <div class="mb-3">
         <label class="form-label">Nama Pelapor</label>
@@ -87,8 +87,8 @@
         <input type="text" name="nama_barang" class="form-control" placeholder="tas, buku"  required>
       </div>
       <div class="mb-3">
-        <label class="form-label">Jenis Barang</label>
-        <select name="jenis_barang" id="jenis_barang" class="form-select" required>
+        <label class="form-label">Kategori Barang</label>
+        <select name="kategori" id="kategori" class="form-select" required>
           <option value="">Pilih Jenis Barang</option>
           <option value="Tas">Tas</option>
           <option value="Dompet">Dompet</option>
@@ -100,8 +100,8 @@
 
       <!-- Input tambahan jika "Lainnya" -->
       <div class="mb-3" id="lainnyaContainer" style="display:none;">
-        <label class="form-label">Jenis Barang Lainnya</label>
-        <input type="text" id="jenis_lainnya" class="form-control" placeholder="Masukkan jenis barang">
+        <label class="form-label">Kategori Barang Lainnya</label>
+        <input type="text" id="kategori_lainnya" class="form-control" placeholder="Masukkan jenis barang">
       </div>
 
       <div class="mb-3">
@@ -163,7 +163,7 @@
       <div class="footer-top">
         <!-- Logo di pojok kiri -->
         <div class="footer-logo">
-          <img src="image/logo putih.png" alt="InJourney Airports">
+          <img src="{{ url_for('static', filename='image/logo putih.png')}}" alt="InJourney Airports">
         </div>
 
         <!-- Alamat -->
@@ -197,6 +197,6 @@
   </footer>
 </section>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="form_kehilangan.js"></script>
+<script src="{{ url_for('static', filename='js/form_kehilangan.js') }}"></script>
 </body>
 </html>

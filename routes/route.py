@@ -1,9 +1,19 @@
 # routes/route.py
-from flask import Blueprint, render_template
+from flask import Blueprint, request, jsonify, render_template
+from datetime import datetime
+import os
+import mysql.connector
 
-# Inisialisasi blueprint
 main = Blueprint('main', __name__)
 
+# --- Koneksi ke database MySQL ---
+def get_db_connection():
+    return mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="",  # ubah sesuai MySQL kamu
+        database="lostfound"
+    )
 # Halaman utama
 @main.route('/')
 def home():
@@ -22,6 +32,81 @@ def cari_barang():
 @main.route('/form-kehilangan')
 def form_kehilangan():
     return render_template('user/form_kehilangan.html')
+
+# --- Route untuk menerima data kehilangan ---
+@main.route("/submit-kehilangan", methods=["POST"])
+def submit_kehilangan():
+    try:
+        nama = request.form.get("nama_pelapor")
+        no_telp = request.form.get("no_telp")
+        email = request.form.get("email")
+        asal_negara = request.form.get("asal_negara")
+        kota = request.form.get("kota")
+        nama_barang = request.form.get("nama_barang")
+        kategori = request.form.get("kategori")
+        lokasi_kehilangan = request.form.get("lokasi_kehilangan")
+        tanggal_kehilangan = request.form.get("tanggal_kehilangan")
+        deskripsi = request.form.get("deskripsi")
+        foto = request.files.get("foto_barang")
+
+        # Simpan foto
+        foto_filename = None
+        if foto:
+            foto_filename = datetime.now().strftime("%Y%m%d%H%M%S_") + foto.filename
+            upload_path = os.path.join("static", "uploads", foto_filename)
+            os.makedirs(os.path.dirname(upload_path), exist_ok=True)
+            foto.save(upload_path)
+
+        db = get_db_connection()
+        cursor = db.cursor()
+
+        # Ambil kode terakhir
+        cursor.execute("SELECT kode_kehilangan FROM kehilangan ORDER BY id DESC LIMIT 1")
+        last_record = cursor.fetchone()
+
+        if last_record:
+            last_code = last_record[0]  # contoh: LF-L00025
+            last_number = int(last_code.split("LF-L")[-1])
+            new_number = last_number + 1
+        else:
+            new_number = 1
+
+        kode = f"LF-L{new_number:05d}"
+
+        # Format tanggal dan waktu
+        now = datetime.now()
+        tanggal_submit = now.strftime("%d/%m/%Y")
+        waktu_submit = now.strftime("%H:%M")
+
+        # Simpan ke database
+        query = """
+            INSERT INTO kehilangan (
+                kode_kehilangan, nama_pelapor, no_telp, email, asal_negara, kota,
+                nama_barang, kategori, lokasi_kehilangan, tanggal_kehilangan,
+                deskripsi, foto_barang, tanggal_submit, waktu_submit, status
+            ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        """
+        values = (
+            kode, nama, no_telp, email, asal_negara, kota,
+            nama_barang, kategori, lokasi_kehilangan, tanggal_kehilangan,
+            deskripsi, foto_filename, tanggal_submit, waktu_submit, "Pending"
+        )
+
+        cursor.execute(query, values)
+        db.commit()
+        cursor.close()
+        db.close()
+
+        return jsonify({
+            "success": True,
+            "kode_kehilangan": kode,
+            "tanggal_submit": tanggal_submit,
+            "waktu_submit": waktu_submit
+        })
+
+    except Exception as e:
+        print("Error:", e)
+        return jsonify({"success": False, "message": str(e)})
 
 # Halaman cek laporan
 @main.route('/cek-laporan')
