@@ -1,6 +1,7 @@
 # routes/route.py
-from flask import Blueprint, request, jsonify, render_template
+from flask import Blueprint, request, jsonify, render_template,  url_for
 from datetime import datetime
+from models import fetch_public_penemuan, get_penemuan_by_kode
 import os
 import mysql.connector
 
@@ -23,10 +24,34 @@ def home():
 def login():
     return render_template('admin/index.html')
 
-# Halaman cari barang
 @main.route('/cari-Barang')
 def cari_barang():
     return render_template('user/cari_barang.html')
+
+@main.route('/api/penemuan')
+def api_penemuan():
+    q = request.args.get('q')
+    kategori = request.args.get('kategori')
+    dari = request.args.get('dari')
+    hingga = request.args.get('hingga')
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 12, type=int)
+
+    items, total = fetch_public_penemuan(q, kategori, dari, hingga, page, per_page)
+    return jsonify({
+        "success": True,
+        "items": items,
+        "total": total,
+        "page": page,
+        "per_page": per_page
+    })
+
+@main.route('/detail-barang/<kode>')
+def detail_barang(kode):
+    barang = get_penemuan_by_kode(kode)
+    if not barang:
+        return render_template('user/not_found.html'), 404
+    return render_template('user/detail_barang.html', barang=barang)
 
 # Halaman form kehilangan
 @main.route('/form-kehilangan')
@@ -112,11 +137,6 @@ def submit_kehilangan():
 @main.route('/cek-laporan')
 def cek_laporan():
     return render_template('user/cek_laporan.html')
-
-# Halaman detail barang (parameter id)
-@main.route('/detail-barang/<id>')
-def detail_barang(id):
-    return render_template('user/detail_barang.html', barang_id=id)
 
 @main.route('/riwayat-klaim')
 def riwayat_klaim():

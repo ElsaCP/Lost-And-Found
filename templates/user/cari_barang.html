@@ -72,55 +72,62 @@
 </section>
 
 
-<!-- Daftar Barang -->
-<section class="list-barang-section mb-5">
-  <div class="container">
-    <h3 class="fw-bold text-center mb-2 text-dark">Daftar Barang Yang Ditemukan</h3>
-    <p class="text-center text-secondary mb-5">
-      Jika barang Anda tidak ditemukan dalam daftar selama lebih dari 1x24 jam, silakan klik
-      <a href="{{ url_for('main.riwayat_klaim') }}" class="text-primary fw-semibold">di sini</a>.
-    </p>
+  <!-- ===================== DAFTAR BARANG ===================== -->
+  <section class="list-barang-section mb-5">
+    <div class="container">
+      <h3 class="fw-bold text-center mb-2 text-dark">Daftar Barang Yang Ditemukan</h3>
+      <p class="text-center text-secondary mb-5">
+        Jika barang Anda tidak ditemukan dalam daftar selama lebih dari 1x24 jam, silakan klik
+        <a href="{{ url_for('main.form_kehilangan') }}" class="text-primary fw-semibold">di sini</a>.
+      </p>
 
-    <div class="row">
-      <div class="col-md-3 mb-4">
-        <div class="card p-3 shadow-sm filter-card">
-          <h5 class="fw-bold mb-3 text-primary">Filter</h5>
-          <label class="form-label">Kategori Barang</label>
-          <select id="filterKategori" class="form-select mb-3">
-            <option value="">Semua</option>
-            <option value="Dompet">Dompet</option>
-            <option value="Pouch">Pouch</option>
-            <option value="Jam Tangan">Jam Tangan</option>
-            <option value="Airpods">Airpods</option>
-            <option value="Topi">Topi</option>
-            <option value="Ikat Pinggang">Ikat Pinggang</option>
-          </select>
+      <div class="row">
+        <!-- FILTER -->
+        <div class="col-md-3 mb-4">
+          <div class="card p-3 shadow-sm filter-card">
+            <h5 class="fw-bold mb-3 text-primary">Filter</h5>
+            <label class="form-label">Kategori Barang</label>
+            <select id="filterKategori" class="form-select mb-3">
+              <option value="">Semua</option>
+              <option value="Dompet">Dompet</option>
+              <option value="Pouch">Pouch</option>
+              <option value="Jam Tangan">Jam Tangan</option>
+              <option value="Airpods">Airpods</option>
+              <option value="Topi">Topi</option>
+              <option value="Ikat Pinggang">Ikat Pinggang</option>
+            </select>
 
-          <label class="form-label">Ditemukan Sejak</label>
-          <input type="date" id="filterDari" class="form-control mb-3">
+            <label class="form-label">Ditemukan Sejak</label>
+            <input type="date" id="filterDari" class="form-control mb-3">
 
-          <label class="form-label">Hingga Tanggal</label>
-          <input type="date" id="filterHingga" class="form-control mb-4">
+            <label class="form-label">Hingga Tanggal</label>
+            <input type="date" id="filterHingga" class="form-control mb-4">
 
-          <div class="d-flex gap-2">
-            <button id="btnCari" class="btn btn-primary flex-fill">Cari</button>
-            <button id="btnReset" class="btn btn-secondary flex-fill">Reset</button>
+            <div class="d-flex gap-2">
+              <button id="btnCari" class="btn btn-primary flex-fill">Cari</button>
+              <button id="btnReset" class="btn btn-secondary flex-fill">Reset</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- DAFTAR BARANG -->
+        <div class="col-md-9">
+          <div id="barangContainer" class="items-grid mb-4">
+            <!-- Data barang akan dimuat lewat JS -->
+          </div>
+
+          <!-- PAGINATION -->
+          <div class="pagination-container text-center mt-4">
+            <button id="prevPage" class="btn btn-light border me-2">&laquo;</button>
+            <input type="number" id="pageInput" class="form-control d-inline-block text-center"
+              style="width:70px;" value="1" min="1">
+            <span id="pageTotal">/ 1</span>
+            <button id="nextPage" class="btn btn-light border ms-2">&raquo;</button>
           </div>
         </div>
       </div>
-
-      <div class="col-md-9">
-        <div id="barangContainer" class="items-grid mb-4"></div>
-        <div class="pagination-container text-center mt-4">
-          <button id="prevPage" class="btn btn-light border me-2">&laquo;</button>
-          <input type="number" id="pageInput" class="form-control d-inline-block text-center" style="width:70px;" value="1" min="1">
-          <span id="pageTotal">/ 1</span>
-          <button id="nextPage" class="btn btn-light border ms-2">&raquo;</button>
-        </div>
-      </div>
     </div>
-  </div>
-</section>
+  </section>
 
 <!-- Footer -->
 <section class="footer" id="kontak">
