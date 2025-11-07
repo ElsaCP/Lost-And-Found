@@ -61,3 +61,35 @@ def get_penemuan_by_kode(kode):
     cursor.close()
     db.close()
     return r
+
+def fetch_barang_publik_terbaru(limit=4):
+    """
+    Ambil 4 data barang publik terbaru dari tabel penemuan
+    berdasarkan tanggal update_terakhir (atau tanggal_lapor kalau tidak ada)
+    """
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT kode_barang, nama_barang, kategori, tanggal_lapor, gambar_barang
+        FROM penemuan
+        WHERE jenis_barang = 'Publik'
+        ORDER BY update_terakhir DESC, tanggal_lapor DESC
+        LIMIT %s
+    """, (limit,))
+
+    items = cursor.fetchall()
+
+    # Format data
+    for item in items:
+        if item.get("tanggal_lapor"):
+            item["tanggal_lapor"] = item["tanggal_lapor"].strftime("%d/%m/%Y")
+        if item.get("gambar_barang"):
+            item["gambar_barang"] = f"/static/uploads/{item['gambar_barang']}"
+        else:
+            item["gambar_barang"] = "/static/image/no-image.png"
+
+    cursor.close()
+    db.close()
+    return items
+
