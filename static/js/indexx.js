@@ -1,63 +1,67 @@
-// ==============================
-// Data Barang Terbaru
-// ==============================
-const barangTerbaruData = [
-  { id: "LF-F001", nama: "Dompet Kulit Coklat", kategori: "Dompet", tanggal: "01/10/2025", gambar: "/static/image/domkul.jpg" },
-  { id: "LF-F002", nama: "Jam Tangan Hitam", kategori: "Jam Tangan", tanggal: "02/10/2025", gambar: "/static/image/jam hitam.webp" },
-  { id: "LF-F003", nama: "Topi Biru", kategori: "Topi", tanggal: "03/10/2025", gambar: "/static/image/topi biru.jpg" },
-  { id: "LF-F004", nama: "Airpods Putih", kategori: "Airpods", tanggal: "04/10/2025", gambar: "/static/image/airpods.png" },
-];
+document.addEventListener("DOMContentLoaded", async function () {
+  const container = document.getElementById("barangTerbaru");
+  if (!container) return;
 
-// ==============================
-// Render Barang ke Dashboard
-// ==============================
-const barangTerbaruContainer = document.getElementById("barangTerbaru");
+  try {
+    const res = await fetch("/api/barang-terbaru"); // API kamu yang ambil 4 data publik terbaru
+    const data = await res.json();
 
-if (barangTerbaruContainer) {
-  barangTerbaruData.slice(0, 6).forEach(item => {
-    const card = document.createElement("div");
-    card.classList.add("item-card");
-    card.innerHTML = `
-      <img src="${item.gambar}" alt="${item.nama}">
-      <div class="card-body">
-        <h5>${item.nama}</h5>
-        <p><strong>Kategori:</strong> ${item.kategori}</p>
-        <p><small>${item.tanggal}</small></p>
-        <button class="btnKlaim" onclick="window.location.href='/detail-barang/<id>=${item.id}'">Klaim</button>
-      </div>
-    `;
-    barangTerbaruContainer.appendChild(card);
-  });
-}
+    container.innerHTML = "";
 
-document.addEventListener("DOMContentLoaded", function () {
-    const navLinks = document.querySelectorAll(".hero-nav-link");
-    const infoSections = document.querySelectorAll(".info-section");
+    if (!data || data.length === 0) {
+      container.innerHTML = `<p class="text-muted text-center">Belum ada barang publik terbaru.</p>`;
+      return;
+    }
 
-    navLinks.forEach(link => {
-      link.addEventListener("click", () => {
-        // Hapus kelas 'active' dari semua link & section
-        navLinks.forEach(nav => nav.classList.remove("active"));
-        infoSections.forEach(section => section.classList.remove("active"));
+    data.forEach(item => {
+      const card = `
+        <div class="item-card">
+          <img src="${item.gambar_barang}" alt="${item.nama_barang}">
+          <div class="item-info">
+            <h5>${item.nama_barang}</h5>
+            <p><strong>Kategori:</strong> ${item.kategori}</p>
+            <p><small>${item.tanggal_lapor}</small></p>
+            <a href="/detail-barang/${item.kode_barang}" class="btn-detail">Lihat Detail</a>
+          </div>
+        </div>
+      `;
+      container.insertAdjacentHTML("beforeend", card);
+    });
+  } catch (error) {
+    console.error("Gagal memuat data barang:", error);
+    container.innerHTML = `<p class="text-danger text-center">Gagal memuat data barang.</p>`;
+  }
+});
 
-        // Tambahkan 'active' ke link & section yang dipilih
-        link.classList.add("active");
-        const tab = link.getAttribute("data-tab");
-        const targetSection = document.getElementById(`info-${tab}`);
-        if (targetSection) targetSection.classList.add("active");
-      });
+  // ==============================
+  // Fungsi Navigasi Tab Hero
+  // ==============================
+  const navLinks = document.querySelectorAll(".hero-nav-link");
+  const infoSections = document.querySelectorAll(".info-section");
+
+  navLinks.forEach(link => {
+    link.addEventListener("click", () => {
+      navLinks.forEach(nav => nav.classList.remove("active"));
+      infoSections.forEach(section => section.classList.remove("active"));
+
+      link.classList.add("active");
+      const tab = link.getAttribute("data-tab");
+      const targetSection = document.getElementById(`info-${tab}`);
+      if (targetSection) targetSection.classList.add("active");
     });
   });
 
-  // Fungsi tombol
-  function goToForm() {
-    window.location.href = "/form-kehilangan";
-  }
+// ==============================
+// Fungsi Tombol
+// ==============================
+function goToForm() {
+  window.location.href = "/form-kehilangan";
+}
 
-  function goToCekLaporan() {
-    window.location.href = "/cek-laporan";
-  }
+function goToCekLaporan() {
+  window.location.href = "/cek-laporan";
+}
 
-  function goToCariBarang() {
-    window.location.href = "/cari-Barang";
-  }
+function goToCariBarang() {
+  window.location.href = "/cari-Barang";
+}

@@ -1,7 +1,7 @@
 # routes/route.py
 from flask import Blueprint, request, jsonify, render_template,  url_for
 from datetime import datetime
-from models import fetch_public_penemuan, get_penemuan_by_kode
+from models import fetch_public_penemuan, get_penemuan_by_kode, fetch_barang_publik_terbaru
 import os
 import mysql.connector
 
@@ -45,6 +45,16 @@ def api_penemuan():
         "page": page,
         "per_page": per_page
     })
+
+@main.route("/api/barang-terbaru")
+def barang_terbaru():
+    from models import fetch_barang_publik_terbaru
+    try:
+        data = fetch_barang_publik_terbaru(limit=4)
+        return jsonify(data)
+    except Exception as e:
+        print("Error mengambil data barang terbaru:", e)
+        return jsonify([])
 
 @main.route('/detail-barang/<kode>')
 def detail_barang(kode):
@@ -141,3 +151,4 @@ def cek_laporan():
 @main.route('/riwayat-klaim')
 def riwayat_klaim():
     return render_template('user/riwayat_klaim.html', barang_id=id)
+

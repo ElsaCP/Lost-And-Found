@@ -104,12 +104,9 @@
     <img src={{ url_for('static', filename='/image/lsedang.png')}} alt="" class="deco-medium deco-4">
     <img src={{ url_for('static', filename='/image/lkecil.png')}} alt="" class="deco-small deco-6">
   </div>
-
   <div class="container">
     <h2 class="section-title text-center mb-4">List Barang Hilang Terbaru</h2>
-
     <div id="barangTerbaru" class="items-grid"></div>
-
     <div class="view-more text-center mt-4">
       <a href="{{ url_for('main.cari_barang') }}" class="btn-view-more">
         Lihat Lainnya
@@ -150,7 +147,7 @@
       <div class="footer-top">
         <!-- Logo di pojok kiri -->
         <div class="footer-logo">
-          <img src="image/logo putih.png" alt="InJourney Airports">
+          <img src={{ url_for('static', filename='image/logo putih.png')}} alt="InJourney Airports">
         </div>
 
         <!-- Alamat -->
