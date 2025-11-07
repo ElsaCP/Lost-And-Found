@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // Tangkap semua tombol detail
+  // === FITUR DETAIL ===
   const detailButtons = document.querySelectorAll(".btn-detail");
 
   detailButtons.forEach(button => {
@@ -16,4 +16,18 @@ document.addEventListener("DOMContentLoaded", function () {
       window.location.href = `detail_klaim_penemuan.html?kode=${kode}`;
     });
   });
+
+  // === FITUR PENCARIAN (disamakan dengan daftar_penemuan.js) ===
+  const searchInput = document.getElementById("searchInput");
+  const tableRows = document.querySelectorAll("#dataTable tbody tr");
+
+  if (searchInput) {
+    searchInput.addEventListener("keyup", function () {
+      const keyword = this.value.toLowerCase();
+      tableRows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(keyword) ? "" : "none";
+      });
+    });
+  }
 });

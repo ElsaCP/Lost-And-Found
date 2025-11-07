@@ -32,7 +32,6 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.addEventListener("click", () => {
       const kode = btn.dataset.kode;
       if (kode) {
-        // arahkan ke halaman detail arsip dengan kode
         window.location.href = `detail_arsip.html?kode=${encodeURIComponent(kode)}`;
       } else {
         Swal.fire({
@@ -72,16 +71,27 @@ document.addEventListener("DOMContentLoaded", () => {
             timerProgressBar: true,
           });
 
-          // Arahkan ke halaman sesuai jenis laporan setelah 2 detik
           setTimeout(() => {
             if (item.jenis.toLowerCase() === "penemuan") {
-              window.location.href = "daftar_penemuan.html";
+              window.location.href = "{{ url_for('admin_bp.daftar_penemuan') }}";
             } else {
-              window.location.href = "daftar_kehilangan.html";
+              window.location.href = "{{ url_for('admin_bp.daftar_kehilangan') }}";
             }
           }, 2200);
         }
       });
     });
   });
+
+  // ==== FITUR PENCARIAN ====
+  const searchInput = document.getElementById("searchInput");
+  if (searchInput) {
+    searchInput.addEventListener("keyup", function () {
+      const keyword = this.value.toLowerCase();
+      document.querySelectorAll("#dataTable tbody tr").forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(keyword) ? "" : "none";
+      });
+    });
+  }
 });

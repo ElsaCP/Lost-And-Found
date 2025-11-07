@@ -5,24 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Detail Klaim Penemuan</title>
 
-  <!-- CSS -->
-  <link rel="stylesheet" href="beranda.css">
-  <link rel="stylesheet" href="daftar_penemuan.css">   
-  <link rel="stylesheet" href="klaim_penemuan.css"> 
-  <link rel="stylesheet" href="detail_klaim_penemuan.css"> 
+  <link rel="stylesheet" href="{{ url_for('admin_bp.static', filename='css/beranda.css') }}">
+  <link rel="stylesheet" href="{{ url_for('admin_bp.static', filename='css/daftar_penemuan.css') }}">
+  <link rel="stylesheet" href="{{ url_for('admin_bp.static', filename='css/klaim_penemuan.css') }}"> 
+  <link rel="stylesheet" href="{{ url_for('admin_bp.static', filename='css/detail_klaim_penemuan.css') }}">  
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
-  <!-- SweetAlert -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
-  <!-- SIDEBAR -->
   <div class="sidebar">
     <div>
       <div class="logo-wrapper">
-        <img src="image/rectangle.png" alt="" class="rectangle-bg">
-        <img src="image/logo.png" alt="" class="logo-front">
+        <img src="{{ url_for('admin_bp.static', filename='image/rectangle.png') }}" alt="Background Sidebar" class="rectangle-bg">
+        <img src="{{ url_for('admin_bp.static', filename='image/logo.png') }}" alt="Logo Bandara" class="logo-front">
       </div>
 
       <nav>

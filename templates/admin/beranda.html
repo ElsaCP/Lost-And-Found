@@ -17,16 +17,17 @@
       <img src="{{ url_for('admin_bp.static', filename='image/logo.png')}}" alt="Logo Bandara" class="logo-front">
     </div>
   </div>
-    <nav>
-      <a href="beranda.html" class="active"><i class="bi bi-speedometer2"></i> Beranda</a>
-      <a href="{{ url_for('admin_bp.daftar_kehilangan') }}"><i class="bi bi-question-circle"></i> Kehilangan</a>
-      <a href="{{ url_for('admin_bp.daftar_penemuan') }}"><i class="bi bi-archive"></i> Penemuan</a>
-      <a href="arsip.html"><i class="bi bi-folder"></i> Arsip</a>
-      <a href="pengaturan.html"><i class="bi bi-gear"></i> Pengaturan</a>
-    </nav>
+  <nav>
+    <a href="{{ url_for('admin_bp.beranda_admin') }}" class="active"><i class="bi bi-speedometer2"></i> Beranda</a>
+    <a href="{{ url_for('admin_bp.daftar_kehilangan') }}"><i class="bi bi-question-circle"></i> Kehilangan</a>
+    <a href="{{ url_for('admin_bp.daftar_penemuan') }}"><i class="bi bi-archive"></i> Penemuan</a>
+    <a href="{{ url_for('admin_bp.arsip') }}"><i class="bi bi-folder"></i> Arsip</a>
+    <a href="{{ url_for('admin_bp.pengaturan') }}"><i class="bi bi-gear"></i> Pengaturan</a>
+  </nav>
 
-    <a href="logout.html" class="logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
-
+  <a href="{{ url_for('admin_bp.logout_admin') }}" class="logout">
+    <i class="bi bi-box-arrow-right"></i> Logout
+  </a>
   </aside>
 
   <!-- Main -->
