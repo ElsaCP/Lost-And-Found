@@ -28,9 +28,6 @@ def login():
 def cari_barang():
     return render_template('user/cari_barang.html')
 
-@main.route('/cari-Barang-old')
-def cari_barang_old():
-    return render_template('user/cari_barang_old.html')
 
 @main.route('/api/penemuan')
 def api_penemuan():

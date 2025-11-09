@@ -127,6 +127,103 @@ body {
   }
 }
 
+/* ===== LOGO JUANDA ===== */
+.juanda-logo {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.juanda-logo img {
+  width: 200px;
+  height: auto;
+  transition: 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .juanda-logo img {
+    width: 150px;
+  }
+}
+
+/* ===== TOMBOL BACK ===== */
+.back-btn {
+  position: absolute;
+  left: 25px;
+  top: 85px;
+  color: #003b75;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  z-index: 10;
+  transition: transform 0.2s ease;
+}
+
+.back-btn:hover {
+  transform: scale(1.1);
+}
+
+.back-btn i {
+  font-size: 42px;
+  font-weight: 900;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.15);
+}
+
+@media (max-width: 768px) {
+  .back-btn {
+    top: 70px;
+    left: 15px;
+  }
+
+  .back-btn i {
+    font-size: 34px;
+  }
+}
+
+/* ===== POPUP ===== */
+.popup {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.4);
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+.popup-content {
+  background: #fff;
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  width: 320px;
+  max-width: 90%;
+}
+
+.popup-content img {
+  width: 70px;
+  margin-bottom: 10px;
+}
+
+.popup-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+}
+
+.popup-buttons button {
+  border: none;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.popup-buttons button:hover {
+  opacity: 0.9;
+}
 
 footer {
   background: #0056a6;
