@@ -28,6 +28,10 @@ def login():
 def cari_barang():
     return render_template('user/cari_barang.html')
 
+@main.route('/cari-Barang-old')
+def cari_barang_old():
+    return render_template('user/cari_barang_old.html')
+
 @main.route('/api/penemuan')
 def api_penemuan():
     q = request.args.get('q')
@@ -55,13 +59,6 @@ def barang_terbaru():
     except Exception as e:
         print("Error mengambil data barang terbaru:", e)
         return jsonify([])
-
-@main.route('/detail-barang/<kode>')
-def detail_barang(kode):
-    barang = get_penemuan_by_kode(kode)
-    if not barang:
-        return render_template('user/not_found.html'), 404
-    return render_template('user/detail_barang.html', barang=barang)
 
 # Halaman form kehilangan
 @main.route('/form-kehilangan')
@@ -152,3 +149,39 @@ def cek_laporan():
 def riwayat_klaim():
     return render_template('user/riwayat_klaim.html', barang_id=id)
 
+@main.route('/detail-barang/<kode>')
+def detail_barang(kode):
+    barang = get_penemuan_by_kode(kode)
+    if not barang:
+        return render_template('user/not_found.html'), 404
+
+    # Ubah path gambar agar bisa tampil
+    if barang.get('gambar_barang'):
+        barang['gambar_barang'] = f"/static/uploads/{barang['gambar_barang']}"
+    else:
+        barang['gambar_barang'] = "/static/image/no-image.png"
+
+    return render_template('user/detail_barang.html', barang=barang)
+
+# Halaman form klaim barang (berdasarkan kode barang)
+@main.route('/form_klaim_barang')
+def form_klaim_barang():
+    kode = request.args.get('id')  # ambil kode dari URL ?id=LF-F001
+    barang = None
+
+    if kode:
+        from models import get_penemuan_by_kode
+        barang = get_penemuan_by_kode(kode)
+
+        # Jika tidak ditemukan
+        if not barang:
+            return render_template('user/not_found.html'), 404
+
+        # Pastikan path gambar bisa ditampilkan
+        if barang.get('gambar_barang'):
+            barang['gambar_barang'] = f"/static/uploads/{barang['gambar_barang']}"
+        else:
+            barang['gambar_barang'] = "/static/image/no-image.png"
+
+    # Render halaman form klaim dengan data barang
+    return render_template('user/form_klaim_barang.html', barang=barang)
