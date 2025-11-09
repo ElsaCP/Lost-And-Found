@@ -12,6 +12,7 @@
 </head>
 
 <body>
+  <!-- ========== SIDEBAR ========== -->
   <div class="sidebar">
     <div>
       <div class="logo-wrapper">
@@ -19,22 +20,25 @@
         <img src="{{ url_for('admin_bp.static', filename='image/logo.png')}}" alt="Logo Bandara" class="logo-front">
       </div>
 
-    <nav>
+      <nav>
         <a href="{{ url_for('admin_bp.beranda_admin') }}"><i class="bi bi-speedometer2"></i> Beranda</a>
         <a href="{{ url_for('admin_bp.daftar_kehilangan') }}"><i class="bi bi-question-circle"></i> Kehilangan</a>
         <a href="{{ url_for('admin_bp.daftar_penemuan') }}"><i class="bi bi-archive"></i> Penemuan</a>
         <a href="{{ url_for('admin_bp.arsip') }}" class="active"><i class="bi bi-folder"></i> Arsip</a>
         <a href="{{ url_for('admin_bp.pengaturan') }}"><i class="bi bi-gear"></i> Pengaturan</a>
       </nav>
+    </div>
 
-      <a href="{{ url_for('admin_bp.logout_admin') }}" class="logout">
-        <i class="bi bi-box-arrow-right"></i> Logout
-      </a>
+    <a href="{{ url_for('admin_bp.logout_admin') }}" class="logout">
+      <i class="bi bi-box-arrow-right"></i> Logout
+    </a>
+  </div> <!-- ✅ ini penutup sidebar yang hilang di versimu -->
 
+  <!-- ========== HEADER ========== -->
   <div class="header">
     <div class="logo-wrapper">
-        <img src="{{ url_for('admin_bp.static', filename='image/rectangle2.png')}}" alt="Rectangle Background" class="rectangle-bg">
-        <img src="{{ url_for('admin_bp.static', filename='image/image5.png')}}" alt="Logo Header" class="logo-front">
+      <img src="{{ url_for('admin_bp.static', filename='image/rectangle2.png')}}" alt="Rectangle Background" class="rectangle-bg">
+      <img src="{{ url_for('admin_bp.static', filename='image/image5.png')}}" alt="Logo Header" class="logo-front">
     </div>
     <h2>Arsip - Semua Laporan</h2>
     <div class="right-header">
@@ -42,15 +46,12 @@
     </div>
   </div>
 
-  <!-- KONTEN UTAMA -->
+  <!-- ========== KONTEN UTAMA ========== -->
   <main class="main-content">
-
-    <!-- Search Bar -->
     <div class="search-bar">
       <input type="text" placeholder="Search...">
     </div>
 
-    <!-- Tabel Arsip -->
     <div class="tabel-wrapper">
       <table class="arsip-table">
         <thead>
@@ -106,9 +107,10 @@
         </tbody>
       </table>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="{{ url_for('admin_bp.static', filename='js/arsip.js') }}"></script>
   </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="{{ url_for('admin_bp.static', filename='js/arsip.js') }}"></script>
+    <script src="{{ url_for('admin_bp.static', filename='js/logout.js') }}"></script>
 </body>
 </html>

@@ -38,9 +38,10 @@
         <img src="{{ url_for('admin_bp.static', filename='image/image5.png')}}" alt="Logo Header" class="logo-front">
       </div>
       <h2>Beranda - Semua Laporan</h2>
-      <div class="profile-icon">
-        <i class="bi bi-person-circle"></i>
-      </div>
+<div class="profile-icon">
+  <img src="{{ url_for('admin_bp.static', filename='image/admin_photo.jpg') }}" alt="Foto Admin">
+</div>
+
     </div>
 
     <!-- Search -->
@@ -145,6 +146,7 @@
   </main>
 
   <script src="{{ url_for('admin_bp.static', filename='js/beranda.js') }}"></script>
+  <script src="{{ url_for('admin_bp.static', filename='js/logout.js') }}"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 </html>

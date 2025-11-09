@@ -35,15 +35,26 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   ];
 
+  // ==== Validasi kode laporan ====
   if (!kode) {
-    alert("Kode laporan tidak ditemukan!");
+    Swal.fire({
+      icon: "error",
+      title: "Oops!",
+      text: "Kode laporan tidak ditemukan.",
+      confirmButtonColor: "#d33"
+    });
     return;
   }
 
   const laporan = dataLaporan.find(item => item.kode === kode);
 
   if (!laporan) {
-    alert("Data laporan tidak ditemukan!");
+    Swal.fire({
+      icon: "error",
+      title: "Tidak Ditemukan!",
+      text: "Data laporan tidak tersedia.",
+      confirmButtonColor: "#d33"
+    });
     return;
   }
 
@@ -67,12 +78,26 @@ document.addEventListener("DOMContentLoaded", () => {
     laporan.status = newStatus;
     laporan.updateTerakhir = new Date().toLocaleDateString("id-ID");
 
-    alert(`Status berhasil diubah menjadi "${newStatus}"`);
+    Swal.fire({
+      icon: "success",
+      title: "Status Diperbarui!",
+      text: `Status berhasil diubah menjadi "${newStatus}".`,
+      confirmButtonColor: "#3085d6",
+      timer: 2000,
+      showConfirmButton: false,
+    });
+
     document.getElementById("updateTerakhir").textContent = laporan.updateTerakhir;
   });
 
   // === Tombol Kembali ===
   document.getElementById("btnKembali").addEventListener("click", () => {
-    window.location.href = `${from}.html`;
+    if (from === "daftar_kehilangan") {
+      window.location.href = "/admin/kehilangan/daftar";
+    } else if (from === "daftar_penemuan") {
+      window.location.href = "/admin/penemuan/daftar";
+    } else {
+      window.history.back();
+    }
   });
 });

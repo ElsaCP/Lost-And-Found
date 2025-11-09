@@ -80,6 +80,12 @@ def tambah_kehilangan():
         return redirect(url_for('admin_bp.login_admin'))
     return render_template('tambah_kehilangan.html')
 
+@admin_bp.route('/kehilangan/detail')
+def detail_kehilangan():
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_bp.login_admin'))
+    return render_template('detail_kehilangan.html')
+
 # ======================
 # ROUTE: PENEMUAN
 # ======================
@@ -142,6 +148,13 @@ def pengaturan():
     if not session.get('admin_logged_in'):
         return redirect(url_for('admin_bp.login_admin'))
     return render_template('pengaturan.html')
+
+@admin_bp.route('/pengaturan/ganti-password')
+def ganti_password():
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_bp.login_admin'))
+    return render_template('ganti_password.html')
+
 
 
 # ======================
