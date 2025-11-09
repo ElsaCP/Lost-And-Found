@@ -2,19 +2,17 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Form Klaim | Sistem Lost & Found</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form Klaim Barang | Lost & Found Juanda</title>
+
   <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Bootstrap Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-  <!-- Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Protest+Strike&display=swap" rel="stylesheet">
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <!-- Custom CSS -->
-  <link rel="stylesheet" href={{ url_for('static', filename='css/form_klaim_barang.css') }}>
-  <!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Reddit+Sans+Condensed:wght@700;800&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/indexx.css')}}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/cari_barang.css')}}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/form_klaim_barang.css')}}">
 </head>
 
 <body>
@@ -22,26 +20,26 @@
   <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
     <div class="container-fluid">
       <a class="navbar-brand" href="#">
-        <img src={{ url_for('static', filename='image/logo injourney.png') }} alt="Logo">
+        <img src={{url_for('static', filename='image/logo injourney.png')}} alt="Logo">
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
         <ul class="navbar-nav align-items-center">
-          <li class="nav-item"><a class="nav-link active" href="{{ url_for('main.home') }}#hero">Beranda</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('main.home') }}#listBarang">List Barang</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('main.home') }}#panduan">Panduan</a></li>
+          <li class="nav-item"><a class="nav-link active" href="indexx.html#hero">Beranda</a></li>
+          <li class="nav-item"><a class="nav-link" href="indexx.html#listBarang">List Barang</a></li>
+          <li class="nav-item"><a class="nav-link" href="indexx.html#panduan">Panduan</a></li>
           <li class="nav-item"><a class="nav-link" href="#kontak">Kontak</a></li>
           <li class="nav-item ms-lg-3">
-            <a href="/login" class="profile-icon"><i class="bi bi-person-circle"></i></a>
+            <a href="#loginAdmin" class="profile-icon"><i class="bi bi-person-circle"></i></a>
           </li>
         </ul>
       </div>
     </div>
   </nav>
 
-  <!-- Header Form -->
+<!-- Header Form -->
 <section class="header-klaim container d-flex align-items-center justify-content-between mt-5 pt-4">
   <div class="d-flex align-items-center gap-3">
     <a href="javascript:history.back()" class="back-arrow-header"><i class="fa-solid fa-arrow-left"></i></a>
@@ -50,7 +48,7 @@
       <p class="subtitle mb-0 text-secondary">Mohon lengkapi informasi di bawah ini agar kami dapat memverifikasi kepemilikan barang Anda.</p>
     </div>
   </div>
-  <img src={{ url_for('static', filename='image/logo juanda 2.png')}} alt="Logo Juanda" class="logo-juanda2">
+  <img src={{ url_for('static', filename='image/juanda 3.png')}} alt="Logo Juanda" class="logo-juanda2">
 </section>
 
 <!-- Form Klaim Barang -->
@@ -126,7 +124,6 @@
   </div>
 </div>
 
-
 <!-- Footer -->
 <section class="footer" id="kontak">
   <footer class="footer text-white" id="kontak">
@@ -171,6 +168,6 @@
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src={{ url_for('static', filename='js/form_klaim_barang.js') }}></script>
+<script src="{{ url_for('static', filename='js/form_klaim_barang.js')}}"></script>
 </body>
 </html>

@@ -1,0 +1,210 @@
+body {
+  background-color: #f4f6f9;
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Header */ 
+.header-klaim {
+  margin-top: 100px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.back-arrow-header {
+  font-size: 1.8rem;
+  color: #004b8d;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.back-arrow-header:hover {
+  color: #002f60;
+}
+
+.logo-juanda2 {
+  height: 55px;
+  object-fit: contain;
+}
+
+.subtitle {
+  font-size: 0.95rem;
+  color: #444;
+}
+
+/* Tombol utama (gradasi) */
+.btn-primary {
+  background: linear-gradient(90deg, #004b8d, #0072ff);
+  border: none;
+  color: #fff;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 75, 141, 0.3);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(90deg, #00386a, #005ed1);
+  box-shadow: 0 6px 16px rgba(0, 75, 141, 0.4);
+  transform: translateY(-2px);
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+  box-shadow: 0 3px 8px rgba(0, 75, 141, 0.3);
+}
+
+
+/* Tombol batal */
+.btn-secondary {
+  border: none;
+  transition: 0.3s;
+}
+
+.btn-secondary:hover {
+  background-color: #6c757d;
+}
+
+/* Form Container */
+.form-wrapper {
+  max-width: 950px;
+  margin: 40px auto 50px; /* memberi jarak bawah agar tidak menempel footer */
+  background-color: transparent;
+}
+
+.klaim-form {
+  background-color: #fff;
+  border-radius: 15px;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+  padding: 40px;
+}
+
+/* Label dan input */
+label.form-label {
+  font-weight: 500;
+  color: #333;
+}
+
+input.form-control,
+textarea.form-control {
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  transition: 0.3s;
+}
+
+input.form-control:focus,
+textarea.form-control:focus {
+  border-color: #004b8d;
+  box-shadow: 0 0 0 0.15rem rgba(0, 75, 141, 0.25);
+}
+
+/* Checkbox */
+.form-check-label {
+  font-size: 0.9rem;
+}
+
+/* Modal */
+.modal-content {
+  border-radius: 1rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  padding: 20px;
+  text-align: center;
+}
+
+.modal-content i {
+  color: #004b8d;
+}
+
+/* Footer jarak tambahan */
+footer {
+  margin-top: 50px;
+}
+
+/* Tombol container agar tetap sejajar */
+.button-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* -------------------- */
+/* RESPONSIVE SETTINGS */
+/* -------------------- */
+
+@media (max-width: 992px) {
+  .header-klaim {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+  }
+
+  .form-wrapper {
+    padding: 0 20px;
+    margin-bottom: 20px;
+  }
+
+  .klaim-form {
+    padding: 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-klaim h2 {
+    font-size: 1.4rem;
+  }
+
+  .subtitle {
+    font-size: 0.9rem;
+  }
+
+  .klaim-form {
+    padding: 25px;
+  }
+
+  .button-group {
+    justify-content: center;
+  }
+
+  .button-group button {
+    width: auto;
+    min-width: 130px;
+  }
+}
+
+@media (max-width: 576px) {
+  .form-wrapper {
+    margin-bottom: 80px;
+  }
+
+  .klaim-form {
+    padding: 20px;
+  }
+
+  input.form-control,
+  textarea.form-control {
+    font-size: 0.9rem;
+  }
+
+  label.form-label {
+    font-size: 0.9rem;
+  }
+
+  .btn {
+    font-size: 0.9rem;
+  }
+
+  /* Tombol tetap sejajar tapi tidak terlalu kecil */
+  .button-group {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .button-group button {
+    flex: 1 1 auto;
+    min-width: 130px;
+  }
+}
