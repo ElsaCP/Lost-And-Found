@@ -65,11 +65,7 @@ body {
 @media (max-width: 992px) {
   .navbar {
     height: auto;
-    padding: 10px 20px;
-  }
-
-  .navbar-brand img {
-    height: 55px;
+    padding: 0px 20px;
   }
 
   /* COLLAPSE MENU KECIL DI KANAN BAWAH TOGGLER */

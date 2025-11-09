@@ -1,7 +1,11 @@
+/* ===== BODY UMUM ===== */
 body {
-  font-family: Arial, sans-serif;
-  padding-top: 70px; 
+  font-family: "Poppins", sans-serif;
+  background-color: #f8f9fa;
+  padding-top: 90px;
+  margin: 0;
 }
+
 /* ===== NAVBAR STYLE ===== */
 .navbar {
   background: #0056a6;
@@ -65,7 +69,11 @@ body {
 @media (max-width: 992px) {
   .navbar {
     height: auto;
-    padding: 0px 20px;
+    padding: 10px 20px;
+  }
+
+  .navbar-brand img {
+    height: 55px;
   }
 
   /* COLLAPSE MENU KECIL DI KANAN BAWAH TOGGLER */
@@ -128,14 +136,113 @@ body {
 }
 
 
+/* ===== LOGO JUANDA ===== */
+.juanda-logo {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.juanda-logo img {
+  width: 200px;
+  height: auto;
+  transition: 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .juanda-logo img {
+    width: 150px;
+  }
+}
+
+/* ===== TOMBOL BACK ===== */
+.back-btn {
+  position: absolute;
+  left: 25px;
+  top: 85px;
+  color: #003b75;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  z-index: 10;
+  transition: transform 0.2s ease;
+}
+
+.back-btn:hover {
+  transform: scale(1.1);
+}
+
+.back-btn i {
+  font-size: 42px;
+  font-weight: 900;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.15);
+}
+
+@media (max-width: 768px) {
+  .back-btn {
+    top: 70px;
+    left: 15px;
+  }
+
+  .back-btn i {
+    font-size: 34px;
+  }
+}
+
+/* ===== POPUP ===== */
+.popup {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.4);
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+.popup-content {
+  background: #fff;
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  width: 320px;
+  max-width: 90%;
+}
+
+.popup-content img {
+  width: 70px;
+  margin-bottom: 10px;
+}
+
+.popup-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+}
+
+.popup-buttons button {
+  border: none;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.popup-buttons button:hover {
+  opacity: 0.9;
+}
+
+/* ===== FOOTER SAMA DENGAN INDEX ===== */
 footer {
   background: #0056a6;
   color: white;
-  padding: 6px 20px; /* ✅ lebih pendek dari sebelumnya */
+  padding: 6px 20px;
   font-family: 'Poppins', sans-serif;
   display: flex;
   justify-content: center;
-  align-items: center; /* konten tetap di tengah vertikal */
+  align-items: center;
   flex-direction: column;
 }
 
@@ -149,18 +256,18 @@ footer {
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 15px; /* ✅ jarak antar elemen lebih kecil */
-  margin-bottom: 10px; /* dikurangi agar tidak terlalu tinggi */
+  gap: 15px;
+  margin-bottom: 10px;
 }
 
 .footer-logo img {
-  height: 55px; /* ✅ sedikit lebih kecil */
+  height: 55px;
   margin-bottom: 5px;
 }
 
 .footer-address {
   max-width: 320px;
-  font-size: 13px; /* sedikit kecil biar lebih ringkas */
+  font-size: 13px;
   line-height: 1.5;
 }
 
@@ -174,8 +281,8 @@ footer {
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 15px; /* dikurangi agar tidak terlalu melebar */
-  font-size: 24px; /* ikon sedikit lebih kecil */
+  gap: 15px;
+  font-size: 24px;
 }
 
 .footer-icons a {
@@ -191,7 +298,7 @@ footer {
 .footer-divider {
   border: none;
   border-top: 1px solid rgba(255, 255, 255, 255);
-  margin: 10px 0; /* ✅ lebih pendek */
+  margin: 10px 0;
 }
 
 .footer-bottom {
@@ -200,18 +307,20 @@ footer {
   text-align: center;
 }
 
+@media (max-width: 768px) {
+  .footer-top {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 8px;
+  }
 
-.profile-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: #0056a6;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.profile-icon i {
-  color: white;
-  font-size: 35px;
-}
+  .footer-logo {
+    margin-bottom: 8px;
+  }
 
+  .footer-icons {
+    margin-top: 5px;
+    font-size: 26px;
+  }
+}
