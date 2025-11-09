@@ -84,11 +84,11 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ==== FITUR PENCARIAN ====
-  const searchInput = document.getElementById("searchInput");
+  const searchInput = document.querySelector(".search-bar input"); // ambil input di dalam search-bar
   if (searchInput) {
     searchInput.addEventListener("keyup", function () {
       const keyword = this.value.toLowerCase();
-      document.querySelectorAll("#dataTable tbody tr").forEach(row => {
+      document.querySelectorAll(".arsip-table tbody tr").forEach(row => {
         const text = row.textContent.toLowerCase();
         row.style.display = text.includes(keyword) ? "" : "none";
       });

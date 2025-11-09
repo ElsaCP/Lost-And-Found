@@ -28,8 +28,8 @@
           <a href="{{ url_for('admin_bp.tambah_kehilangan') }}" class="active"><i class="bi bi-plus-circle"></i> Tambah</a>
         </div>
         <a href="{{ url_for('admin_bp.daftar_penemuan') }}"><i class="bi bi-archive"></i> Penemuan</a>
-        <a href="arsip.html"><i class="bi bi-folder"></i> Arsip</a>
-        <a href="pengaturan.html"><i class="bi bi-gear"></i> Pengaturan</a>
+        <a href="{{ url_for('admin_bp.arsip') }}"><i class="bi bi-folder"></i> Arsip</a>
+        <a href="{{ url_for('admin_bp.pengaturan') }}"><i class="bi bi-gear"></i> Pengaturan</a>
       </nav>
     </div>
 
@@ -106,6 +106,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="{{ url_for('admin_bp.static', filename='js/tambah_kehilangan.js') }}"></script>
+    <script src="{{ url_for('admin_bp.static', filename='js/logout.js') }}"></script>
   </div>
 </body>
 </html>
