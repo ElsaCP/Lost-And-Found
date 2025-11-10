@@ -55,7 +55,7 @@ function renderBarang(items) {
     const card = document.createElement("div");
     card.className = "item-card";
     card.innerHTML = `
-      <img src="/static/image/${item.gambar_barang}" alt="${item.nama_barang}">
+      <img src="/static/uploads/${item.gambar_barang}" alt="${item.nama_barang}">
       <div class="card-body">
         <h5>${item.nama_barang}</h5>
         <p class="text-muted">Kategori: ${item.kategori}</p>
