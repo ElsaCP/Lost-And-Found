@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.addEventListener("click", () => {
       const kode = btn.dataset.kode;
       if (kode) {
-        window.location.href = `detail_arsip.html?kode=${encodeURIComponent(kode)}`;
+      window.location.href = `/admin/arsip/detail?kode=${encodeURIComponent(kode)}`;
       } else {
         Swal.fire({
           icon: "error",
