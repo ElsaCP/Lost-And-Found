@@ -86,6 +86,12 @@ def detail_kehilangan():
         return redirect(url_for('admin_bp.login_admin'))
     return render_template('detail_kehilangan.html')
 
+@admin_bp.route('/kehilangan/edit')
+def edit_kehilangan():
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_bp.login_admin'))
+    return render_template('edit_kehilangan.html')
+
 # ======================
 # ROUTE: PENEMUAN
 # ======================
@@ -142,6 +148,16 @@ def arsip():
     if not session.get('admin_logged_in'):
         return redirect(url_for('admin_bp.login_admin'))
     return render_template('arsip.html')
+
+from flask import request
+
+@admin_bp.route('/arsip/detail')
+def detail_arsip():
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_bp.login_admin'))
+
+    kode = request.args.get('kode')  # ambil kode dari URL query (?kode=LF-L001)
+    return render_template('detail_arsip.html', kode=kode)
 
 @admin_bp.route('/pengaturan')
 def pengaturan():

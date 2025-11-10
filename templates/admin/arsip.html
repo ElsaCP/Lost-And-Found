@@ -70,7 +70,9 @@
             <td>Hilang</td>
             <td>Arsip</td>
             <td class="aksi">
-              <button class="btn-view"><i class="bi bi-eye"></i></button>
+            <a href="{{ url_for('admin_bp.detail_arsip') }}?kode=LF-L001" class="btn-view">
+              <i class="bi bi-eye"></i>
+            </a>
               <button class="btn-restore"><i class="bi bi-arrow-clockwise"></i></button>
             </td>
           </tr>
@@ -80,7 +82,9 @@
             <td>Temuan</td>
             <td>Arsip</td>
             <td class="aksi">
-              <button class="btn-view"><i class="bi bi-eye"></i></button>
+            <a href="{{ url_for('admin_bp.detail_arsip') }}?kode=LF-L002" class="btn-view">
+              <i class="bi bi-eye"></i>
+            </a>
               <button class="btn-restore"><i class="bi bi-arrow-clockwise"></i></button>
             </td>
           </tr>
@@ -90,7 +94,9 @@
             <td>Hilang</td>
             <td>Arsip</td>
             <td class="aksi">
-              <button class="btn-view"><i class="bi bi-eye"></i></button>
+            <a href="{{ url_for('admin_bp.detail_arsip') }}?kode=LF-L003" class="btn-view">
+              <i class="bi bi-eye"></i>
+            </a>
               <button class="btn-restore"><i class="bi bi-arrow-clockwise"></i></button>
             </td>
           </tr>
@@ -100,7 +106,9 @@
             <td>Temuan</td>
             <td>Arsip</td>
             <td class="aksi">
-              <button class="btn-view"><i class="bi bi-eye"></i></button>
+            <a href="{{ url_for('admin_bp.detail_arsip') }}?kode=LF-L004" class="btn-view">
+              <i class="bi bi-eye"></i>
+            </a>
               <button class="btn-restore"><i class="bi bi-arrow-clockwise"></i></button>
             </td>
           </tr>
@@ -111,6 +119,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="{{ url_for('admin_bp.static', filename='js/arsip.js') }}"></script>
-    <script src="{{ url_for('admin_bp.static', filename='js/logout.js') }}"></script>
+  <script src="{{ url_for('admin_bp.static', filename='js/logout.js') }}"></script>
 </body>
 </html>
