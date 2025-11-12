@@ -67,26 +67,43 @@ def form_kehilangan():
 @main.route("/submit-kehilangan", methods=["POST"])
 def submit_kehilangan():
     try:
-        nama = request.form.get("nama_pelapor")
-        no_telp = request.form.get("no_telp")
+        # === Ambil data dari form ===
+        nama_pelapor = request.form.get("nama_pelapor")
         email = request.form.get("email")
+        no_telp = request.form.get("no_telp")
         asal_negara = request.form.get("asal_negara")
         kota = request.form.get("kota")
         nama_barang = request.form.get("nama_barang")
         kategori = request.form.get("kategori")
-        lokasi_kehilangan = request.form.get("lokasi_kehilangan")
-        tanggal_kehilangan = request.form.get("tanggal_kehilangan")
+        jenis_laporan = request.form.get("jenis_laporan") or "Kehilangan"
         deskripsi = request.form.get("deskripsi")
-        foto = request.files.get("foto_barang")
+        tanggal_kehilangan = request.form.get("tanggal_kehilangan")
+        terminal = request.form.get("terminal")
+        lokasi = request.form.get("lokasi")
+        lokasi_lain = request.form.get("lokasi_lain")
 
-        # Simpan foto
+        # === Gabungkan terminal dan lokasi ===
+        if lokasi == "Lainnya" and lokasi_lain:
+            lokasi_final = f"{terminal} - {lokasi_lain}"
+        else:
+            lokasi_final = f"{terminal} - {lokasi}"
+
+        # === Simpan foto ===
+        foto = request.files.get("foto")
         foto_filename = None
-        if foto:
+        if foto and foto.filename:
             foto_filename = datetime.now().strftime("%Y%m%d%H%M%S_") + foto.filename
             upload_path = os.path.join("static", "uploads", foto_filename)
             os.makedirs(os.path.dirname(upload_path), exist_ok=True)
             foto.save(upload_path)
 
+        # === Format tanggal & waktu ===
+        now = datetime.now()
+        tanggal_submit = now.strftime("%d/%m/%Y")
+        waktu_submit = now.strftime("%H:%M")
+        update_terakhir = now.strftime("%d/%m/%Y %H:%M")
+
+        # === Koneksi database ===
         db = get_db_connection()
         cursor = db.cursor()
 
@@ -101,35 +118,36 @@ def submit_kehilangan():
         else:
             new_number = 1
 
-        kode = f"LF-L{new_number:05d}"
+        kode_kehilangan = f"LF-L{new_number:05d}"
 
-        # Format tanggal dan waktu
-        now = datetime.now()
-        tanggal_submit = now.strftime("%d/%m/%Y")
-        waktu_submit = now.strftime("%H:%M")
-
-        # Simpan ke database
+        # === Simpan ke database ===
         query = """
             INSERT INTO kehilangan (
-                kode_kehilangan, nama_pelapor, no_telp, email, asal_negara, kota,
-                nama_barang, kategori, lokasi_kehilangan, tanggal_kehilangan,
-                deskripsi, foto_barang, tanggal_submit, waktu_submit, status
-            ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                kode_kehilangan, nama_pelapor, email, no_telp, asal_negara, kota,
+                nama_barang, kategori, jenis_laporan, deskripsi, lokasi,
+                tanggal_kehilangan, tanggal_submit, waktu_submit, update_terakhir,
+                catatan, status, foto
+            ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
         """
         values = (
-            kode, nama, no_telp, email, asal_negara, kota,
-            nama_barang, kategori, lokasi_kehilangan, tanggal_kehilangan,
-            deskripsi, foto_filename, tanggal_submit, waktu_submit, "Pending"
+            kode_kehilangan, nama_pelapor, email, no_telp, asal_negara, kota,
+            nama_barang, kategori, jenis_laporan, deskripsi, lokasi_final,
+            tanggal_kehilangan, tanggal_submit, waktu_submit, update_terakhir,
+            "Menunggu verifikasi oleh admin", "Pending", foto_filename
         )
 
         cursor.execute(query, values)
         db.commit()
+
+        # === Tutup koneksi ===
         cursor.close()
         db.close()
 
+        # === Response sukses ===
         return jsonify({
             "success": True,
-            "kode_kehilangan": kode,
+            "kode_kehilangan": kode_kehilangan,
+            "lokasi": lokasi_final,
             "tanggal_submit": tanggal_submit,
             "waktu_submit": waktu_submit
         })

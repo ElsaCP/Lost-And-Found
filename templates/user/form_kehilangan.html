@@ -92,10 +92,12 @@
         <label class="form-label">Kategori Barang</label>
         <select name="kategori" id="kategori" class="form-select" required>
           <option value="">Pilih Jenis Barang</option>
-          <option value="Tas">Tas</option>
+          <option value="Elektronik">Elektronik</option>
           <option value="Dompet">Dompet</option>
-          <option value="Dokumen">Dokumen</option>
-          <option value="Handphone">Handphone</option>
+          <option value="Tas">Tas</option>
+          <option value="Kunci">Kunci</option>
+          <option value="Pakaian_aksesoris">Pakaian & Aksesoris</option>
+          <option value="Kendaraan_aksesoris">Kendaraan & Aksesoris Kendaraan</option>
           <option value="Lainnya">Lainnya</option>
         </select>
       </div>
@@ -107,12 +109,56 @@
       </div>
 
       <div class="mb-3">
-        <label class="form-label">Lokasi Kehilangan</label>
-        <select name="lokasi_kehilangan" class="form-select" required>
-          <option value="">Pilih Lokasi Kehilangan</option>
-          <option value="Terminal 1 Kedatangan">Terminal 1 Kedatangan</option>
-          <option value="Terminal 2 Keberangkatan">Terminal 2 Keberangkatan</option>
-          <option value="Terminal 3 Domestik">Terminal 3 Domestik</option>
+        <label for="terminal">Terminal:</label>
+        <select id="terminal">
+          <option value="">Pilih Terminal</option>
+          <option value="T1">Terminal 1</option>
+          <option value="T2">Terminal 2</option>
+        </select>
+
+        <label for="lokasi">Lokasi:</label>
+        <select id="lokasi">
+          <option value="">Pilih Lokasi</option>
+          <option value="Gate A">Gate A</option>
+          <option value="Gate B">Gate B</option>
+          <option value="Waiting Area">Waiting Area</option>
+          <option value="Bagasi">Bagasi</option>
+        </select>
+
+        <input type="text" id="lokasi_lain" placeholder="Tulis lokasi lain" style="display:none;">
+
+        <script>
+          const terminalSelect = document.getElementById('terminal');
+          const lokasiSelect = document.getElementById('lokasi');
+          const lokasiLain = document.getElementById('lokasi_lain');
+
+          const lokasiData = {
+            T1: ['Gate A', 'Gate B', 'Waiting Area T1', 'Lainnya'],
+            T2: ['Gate C', 'Gate D', 'Waiting Area T2', 'Lainnya']
+          };
+
+          terminalSelect.addEventListener('change', function() {
+            const terminal = this.value;
+            lokasiSelect.innerHTML = '<option value="">Pilih Lokasi</option>';
+            if(lokasiData[terminal]){
+              lokasiData[terminal].forEach(loc => {
+                const option = document.createElement('option');
+                option.value = loc;
+                option.textContent = loc;
+                lokasiSelect.appendChild(option);
+              });
+            }
+            lokasiLain.style.display = 'none';
+          });
+
+          lokasiSelect.addEventListener('change', function() {
+            if(this.value === 'Lainnya'){
+              lokasiLain.style.display = 'block';
+            } else {
+              lokasiLain.style.display = 'none';
+            }
+          });
+        </script>
         </select>
       </div>
       <div class="mb-3">
@@ -125,7 +171,7 @@
       </div>
       <div class="mb-3">
         <label class="form-label">Foto Barang</label>
-        <input type="file" name="foto_barang" class="form-control" accept="image/*" required>
+        <input type="file" name="foto" class="form-control" accept="image/*" required>
       </div>
       <div class="form-check mb-3">
         <input type="checkbox" class="form-check-input" id="tanggung" required>

@@ -1,141 +1,16 @@
 body {
-  font-family: Arial, sans-serif;
-  padding-top: 70px; 
+  background-color: #ffffff;
+  font-family: 'Poppins', sans-serif;
+  overflow-x: hidden;
 }
 
-/* ===== NAVBAR STYLE ===== */
-.navbar {
-  background: #0056a6;
-  height: 70px;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  padding: 0 20px;
-}
-
-/* LOGO */
-.navbar-brand img {
-  height: 100%;              /* Logo setinggi navbar */
-  max-height: 70px;
-  width: auto;
-  object-fit: contain;       /* Biar tidak terpotong */
-  transition: all 0.3s ease;
-}
-
-/* MENU LINKS */
-.nav-link {
-  color: #fff !important;
-  margin-right: 18px;
-  font-weight: 500;
-  transition: color 0.3s ease, transform 0.2s ease;
-}
-
-.nav-link:hover {
-  text-decoration: underline;
-  color: #cce4ff !important;
-  transform: translateY(-1px);
-}
-
-/* ICON PROFILE */
-.profile-icon {
-  color: #fff;
-  font-size: 1.6rem;
-  transition: color 0.3s ease, transform 0.2s ease;
-}
-
-.profile-icon:hover {
-  color: #cce4ff;
-  transform: scale(1.1);
-}
-
-/* HAMBURGER BUTTON */
-.navbar-toggler {
-  border: none;
-  background: none;
-  outline: none;
-  box-shadow: none !important;
-}
-
-.navbar-toggler-icon {
-  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='white' stroke-width='2' stroke-linecap='round' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
-}
-
-/* ===== RESPONSIVE BREAKPOINTS ===== */
-
-/* Laptop & Tablet Landscape */
-@media (max-width: 992px) {
-  .navbar {
-    height: auto;
-    padding: 0px 20px;
-  }
-
-  /* COLLAPSE MENU KECIL DI KANAN BAWAH TOGGLER */
-  .navbar-collapse {
-    background: #0056a6;
-    border-radius: 10px;
-    padding: 10px 15px;
-    position: absolute;
-    top: 60px;               /* sedikit di bawah navbar */
-    right: 10px;
-    width: 180px;            /* kecil */
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    z-index: 999;
-    opacity: 0;
-    transform: scale(0.9);
-    transform-origin: top right;
-    transition: all 0.25s ease;
-  }
-
-  /* Saat collapse aktif */
-  .navbar-collapse.show {
-    opacity: 1;
-    transform: scale(1);
-  }
-
-  .navbar-nav {
-    text-align: center;
-  }
-
-  .nav-link {
-    margin: 8px 0;
-    display: block;
-  }
-
-  .profile-icon {
-    display: block;
-    margin: 10px auto 5px auto;
-  }
-}
-
-/* Smartphone */
-@media (max-width: 576px) {
-  .navbar-brand img {
-    height: 45px;
-  }
-
-  .navbar-collapse {
-    width: 160px;
-    right: 8px;
-    top: 55px;
-  }
-
-  .nav-link {
-    font-size: 15px;
-  }
-
-  .profile-icon {
-    font-size: 1.4rem;
-  }
-}
-
-/* --- Hero Section --- */
 /* --- Hero Section --- */
 .hero-section {
   margin-top: 0;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 100px 0 80px; /* ✅ tidak pakai 100vh agar tidak terlalu tinggi */
+  min-height: 100vh;
   position: relative;
   background: linear-gradient(to bottom right, #f0f9ff, #e0f2fe);
 }
@@ -148,81 +23,6 @@ body {
   width: 550px;
   position: relative;
   z-index: 2;
-}
-
-/* --- RESPONSIVE --- */
-@media (max-width: 992px) {
-  .hero-section {
-    padding: 80px 0 60px;
-  }
-
-  .hero-box {
-    width: 85%;
-    padding: 45px 35px;
-  }
-}
-
-@media (max-width: 768px) {
-  .hero-section {
-    padding: 70px 0 50px; /* ✅ background tidak terlalu panjang */
-  }
-
-  .hero-box {
-    width: 90%;
-    padding: 40px 30px;
-  }
-
-  .hero-title {
-    font-size: 1.8rem;
-  }
-}
-
-@media (max-width: 576px) {
-  .hero-section {
-    padding: 50px 0 40px; /* ✅ di HP pendek dan proporsional */
-    background: linear-gradient(to bottom right, #f6fbff, #e7f7fe);
-  }
-
-  .hero-box {
-    width: 92%;
-    padding: 35px 25px;
-  }
-
-  .hero-title {
-    font-size: 1.7rem;
-  }
-
-  .hero-subtitle {
-    font-size: 0.95rem;
-    margin-bottom: 20px;
-  }
-}
-
-
-/* Responsif */
-@media (max-width: 768px) {
-  .hero-section {
-    padding: 80px 0 40px;   /* ✅ lebih rapat di tablet/HP */
-  }
-
-  .hero-box {
-    padding: 30px 20px;
-  }
-}
-
-@media (max-width: 576px) {
-  .hero-section {
-    padding: 70px 0 30px;   /* ✅ di HP lebih rapat lagi */
-  }
-
-  .hero-box {
-    width: 92%;
-    padding: 25px 18px;
-  }
-
-  .hero-title {
-    font-size: 1.6rem;
-  }
 }
 
 .hero-logo {
@@ -438,7 +238,7 @@ footer {
 
 .footer-divider {
   border: none;
-  border-top: 1px solid rgba(255, 255, 255, 255);
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
   margin: 10px 0; /* ✅ lebih pendek */
 }
 
@@ -448,17 +248,21 @@ footer {
   text-align: center;
 }
 
+/* Responsif di HP */
+@media (max-width: 768px) {
+  .footer-top {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 8px;
+  }
 
-.profile-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: #0056a6;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.profile-icon i {
-  color: white;
-  font-size: 35px;
+  .footer-logo {
+    margin-bottom: 8px;
+  }
+
+  .footer-icons {
+    margin-top: 5px;
+    font-size: 26px;
+  }
 }
