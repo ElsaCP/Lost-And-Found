@@ -1,101 +1,51 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const kode = urlParams.get("kode");
-  const from = urlParams.get("from") || "daftar_kehilangan";
+  const kode = document.getElementById("btnUpdateStatus").dataset.kode;
 
-  // ==== DUMMY DATA LAPORAN ====
-  const dataLaporan = [
-    {
-      kode: "LF-L001",
-      namaPelapor: "Elsa Claudia P.",
-      email: "elsa@gmail.com",
-      noTelp: "08321xxxxxx",
-      namaBarang: "Dompet Kulit Buaya",
-      jenisLaporan: "Kehilangan",
-      deskripsi: "Warna coklat",
-      lokasi: "Terminal 1, Kedatangan",
-      tanggalLapor: "21/09/2025",
-      updateTerakhir: "21/09/2025",
-      status: "Pending",
-      foto: "https://placehold.co/344x375?text=Dompet"
-    },
-    {
-      kode: "LF-L002",
-      namaPelapor: "Aulia Agstya H.",
-      email: "aulia@gmail.com",
-      noTelp: "08214xxxxxx",
-      namaBarang: "Jam Tangan",
-      jenisLaporan: "Kehilangan",
-      deskripsi: "Warna hitam",
-      lokasi: "Terminal 2, Keberangkatan",
-      tanggalLapor: "23/09/2025",
-      updateTerakhir: "25/09/2025",
-      status: "Verifikasi",
-      foto: "https://placehold.co/344x375?text=Jam"
-    }
-  ];
-
-  // ==== Validasi kode laporan ====
-  if (!kode) {
-    Swal.fire({
-      icon: "error",
-      title: "Oops!",
-      text: "Kode laporan tidak ditemukan.",
-      confirmButtonColor: "#d33"
-    });
-    return;
-  }
-
-  const laporan = dataLaporan.find(item => item.kode === kode);
-
-  if (!laporan) {
-    Swal.fire({
-      icon: "error",
-      title: "Tidak Ditemukan!",
-      text: "Data laporan tidak tersedia.",
-      confirmButtonColor: "#d33"
-    });
-    return;
-  }
-
-  // === Isi data ke elemen HTML ===
-  document.getElementById("kodeLaporan").textContent = laporan.kode;
-  document.getElementById("namaPelapor").textContent = laporan.namaPelapor;
-  document.getElementById("email").textContent = laporan.email;
-  document.getElementById("noTelp").textContent = laporan.noTelp;
-  document.getElementById("namaBarang").textContent = laporan.namaBarang;
-  document.getElementById("jenisLaporan").textContent = laporan.jenisLaporan;
-  document.getElementById("deskripsi").textContent = laporan.deskripsi;
-  document.getElementById("lokasi").textContent = laporan.lokasi;
-  document.getElementById("tanggalLapor").textContent = laporan.tanggalLapor;
-  document.getElementById("updateTerakhir").textContent = laporan.updateTerakhir;
-  document.getElementById("fotoBarang").src = laporan.foto;
-  document.getElementById("status").value = laporan.status;
-
-  // === Tombol Update Status ===
-  document.getElementById("btnUpdateStatus").addEventListener("click", () => {
+  // Tombol Update Status → kirim ke Flask pakai fetch()
+  document.getElementById("btnUpdateStatus").addEventListener("click", async () => {
     const newStatus = document.getElementById("status").value;
-    laporan.status = newStatus;
-    laporan.updateTerakhir = new Date().toLocaleDateString("id-ID");
 
-    Swal.fire({
-      icon: "success",
-      title: "Status Diperbarui!",
-      text: `Status berhasil diubah menjadi "${newStatus}".`,
-      confirmButtonColor: "#3085d6",
-      timer: 2000,
-      showConfirmButton: false,
-    });
+    try {
+      const response = await fetch(`/admin/api/kehilangan/update_status`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ kode: kode, status: newStatus })
+      });
 
-    document.getElementById("updateTerakhir").textContent = laporan.updateTerakhir;
+      const result = await response.json();
+
+      if (result.success) {
+        Swal.fire({
+          icon: "success",
+          title: "Status Diperbarui!",
+          text: `Status berhasil diubah menjadi "${newStatus}".`,
+          timer: 2000,
+          showConfirmButton: false
+        });
+
+        document.getElementById("updateTerakhir").textContent = result.update_terakhir;
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Gagal!",
+          text: "Tidak dapat memperbarui status.",
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      Swal.fire({
+        icon: "error",
+        title: "Kesalahan!",
+        text: "Terjadi kesalahan pada server.",
+      });
+    }
   });
 
-  // === Tombol Kembali ===
+  // Tombol kembali
   document.getElementById("btnKembali").addEventListener("click", () => {
+    const from = new URLSearchParams(window.location.search).get("from");
     if (from === "daftar_kehilangan") {
       window.location.href = "/admin/kehilangan/daftar";
-    } else if (from === "daftar_penemuan") {
-      window.location.href = "/admin/penemuan/daftar";
     } else {
       window.history.back();
     }

@@ -14,8 +14,8 @@
 <div class="sidebar">
   <div>
     <div class="logo-wrapper">
-      <img src="{{ url_for('admin_bp.static', filename='image/rectangle.png')}}" alt="Background Sidebar" class="rectangle-bg">
-      <img src="{{ url_for('admin_bp.static', filename='image/logo.png')}}" alt="Logo Bandara" class="logo-front">
+      <img src="{{ url_for('admin_bp.static', filename='image/rectangle.png')}}" class="rectangle-bg">
+      <img src="{{ url_for('admin_bp.static', filename='image/logo.png')}}" class="logo-front">
     </div>
 
     <nav>
@@ -36,58 +36,62 @@
   </a>
 </div>
 
-  <div class="content">
-    <div class="header">
-      <div class="logo-wrapper">
-        <img src="{{ url_for('admin_bp.static', filename='image/rectangle2.png')}}" alt="Rectangle Background" class="rectangle-bg">
-        <img src="{{ url_for('admin_bp.static', filename='image/image5.png')}}" alt="Logo Header" class="logo-front">
-      </div>
-      <h2>Kehilangan - Detail Laporan Barang</h2>
-      <div class="profile-icon">
-        <i class="bi bi-person-circle"></i>
-      </div>
+<div class="content">
+  <div class="header">
+    <div class="logo-wrapper">
+      <img src="{{ url_for('admin_bp.static', filename='image/rectangle2.png')}}" class="rectangle-bg">
+      <img src="{{ url_for('admin_bp.static', filename='image/image5.png')}}" class="logo-front">
     </div>
-
-   <div class="detail-container">
-  <div class="left-panel">
-    <img id="fotoBarang" class="foto-barang" src="https://placehold.co/344x375" alt="Foto Barang">
-    <div id="kodeLaporan" class="kode-laporan">LF-L001</div>
+    <h2>Detail Laporan Kehilangan</h2>
+    <div class="profile-icon">
+      <i class="bi bi-person-circle"></i>
+    </div>
   </div>
 
-  <div class="right-panel">
-    <div class="data-section">
-      <h3>Data Pelapor</h3>
-      <div class="data-row"><span>Nama :</span><strong id="namaPelapor">-</strong></div>
-      <div class="data-row"><span>No. Telp :</span><strong id="noTelp">-</strong></div>
-      <div class="data-row"><span>Email :</span><strong id="email">-</strong></div>
+  <div class="detail-container">
+    <div class="left-panel">
+      <img id="fotoBarang" class="foto-barang" 
+           src="{{ url_for('admin_bp.static', filename='upload/' + (laporan.foto if laporan.foto else 'placeholder.png')) }}" 
+           alt="Foto Barang">
+      <div id="kodeLaporan" class="kode-laporan">{{ laporan.kode }}</div>
     </div>
 
-    <div class="data-section">
-      <h3>Data Barang</h3>
-      <div class="data-row"><span>Nama Barang :</span><strong id="namaBarang">-</strong></div>
-      <div class="data-row"><span>Jenis Laporan :</span><strong id="jenisLaporan">-</strong></div>
-      <div class="data-row"><span>Lokasi :</span><strong id="lokasi">-</strong></div>
-      <div class="data-row"><span>Deskripsi :</span><strong id="deskripsi">-</strong></div>
-    </div>
-
-    <div class="data-section">
-      <div class="data-row"><span>Tanggal Lapor :</span><strong id="tanggalLapor">-</strong></div>
-      <div class="data-row"><span>Update Terakhir :</span><strong id="updateTerakhir">-</strong></div>
-      <div class="data-row">
-        <span>Status :</span>
-        <select id="status" class="status-select">
-            <option value="Pending">Pending</option>
-            <option value="Verifikasi">Verifikasi</option>
-            <option value="Dicari">Dalam Pencarian</option>
-            <option value="Diproses">Barang Ditemukan</option>
-            <option value="Selesai">Selesai</option>
-        </select>
+    <div class="right-panel">
+      <div class="data-section">
+        <h3>Data Pelapor</h3>
+        <div class="data-row"><span>Nama :</span><strong>{{ laporan.nama_pelapor }}</strong></div>
+        <div class="data-row"><span>No. Telp :</span><strong>{{ laporan.no_telp }}</strong></div>
+        <div class="data-row"><span>Email :</span><strong>{{ laporan.email }}</strong></div>
       </div>
-    </div>
 
-    <div class="button-group">
-      <button id="btnKembali" class="btn btn-secondary">Kembali</button>
-      <button id="btnUpdateStatus" class="btn btn-primary">Update Status</button>
+      <div class="data-section">
+        <h3>Data Barang</h3>
+        <div class="data-row"><span>Nama Barang :</span><strong>{{ laporan.nama_barang }}</strong></div>
+        <div class="data-row"><span>Kategori :</span><strong>{{ laporan.kategori }}</strong></div>
+        <div class="data-row"><span>Jenis Laporan :</span><strong>{{ laporan.jenis_laporan }}</strong></div>
+        <div class="data-row"><span>Lokasi :</span><strong>{{ laporan.lokasi }}</strong></div>
+        <div class="data-row"><span>Deskripsi :</span><strong>{{ laporan.deskripsi }}</strong></div>
+      </div>
+
+      <div class="data-section">
+        <div class="data-row"><span>Tanggal Lapor :</span><strong>{{ laporan.tanggal_lapor }}</strong></div>
+        <div class="data-row"><span>Update Terakhir :</span><strong id="updateTerakhir">{{ laporan.update_terakhir }}</strong></div>
+        <div class="data-row">
+          <span>Status :</span>
+          <select id="status" class="status-select">
+            <option value="Pending" {% if laporan.status == 'Pending' %}selected{% endif %}>Pending</option>
+            <option value="Verifikasi" {% if laporan.status == 'Verifikasi' %}selected{% endif %}>Verifikasi</option>
+            <option value="Dicari" {% if laporan.status == 'Dicari' %}selected{% endif %}>Dalam Pencarian</option>
+            <option value="Diproses" {% if laporan.status == 'Diproses' %}selected{% endif %}>Barang Ditemukan</option>
+            <option value="Selesai" {% if laporan.status == 'Selesai' %}selected{% endif %}>Selesai</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button id="btnKembali" class="btn btn-secondary">Kembali</button>
+        <button id="btnUpdateStatus" class="btn btn-primary" data-kode="{{ laporan.kode }}">Update Status</button>
+      </div>
     </div>
   </div>
 </div>

@@ -3,87 +3,74 @@
 // ===============================
 
 document.addEventListener("DOMContentLoaded", function () {
-  const currentPage = window.location.pathname;
-
   // === Fitur ubah status dengan SweetAlert2 ===
-  if (currentPage.includes("daftar_kehilangan")) {
-    const statusSelects = document.querySelectorAll("#dataTable select");
-    statusSelects.forEach(select => {
-      select.dataset.prevIndex = select.selectedIndex;
+  const statusSelects = document.querySelectorAll("#dataTable select");
+  statusSelects.forEach(select => {
+    select.dataset.prevIndex = select.selectedIndex;
 
-      select.addEventListener("change", function (e) {
-        const selectedStatus = this.value;
-        const prevIndex = this.dataset.prevIndex;
-        const row = this.closest("tr");
+    select.addEventListener("change", function (e) {
+      const selectedStatus = this.value;
+      const prevIndex = this.dataset.prevIndex;
+      const row = this.closest("tr");
+      const kode = row.querySelector("td:first-child").textContent.trim();
 
-        Swal.fire({
-          title: "Ubah Status?",
-          text: `Apakah kamu yakin ingin mengubah status menjadi "${selectedStatus}"?`,
-          icon: "question",
-          showCancelButton: true,
-          confirmButtonColor: "#3085d6",
-          cancelButtonColor: "#6c757d",
-          confirmButtonText: "Ya, ubah!",
-          cancelButtonText: "Batal",
-        }).then((result) => {
-          if (result.isConfirmed) {
-            this.dataset.prevIndex = this.selectedIndex;
-            row.classList.add("status-updated");
-            setTimeout(() => row.classList.remove("status-updated"), 1000);
-
-            Swal.fire({
-              icon: "success",
-              title: "Status Diperbarui!",
-              text: `Status berhasil diubah menjadi "${selectedStatus}".`,
-              timer: 2000,
-              showConfirmButton: false,
-            });
-          } else {
-            this.selectedIndex = prevIndex;
-            e.preventDefault();
-          }
-        });
-      });
-    });
-  }
-
-  // === Delegasi tombol kehilangan ===
-  document.addEventListener("click", function (e) {
-    const target = e.target.closest("button");
-    if (!target) return;
-
-    const row = target.closest("tr");
-    const kode = row?.querySelector("td:first-child")?.textContent.trim();
-    if (!kode) return;
-
-    // === Tombol DETAIL ===
-    if (target.classList.contains("btn-view") || target.classList.contains("btn-detail")) {
       Swal.fire({
-        title: "Membuka Detail...",
-        text: `Menampilkan laporan dengan kode ${kode}`,
-        timer: 800,
-        showConfirmButton: false,
-        didClose: () => {
-          // arahkan ke route Flask
-          window.location.href = `/admin/kehilangan/detail?kode=${encodeURIComponent(kode)}`;
+        title: "Ubah Status?",
+        text: `Apakah kamu yakin ingin mengubah status laporan ${kode} menjadi "${selectedStatus}"?`,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#6c757d",
+        confirmButtonText: "Ya, ubah!",
+        cancelButtonText: "Batal",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.dataset.prevIndex = this.selectedIndex;
+          row.classList.add("status-updated");
+          setTimeout(() => row.classList.remove("status-updated"), 1000);
+
+          Swal.fire({
+            icon: "success",
+            title: "Status Diperbarui!",
+            text: `Status berhasil diubah menjadi "${selectedStatus}".`,
+            timer: 2000,
+            showConfirmButton: false,
+          });
+
+          // 🔄 Kirim ke Flask API
+          fetch("/admin/api/kehilangan/update_status", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ kode, status: selectedStatus }),
+          });
+        } else {
+          this.selectedIndex = prevIndex;
+          e.preventDefault();
         }
       });
-    }
+    });
+  });
 
-    // === Tombol EDIT ===
-    else if (target.classList.contains("btn-edit")) {
-      window.location.href = `/admin/kehilangan/edit?kode=${encodeURIComponent(kode)}`;
-    }
+  // === Tombol Aksi ===
+  document.addEventListener("click", function (e) {
+    const btn = e.target.closest("button");
+    if (!btn) return;
 
-    // === Tombol HAPUS ===
-    else if (target.classList.contains("btn-delete")) {
+    const row = btn.closest("tr");
+    const kode = row?.querySelector("td:first-child")?.textContent.trim();
+
+    if (btn.classList.contains("btn-view")) {
+      window.location.href = `/admin/kehilangan/detail?kode=${kode}`;
+    } else if (btn.classList.contains("btn-edit")) {
+      window.location.href = `/admin/kehilangan/edit?kode=${kode}`;
+    } else if (btn.classList.contains("btn-delete")) {
       Swal.fire({
         title: "Hapus Laporan?",
-        text: "Apakah kamu yakin ingin menghapus laporan ini?",
+        text: `Apakah kamu yakin ingin menghapus laporan ${kode}?`,
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#d33",
-        cancelButtonColor: "#3085d6",
+        cancelButtonColor: "#6c757d",
         confirmButtonText: "Ya, hapus!",
         cancelButtonText: "Batal",
       }).then((result) => {
@@ -98,41 +85,7 @@ document.addEventListener("DOMContentLoaded", function () {
           });
         }
       });
-    }
-
-    // === Tombol VERIFIKASI ===
-    else if (target.classList.contains("btn-verify")) {
-      const select = row.querySelector("select");
-      Swal.fire({
-        title: "Verifikasi Laporan",
-        text: "Apakah kamu yakin ingin memverifikasi laporan ini?",
-        icon: "success",
-        showCancelButton: true,
-        confirmButtonColor: "#28a745",
-        cancelButtonColor: "#6c757d",
-        confirmButtonText: "Ya, verifikasi",
-        cancelButtonText: "Batal",
-      }).then((result) => {
-        if (result.isConfirmed && select) {
-          select.value = "Verifikasi";
-          select.dataset.prevIndex = select.selectedIndex;
-
-          row.classList.add("status-updated");
-          setTimeout(() => row.classList.remove("status-updated"), 1000);
-
-          Swal.fire({
-            icon: "success",
-            title: "Berhasil Diverifikasi!",
-            text: "Status laporan telah diperbarui menjadi 'Verifikasi'.",
-            timer: 2000,
-            showConfirmButton: false,
-          });
-        }
-      });
-    }
-
-    // === Tombol ARSIP ===
-    else if (target.classList.contains("btn-archive")) {
+    } else if (btn.classList.contains("btn-archive")) {
       Swal.fire({
         title: "Arsipkan Laporan?",
         text: `Apakah kamu yakin ingin memindahkan laporan ${kode} ke arsip?`,
@@ -144,20 +97,13 @@ document.addEventListener("DOMContentLoaded", function () {
         cancelButtonText: "Batal",
       }).then((result) => {
         if (result.isConfirmed) {
-          Swal.fire({
-            icon: "success",
-            title: "Diarsipkan!",
-            text: `Laporan ${kode} berhasil dipindahkan ke arsip.`,
-            timer: 2000,
-            showConfirmButton: false,
-          });
           window.location.href = "/admin/arsip";
         }
       });
     }
   });
 
-  // === FITUR PENCARIAN ===
+  // === Fitur Pencarian ===
   const searchInput = document.getElementById("searchInput");
   const tableRows = document.querySelectorAll("#dataTable tbody tr");
 
