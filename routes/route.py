@@ -1,6 +1,7 @@
 # routes/route.py
 from flask import Blueprint, request, jsonify, render_template,  url_for
 from datetime import datetime
+from werkzeug.utils import secure_filename
 from models import fetch_public_penemuan, get_penemuan_by_kode, fetch_barang_publik_terbaru
 import os
 import mysql.connector
@@ -182,3 +183,84 @@ def form_klaim_barang():
 
     # Render halaman form klaim dengan data barang
     return render_template('user/form_klaim_barang.html', barang=barang)
+
+@main.route("/submit-klaim", methods=["POST"])
+def submit_klaim():
+    try:
+        db = get_db_connection()
+        cursor = db.cursor()
+
+        # === Ambil data dari form ===
+        nama = request.form.get("nama")
+        telp = request.form.get("telp")
+        email = request.form.get("email")
+        deskripsi_khusus = request.form.get("deskripsiKhusus")
+        kode_barang = request.form.get("kodeBarang")
+        kode_laporan_kehilangan = request.form.get("kodeKehilangan")
+
+        # === File upload ===
+        identitas = request.files.get("fileIdentitas")
+        bukti = request.files.get("fileLaporan")   # opsional
+        foto_barang = request.files.get("fotoBarang")
+
+        upload_dir = os.path.join("static", "uploads")
+        os.makedirs(upload_dir, exist_ok=True)
+
+        def simpan_file(file_obj):
+            if not file_obj or file_obj.filename == "":
+                return None
+            filename = datetime.now().strftime("%d%m%Y%H%M%S_") + secure_filename(file_obj.filename)
+            path = os.path.join(upload_dir, filename)
+            file_obj.save(path)
+            return filename
+
+        nama_identitas = simpan_file(identitas)
+        nama_bukti = simpan_file(bukti)
+        nama_foto = simpan_file(foto_barang)
+
+        # === Generate kode klaim baru ===
+        cursor.execute("SELECT kode_laporan FROM klaim_barang ORDER BY id DESC LIMIT 1")
+        last = cursor.fetchone()
+
+        if last and last[0]:
+            last_num = int(last[0].split("LF-C")[-1])
+        else:
+            last_num = 0
+        kode_laporan = f"LF-C{last_num + 1:05d}"
+
+        now = datetime.now()
+        tanggal = now.strftime("%d/%m/%Y")
+        waktu = now.strftime("%H:%M")
+
+        # === Simpan ke database ===
+        query = """
+            INSERT INTO klaim_barang (
+                kode_laporan, kode_barang, kode_laporan_kehilangan, nama_barang,
+                nama_pelapor, no_telp, email, deskripsi_khusus,
+                identitas_diri, bukti_laporan, foto_barang,
+                tanggal_lapor, waktu_lapor, status, catatan_admin
+            ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        """
+        cursor.execute("""
+            SELECT nama_barang FROM penemuan WHERE kode_barang=%s
+        """, (kode_barang,))
+        nama_barang_row = cursor.fetchone()
+        nama_barang = nama_barang_row[0] if nama_barang_row else "Tidak diketahui"
+
+        values = (
+            kode_laporan, kode_barang, kode_laporan_kehilangan, nama_barang,
+            nama, telp, email, deskripsi_khusus,
+            nama_identitas, nama_bukti, nama_foto,
+            tanggal, waktu, "Pending", "Menunggu verifikasi oleh admin."
+        )
+
+        cursor.execute(query, values)
+        db.commit()
+        cursor.close()
+        db.close()
+
+        return jsonify({"success": True, "kode_laporan": kode_laporan})
+
+    except Exception as e:
+        print("Error klaim:", e)
+        return jsonify({"success": False, "message": str(e)})

@@ -93,3 +93,18 @@ def fetch_barang_publik_terbaru(limit=4):
     db.close()
     return items
 
+def insert_klaim_barang(data):
+    db = get_db_connection()
+    cursor = db.cursor()
+    query = """
+        INSERT INTO klaim_barang (
+            kode_laporan, kode_barang, kode_laporan_kehilangan, nama_barang,
+            nama_pelapor, no_telp, email, deskripsi_khusus,
+            identitas_diri, bukti_laporan, foto_barang,
+            tanggal_lapor, waktu_lapor, status, catatan_admin
+        ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+    """
+    cursor.execute(query, data)
+    db.commit()
+    cursor.close()
+    db.close()

@@ -1,4 +1,3 @@
-// === Ambil kode barang otomatis dari URL ===
 document.addEventListener("DOMContentLoaded", () => {
   const params = new URLSearchParams(window.location.search);
   const kode = params.get("id");
@@ -7,27 +6,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// === Fungsi generate kode laporan berurutan (LF-C001, LF-C002, dst.) ===
-function generateKodeLaporan() {
-  // Ambil nomor terakhir dari localStorage (jika belum ada, mulai dari 0)
-  let lastNumber = parseInt(localStorage.getItem("lastKodeNumber")) || 0;
-
-  // Tambah 1 untuk klaim berikutnya
-  lastNumber++;
-
-  // Simpan kembali nomor terakhir
-  localStorage.setItem("lastKodeNumber", lastNumber);
-
-  // Format jadi 3 digit, misal 1 → 001, 10 → 010
-  const formattedNumber = lastNumber.toString().padStart(5, "0");
-
-  return `LF-C${formattedNumber}`;
-}
-
-// === Tombol "Kirim Klaim" ditekan ===
 document.getElementById("kirimBtn").addEventListener("click", () => {
   const form = document.getElementById("klaimForm");
-
   const nama = document.getElementById("nama").value.trim();
   const telp = document.getElementById("telp").value.trim();
   const email = document.getElementById("email").value.trim();
@@ -35,77 +15,59 @@ document.getElementById("kirimBtn").addEventListener("click", () => {
   const kodeBarang = document.getElementById("kodeBarang").value.trim();
   const konfirmasi = document.getElementById("konfirmasi").checked;
 
-  const fileIdentitas = form.querySelector('input[type="file"]:nth-of-type(1)').files.length;
-  const fileFotoBarang = form.querySelector('input[type="file"]:nth-of-type(3)').files.length;
+  const fileIdentitas = form.querySelectorAll('input[type="file"]')[0].files.length;
+  const fotoBarang = form.querySelectorAll('input[type="file"]')[2].files.length;
 
-  const existingAlert = document.querySelector(".alert");
-  if (existingAlert) existingAlert.remove();
-
-  if (!nama || !telp || !email || !deskripsi || !kodeBarang || !fileIdentitas || !fileFotoBarang || !konfirmasi) {
-    const alert = document.createElement("div");
-    alert.className = "alert alert-danger mt-3";
-    alert.innerHTML = "<strong>Harap isi semua data wajib!</strong> Pastikan semua kolom dan file telah diisi.";
-    form.prepend(alert);
-    form.scrollIntoView({ behavior: "smooth" });
+  if (!nama || !telp || !email || !deskripsi || !kodeBarang || !fileIdentitas || !fotoBarang || !konfirmasi) {
+    alert("⚠️ Harap isi semua data wajib dan centang konfirmasi.");
     return;
   }
 
-  // Tampilkan modal konfirmasi
   const modal = new bootstrap.Modal(document.getElementById("konfirmasiModal"));
   modal.show();
 });
 
-// === Saat klik tombol "Kirim Klaim" di dalam modal ===
-document.getElementById("confirmKirim").addEventListener("click", () => {
+document.getElementById("confirmKirim").addEventListener("click", async () => {
   const modal = bootstrap.Modal.getInstance(document.getElementById("konfirmasiModal"));
   modal.hide();
 
-  const nama = document.getElementById("nama").value.trim();
-  const telp = document.getElementById("telp").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const deskripsi = document.getElementById("deskripsiKhusus").value.trim();
-  const kodeBarang = document.getElementById("kodeBarang").value.trim();
-  const kodeLaporan = generateKodeLaporan();
+  const formData = new FormData();
+  formData.append("nama", document.getElementById("nama").value);
+  formData.append("telp", document.getElementById("telp").value);
+  formData.append("email", document.getElementById("email").value);
+  formData.append("deskripsiKhusus", document.getElementById("deskripsiKhusus").value);
+  formData.append("kodeBarang", document.getElementById("kodeBarang").value);
+  formData.append("kodeKehilangan", document.getElementById("kodeKehilangan").value);
 
-  // Pisahkan tanggal dan waktu (format Indonesia)
-  const now = new Date();
-  const tanggal = now.toLocaleDateString("id-ID"); // dd/mm/yyyy
-  const waktu = now.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit"});
+  const fileInputs = document.querySelectorAll('input[type="file"]');
+  formData.append("fileIdentitas", fileInputs[0].files[0]);
+  formData.append("fileLaporan", fileInputs[1].files[0]);
+  formData.append("fotoBarang", fileInputs[2].files[0]);
 
-  const status = "Pending";
-  const catatan = "Menunggu verifikasi oleh admin.";
+  try {
+    const res = await fetch("/submit-klaim", { method: "POST", body: formData });
+    const data = await res.json();
 
-  const klaimBaru = {
-    kodeLaporan,
-    kodeBarang,
-    nama,
-    telp,
-    email,
-    deskripsi,
-    tanggal,
-    waktu,
-    status,
-    catatan
-  };
-
-  // Simpan ke localStorage
-  let dataKlaim = JSON.parse(localStorage.getItem("dataKlaim")) || [];
-  dataKlaim.push(klaimBaru);
-  localStorage.setItem("dataKlaim", JSON.stringify(dataKlaim));
-
-  // === Notifikasi sukses seperti versi awal ===
-  setTimeout(() => {
-    const alertSuccess = document.createElement("div");
-    alertSuccess.className =
-      "alert alert-success text-center position-fixed top-0 start-50 translate-middle-x mt-3 shadow";
-    alertSuccess.style.zIndex = "2000";
-    alertSuccess.innerHTML = `✅ Klaim barang berhasil dikirim!<br>Kode Laporan Anda: <strong>${kodeLaporan}</strong>`;
-    document.body.appendChild(alertSuccess);
-
-    // Hilangkan notifikasi dan redirect ke halaman list
-    setTimeout(() => {
-      alertSuccess.remove();
-      window.location.href = "cari_barang.html";
-    }, 2500);
-  }, 700);
+    if (data.success) {
+      // === tampilkan popup sukses kustom ===
+      document.getElementById("kodeLaporanText").innerText = data.kode_laporan;
+      const popup = document.getElementById("popupSukses");
+      popup.style.display = "flex";
+    } else {
+      alert("❌ Gagal mengirim klaim: " + data.message);
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Terjadi kesalahan koneksi ke server.");
+  }
 });
+
+// === Fungsi Tutup Popup & Arahkan ke Riwayat Klaim ===
+function tutupSukses() {
+  const popup = document.getElementById("popupSukses");
+  popup.style.opacity = "0";
+  setTimeout(() => {
+    popup.style.display = "none";
+    window.location.href = "/riwayat-klaim"; // arahkan ke halaman riwayat klaim
+  }, 300); // jeda animasi 0.3 detik sebelum pindah halaman
+}
