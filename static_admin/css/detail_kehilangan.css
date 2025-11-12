@@ -196,3 +196,24 @@
   }
 }
 
+/* === Ukuran input dan select diseragamkan === */
+.data-row input,
+.data-row textarea,
+.data-row select {
+  width: 250px; /* samakan semua lebar */
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  height: 32px;
+  box-sizing: border-box;
+}
+
+/* === Biar tetap responsif di layar kecil === */
+@media (max-width: 768px) {
+  .data-row input,
+  .data-row textarea,
+  .data-row select {
+    width: 100%;
+  }
+}

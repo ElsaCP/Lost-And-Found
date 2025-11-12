@@ -11,6 +11,7 @@
 </head>
 <body>
 
+  <!-- SIDEBAR -->
   <div class="sidebar">
     <div>
       <div class="logo-wrapper">
@@ -31,9 +32,10 @@
       </nav>
     </div>
 
-    <a href="logout.html" class="logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
+    <a href="{{ url_for('admin_bp.logout_admin') }}" class="logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
   </div>
 
+  <!-- MAIN CONTENT -->
   <div class="content">
     <div class="header">
       <div class="logo-wrapper">
@@ -47,64 +49,46 @@
     </div>
 
     <div class="search-box">
-      <input type="text" id="searchInput" placeholder="Search...">
+      <input type="text" id="searchInput" placeholder="Cari laporan...">
     </div>
 
     <table id="dataTable">
-    <thead>
-      <tr>
-        <th>Kode</th>
-        <th>Nama Barang</th>
-        <th>Jenis</th>
-        <th>Status</th>
-        <th>Aksi</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>LF-L001</td>
-        <td>Dompet</td>
-        <td>Kehilangan</td>
-        <td>
-          <select>
-            <option>Pending</option>
-            <option selected>Verifikasi</option>
-            <option>Dalam Pencarian</option>
-            <option>Barang Ditemukan</option>
-            <option>Selesai</option>
-          </select>
-        </td>
-      <td class="aksi">
-        <button class="btn-view"><i class="bi bi-eye"></i></button>
-        <button class="btn-edit"><i class="bi bi-pencil"></i></button>
-        <button class="btn-delete"><i class="bi bi-trash"></i></button>
-        <button class="btn-verify"><i class="bi bi-check-circle-fill"></i></button>
-        <button class="btn-archive"><i class="bi bi-folder-fill"></i></button>
-      </td>
-      </tr>
-      <tr>
-        <td>LF-L002</td>
-        <td>Jam Tangan</td>
-        <td>Kehilangan</td>
-        <td>
-          <select>
-            <option>Pending</option>
-            <option selected>Verifikasi</option>
-            <option>Dalam Pencarian</option>
-            <option>Barang Ditemukan</option>
-            <option>Selesai</option>
-          </select>
-        </td>
-      <td class="aksi">
-        <button class="btn-view"><i class="bi bi-eye"></i></button>
-        <button class="btn-edit"><i class="bi bi-pencil"></i></button>
-        <button class="btn-delete"><i class="bi bi-trash"></i></button>
-        <button class="btn-verify"><i class="bi bi-check-circle-fill"></i></button>
-        <button class="btn-archive"><i class="bi bi-folder-fill"></i></button>
-      </td>
-      </tr>
-    </tbody>
-  </table>
+      <thead>
+        <tr>
+          <th>Kode</th>
+          <th>Nama Barang</th>
+          <th>Kategori</th>
+          <th>Status</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in kehilangan_list %}
+        <tr>
+          <td>{{ item.kode }}</td>
+          <td>{{ item.nama_barang }}</td>
+          <td>{{ item.jenis_laporan }}</td>
+          <td>
+            <select>
+              <option value="Pending" {% if item.status == 'Pending' %}selected{% endif %}>Pending</option>
+              <option value="Verifikasi" {% if item.status == 'Verifikasi' %}selected{% endif %}>Verifikasi</option>
+              <option value="Dalam Pencarian" {% if item.status == 'Dalam Pencarian' %}selected{% endif %}>Dalam Pencarian</option>
+              <option value="Barang Ditemukan" {% if item.status == 'Barang Ditemukan' %}selected{% endif %}>Barang Ditemukan</option>
+              <option value="Selesai" {% if item.status == 'Selesai' %}selected{% endif %}>Selesai</option>
+            </select>
+          </td>
+          <td class="aksi">
+            <button class="btn-view"><i class="bi bi-eye"></i></button>
+            <button class="btn-edit"><i class="bi bi-pencil"></i></button>
+            <button class="btn-delete"><i class="bi bi-trash"></i></button>
+            <button class="btn-verify"><i class="bi bi-check-circle-fill"></i></button>
+            <button class="btn-archive"><i class="bi bi-folder-fill"></i></button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 
   <script src="{{ url_for('admin_bp.static', filename='js/daftar_kehilangan.js') }}"></script>
   <script src="{{ url_for('admin_bp.static', filename='js/logout.js') }}"></script>
