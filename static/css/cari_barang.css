@@ -858,37 +858,6 @@ footer {
   font-size: 35px;
 }
 
-/* Panduan */
-.panduan-img {
-  width: 100%;
-  max-width: 1000px;     /* Batas lebar maksimum di layar besar */
-  height: auto;          /* Biar tinggi menyesuaikan otomatis */
-  border-radius: 30px;   /* Tambahan biar lebih rapi */
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
-  display: block;
-  margin: 0 auto;        /* Tengah secara horizontal */
-}
-
-.panduan-img:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-}
-
-/* Responsif di tablet dan HP */
-@media (max-width: 992px) {
-  .panduan-img {
-    max-width: 90%;
-  }
-}
-
-@media (max-width: 576px) {
-  .panduan-img {
-    max-width: 100%;
-    border-radius: 8px;
-  }
-}
-
-
 /* Gradient Text */
 .gradient-text {
   font-family: 'Protest Strike', sans-serif;

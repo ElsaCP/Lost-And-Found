@@ -1,8 +1,9 @@
 # routes/route.py
-from flask import Blueprint, request, jsonify, render_template,  url_for
+from flask import Blueprint, request, jsonify, render_template,redirect, url_for
 from datetime import datetime
 from werkzeug.utils import secure_filename
 from models import fetch_public_penemuan, get_penemuan_by_kode, fetch_barang_publik_terbaru
+from models import get_laporan_by_email
 import os
 import mysql.connector
 
@@ -79,14 +80,13 @@ def submit_kehilangan():
         deskripsi = request.form.get("deskripsi")
         tanggal_kehilangan = request.form.get("tanggal_kehilangan")
         terminal = request.form.get("terminal")
-        lokasi = request.form.get("lokasi")
+        tempat = request.form.get("tempat")
         lokasi_lain = request.form.get("lokasi_lain")
 
-        # === Gabungkan terminal dan lokasi ===
-        if lokasi == "Lainnya" and lokasi_lain:
-            lokasi_final = f"{terminal} - {lokasi_lain}"
+        if tempat == "Lainnya" and lokasi_lain:
+            lokasi = f"{terminal} - {lokasi_lain}"
         else:
-            lokasi_final = f"{terminal} - {lokasi}"
+            lokasi = f"{terminal} - {tempat}"
 
         # === Simpan foto ===
         foto = request.files.get("foto")
@@ -131,7 +131,7 @@ def submit_kehilangan():
         """
         values = (
             kode_kehilangan, nama_pelapor, email, no_telp, asal_negara, kota,
-            nama_barang, kategori, jenis_laporan, deskripsi, lokasi_final,
+            nama_barang, kategori, jenis_laporan, deskripsi, lokasi,
             tanggal_kehilangan, tanggal_submit, waktu_submit, update_terakhir,
             "Menunggu verifikasi oleh admin", "Pending", foto_filename
         )
@@ -147,7 +147,7 @@ def submit_kehilangan():
         return jsonify({
             "success": True,
             "kode_kehilangan": kode_kehilangan,
-            "lokasi": lokasi_final,
+            "lokasi": lokasi,
             "tanggal_submit": tanggal_submit,
             "waktu_submit": waktu_submit
         })
@@ -155,11 +155,6 @@ def submit_kehilangan():
     except Exception as e:
         print("Error:", e)
         return jsonify({"success": False, "message": str(e)})
-
-# Halaman cek laporan
-@main.route('/cek-laporan')
-def cek_laporan():
-    return render_template('user/cek_laporan.html')
 
 @main.route('/riwayat-klaim')
 def riwayat_klaim():
@@ -282,3 +277,87 @@ def submit_klaim():
     except Exception as e:
         print("Error klaim:", e)
         return jsonify({"success": False, "message": str(e)})
+
+# ==========================
+# 🟦 CEK LAPORAN KEHILANGAN
+# ==========================
+@main.route('/cek-laporan')
+def cek_laporan():
+    return render_template('user/cek_laporan.html')
+
+
+@main.route("/proses-cek-laporan", methods=["POST"])
+def proses_cek_laporan():
+    try:
+        data = request.get_json()
+        email = data.get("email")
+
+        db = get_db_connection()
+        cursor = db.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM kehilangan WHERE email = %s", (email,))
+        hasil = cursor.fetchall()
+        cursor.close()
+        db.close()
+
+        if hasil and len(hasil) > 0:
+            return jsonify({"success": True})
+        else:
+            return jsonify({"success": False})
+    except Exception as e:
+        print("Error proses cek laporan:", e)
+        return jsonify({"success": False, "message": str(e)})
+
+# ==========================
+# 🟩 HALAMAN HASIL CEK LAPORAN
+# ==========================
+@main.route('/hasil-cek')
+def hasil_cek():
+    email = request.args.get("email")
+    if not email:
+        return redirect(url_for("main.cek_laporan"))
+
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+    cursor.execute("""
+        SELECT * FROM kehilangan 
+        WHERE email = %s 
+        ORDER BY tanggal_submit DESC, waktu_submit DESC 
+        LIMIT 1
+    """, (email,))
+    laporan = cursor.fetchone()
+    cursor.close()
+    db.close()
+
+    if laporan:
+        tgl_str = laporan.get("tanggal_submit")
+        waktu_str = laporan.get("waktu_submit")
+
+        # Gabungkan tanggal + waktu menjadi datetime
+        if tgl_str and waktu_str:
+            try:
+                gabung = datetime.strptime(f"{tgl_str} {waktu_str}", "%Y-%m-%d %H:%M:%S")
+                laporan["tanggal_waktu_submit"] = gabung.strftime("%d/%m/%Y, %H:%M")
+            except ValueError:
+                try:
+                    gabung = datetime.strptime(f"{tgl_str} {waktu_str}", "%d/%m/%Y %H:%M:%S")
+                    laporan["tanggal_waktu_submit"] = gabung.strftime("%d/%m/%Y, %H:%M")
+                except:
+                    laporan["tanggal_waktu_submit"] = f"{tgl_str}, {waktu_str}"
+        else:
+            laporan["tanggal_waktu_submit"] = tgl_str or waktu_str or "-"
+
+    return render_template("user/hasil_cek.html", email=email, laporan=laporan)
+
+@main.route('/detail-cek/<kode>')
+def detail_cek(kode):
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM kehilangan WHERE kode_kehilangan = %s", (kode,))
+    laporan = cursor.fetchone()
+    cursor.close()
+    db.close()
+
+    if not laporan:
+        return redirect(url_for('main.cek_laporan'))
+
+    return render_template("user/detail_cek.html", laporan=laporan)

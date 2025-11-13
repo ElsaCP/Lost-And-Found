@@ -26,7 +26,26 @@ form.addEventListener("submit", (e) => {
   // Simpan form data ke variabel global
   formDataGlobal = new FormData(form);
 
-  // Jika kategori "Lainnya", ambil input tambahan
+  // ==== Ambil dan gabungkan lokasi ====
+  const terminal = document.getElementById("terminal")?.value || "";
+  const tempat = document.getElementById("tempat")?.value || "";
+  const lokasiLain = document.getElementById("lokasi_lain")?.value.trim() || "";
+
+  let lokasiGabungan = "";
+  if (tempat === "Lainnya" && lokasiLain) {
+    lokasiGabungan = `${terminal} - ${lokasiLain}`;
+  } else if (terminal && tempat) {
+    lokasiGabungan = `${terminal} - ${tempat}`;
+  } else if (terminal) {
+    lokasiGabungan = terminal;
+  } else if (tempat) {
+    lokasiGabungan = tempat;
+  }
+
+  // Simpan lokasi gabungan ke FormData
+  formDataGlobal.set("lokasi", lokasiGabungan);
+
+  // ==== Jika kategori "Lainnya", ambil input tambahan ====
   if (formDataGlobal.get("kategori") === "Lainnya") {
     const kategoriLain = document.getElementById("kategori_lainnya").value.trim();
     if (!kategoriLain) {
@@ -43,7 +62,6 @@ form.addEventListener("submit", (e) => {
 // === Tutup popup konfirmasi ===
 function tutupPopup() {
   popupKonfirmasi.style.display = "none";
-  // Kembali ke halaman form kehilangan
   window.location.href = "/form-kehilangan";
 }
 
@@ -55,19 +73,19 @@ function kirimData() {
     method: "POST",
     body: formDataGlobal
   })
-  .then(response => response.json())
-  .then(result => {
-    if (result.success) {
-      kodeKehilanganEl.textContent = result.kode_kehilangan;
-      popupSukses.style.display = "flex";
-    } else {
-      alert("Gagal mengirim laporan: " + result.message);
-    }
-  })
-  .catch(err => {
-    console.error(err);
-    alert("Terjadi kesalahan saat mengirim laporan!");
-  });
+    .then(response => response.json())
+    .then(result => {
+      if (result.success) {
+        kodeKehilanganEl.textContent = result.kode_kehilangan;
+        popupSukses.style.display = "flex";
+      } else {
+        alert("Gagal mengirim laporan: " + result.message);
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Terjadi kesalahan saat mengirim laporan!");
+    });
 }
 
 // === Tutup popup sukses ===

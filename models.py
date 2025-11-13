@@ -108,3 +108,21 @@ def insert_klaim_barang(data):
     db.commit()
     cursor.close()
     db.close()
+    
+def get_laporan_by_email(email):
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    query = """
+        SELECT kode_kehilangan, nama_barang, kategori, lokasi, tanggal_submit, status
+        FROM kehilangan
+        WHERE email = %s
+        ORDER BY tanggal_lapor DESC
+    """
+    cursor.execute(query, (email,))
+    hasil = cursor.fetchall()
+
+    cursor.close()
+    db.close()
+
+    return hasil

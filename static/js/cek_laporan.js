@@ -1,40 +1,46 @@
-function cekLaporan() {
-  const email = document.getElementById("emailInput").value.trim();
-
-  // Validasi format email
-  if (email === "" || !email.includes("@") || !email.includes(".")) {
-    alert("Masukkan email yang valid!");
-    return;
-  }
-
-  // Simulasi data email yang sudah memiliki laporan
-  const emailTerdaftar = ["user@contoh.com", "aulia@gmail.com", "angelina@gmail.com"];
-
-  // Jika email ditemukan, arahkan ke halaman hasil
-  if (emailTerdaftar.includes(email.toLowerCase())) {
-    window.location.href = "hasil_cek.html";
-  } else {
-    // Jika tidak ditemukan, tampilkan modal
-    const modal = new bootstrap.Modal(document.getElementById("modalEmailTidakTerdaftar"));
-    modal.show();
-  }
-}
-
-// Pastikan tombol klik dan tombol Enter berfungsi
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
   const cekBtn = document.getElementById("cekLaporanBtn");
   const emailInput = document.getElementById("emailInput");
 
-  // Klik tombol
-  if (cekBtn) cekBtn.addEventListener("click", cekLaporan);
+  async function cekLaporan() {
+    const email = emailInput.value.trim();
 
-  // Tekan Enter di input email
-  if (emailInput) {
-    emailInput.addEventListener("keypress", function (event) {
-      if (event.key === "Enter") {
-        event.preventDefault(); // mencegah reload form
-        cekLaporan();
+    if (!email) {
+      // Jika kosong → tampilkan modal
+      const modal = new bootstrap.Modal(document.getElementById("modalEmailTidakTerdaftar"));
+      modal.show();
+      return;
+    }
+
+    try {
+      const response = await fetch("/proses-cek-laporan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        window.location.href = `/hasil-cek?email=${encodeURIComponent(email)}`;
+      } else {
+        const modal = new bootstrap.Modal(document.getElementById("modalEmailTidakTerdaftar"));
+        modal.show();
       }
-    });
+    } catch (error) {
+      console.error("Error:", error);
+      const modal = new bootstrap.Modal(document.getElementById("modalEmailTidakTerdaftar"));
+      modal.show();
+    }
   }
+
+  cekBtn.addEventListener("click", cekLaporan);
+
+  // Tekan Enter untuk submit
+  emailInput.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      cekLaporan();
+    }
+  });
 });

@@ -109,58 +109,71 @@
       </div>
 
       <div class="mb-3">
-        <label for="terminal">Terminal:</label>
-        <select id="terminal">
-          <option value="">Pilih Terminal</option>
-          <option value="T1">Terminal 1</option>
-          <option value="T2">Terminal 2</option>
-        </select>
+        <label class="form-label">Lokasi Kehilangan</label>
 
-        <label for="lokasi">Lokasi:</label>
-        <select id="lokasi">
-          <option value="">Pilih Lokasi</option>
-          <option value="Gate A">Gate A</option>
-          <option value="Gate B">Gate B</option>
-          <option value="Waiting Area">Waiting Area</option>
-          <option value="Bagasi">Bagasi</option>
-        </select>
+        <div class="row g-2">
+          <div class="col-md-6">
+            <label for="terminal" class="form-label">Terminal:</label>
+            <select id="terminal" name="terminal" class="form-select" required>
+              <option value="">Pilih Terminal</option>
+              <option value="Terminal 1">Terminal 1</option>
+              <option value="Terminal 2">Terminal 2</option>
+            </select>
+          </div>
 
-        <input type="text" id="lokasi_lain" placeholder="Tulis lokasi lain" style="display:none;">
+          <div class="col-md-6">
+            <label for="tempat" class="form-label">Tempat:</label>
+            <select id="tempat" name="tempat" class="form-select" required>
+              <option value="">Pilih Lokasi</option>
+            </select>
+          </div>
+        </div>
 
-        <script>
-          const terminalSelect = document.getElementById('terminal');
-          const lokasiSelect = document.getElementById('lokasi');
-          const lokasiLain = document.getElementById('lokasi_lain');
+        <!-- Input lokasi lain (jika pilih "Lainnya") -->
+        <div class="mt-2" id="lokasiLainContainer" style="display:none;">
+          <label class="form-label">Tulis Lokasi Lainnya</label>
+          <input type="text" id="lokasi_lain" name="lokasi_lain" class="form-control" placeholder="Contoh: Toilet dekat Gate D">
+        </div>
 
-          const lokasiData = {
-            T1: ['Gate A', 'Gate B', 'Waiting Area T1', 'Lainnya'],
-            T2: ['Gate C', 'Gate D', 'Waiting Area T2', 'Lainnya']
-          };
-
-          terminalSelect.addEventListener('change', function() {
-            const terminal = this.value;
-            lokasiSelect.innerHTML = '<option value="">Pilih Lokasi</option>';
-            if(lokasiData[terminal]){
-              lokasiData[terminal].forEach(loc => {
-                const option = document.createElement('option');
-                option.value = loc;
-                option.textContent = loc;
-                lokasiSelect.appendChild(option);
-              });
-            }
-            lokasiLain.style.display = 'none';
-          });
-
-          lokasiSelect.addEventListener('change', function() {
-            if(this.value === 'Lainnya'){
-              lokasiLain.style.display = 'block';
-            } else {
-              lokasiLain.style.display = 'none';
-            }
-          });
-        </script>
-        </select>
+        <!-- Hidden field untuk gabungan lokasi -->
+        <input type="hidden" id="lokasi" name="lokasi">
       </div>
+      <script>
+        const terminalSelect = document.getElementById('terminal');
+        const tempatSelect = document.getElementById('tempat');
+        const lokasiLainContainer = document.getElementById('lokasiLainContainer');
+
+        // Data tempat berdasarkan terminal
+        const tempatData = {
+          "Terminal 1": ["Gate A", "Gate B", "Waiting Area T1", "Bagasi", "Lainnya"],
+          "Terminal 2": ["Gate C", "Gate D", "Waiting Area T2", "Bagasi", "Lainnya"]
+        };
+
+        // Saat terminal dipilih, isi dropdown tempat
+        terminalSelect.addEventListener('change', function () {
+          const terminal = this.value;
+          tempatSelect.innerHTML = '<option value="">Pilih Lokasi</option>';
+          lokasiLainContainer.style.display = "none";
+          if (tempatData[terminal]) {
+            tempatData[terminal].forEach(loc => {
+              const opt = document.createElement("option");
+              opt.value = loc;
+              opt.textContent = loc;
+              tempatSelect.appendChild(opt);
+            });
+          }
+        });
+
+        // Jika "Lainnya" dipilih, tampilkan input tambahan
+        tempatSelect.addEventListener('change', function () {
+          if (this.value === "Lainnya") {
+            lokasiLainContainer.style.display = "block";
+          } else {
+            lokasiLainContainer.style.display = "none";
+          }
+        });
+      </script>
+      
       <div class="mb-3">
         <label class="form-label">Tanggal Kehilangan</label>
         <input type="date" name="tanggal_kehilangan" class="form-control" required>

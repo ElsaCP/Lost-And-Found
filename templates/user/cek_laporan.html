@@ -3,18 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <title>Cek Laporan | Sistem Lost & Found</title>
+
   <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Bootstrap Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+
   <!-- Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Protest+Strike&display=swap" rel="stylesheet">
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href={{ url_for('static', filename='css/cek_laporan.css') }}>
-  <!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Reddit+Sans+Condensed:wght@700;800&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/cek_laporan.css') }}">
 </head>
 
 <body>
@@ -22,7 +19,7 @@
   <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
     <div class="container-fluid">
       <a class="navbar-brand" href="#">
-        <img src={{ url_for('static', filename='image/logo injourney.png') }} alt="Logo">
+        <img src="{{ url_for('static', filename='image/logo injourney.png') }}" alt="Logo">
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
@@ -42,19 +39,18 @@
   </nav>
 
   <!-- Tombol Panah Kembali -->
-  <a href="javascript:history.back()"  class="back-arrow" title="Kembali ke Beranda">
+  <a href="{{ url_for('main.home') }}" class="back-arrow" title="Kembali ke Beranda">
     <i class="fa-solid fa-arrow-left"></i>
   </a>
 
   <!-- Hero Section -->
   <section class="hero-section">
-    <!-- Elemen hiasan -->
-    <img src={{ url_for('static', filename='image/lbesar.png')}} class="lbesar" alt="">
-    <img src={{ url_for('static', filename='image/lsedang.png')}} class="lsedang" alt="">
-    <img src={{ url_for('static', filename='image/lkecil.png')}} class="lkecil" alt="">
+    <img src="{{ url_for('static', filename='image/lbesar.png') }}" class="lbesar" alt="">
+    <img src="{{ url_for('static', filename='image/lsedang.png') }}" class="lsedang" alt="">
+    <img src="{{ url_for('static', filename='image/lkecil.png') }}" class="lkecil" alt="">
 
     <div class="hero-content text-center">
-      <img src={{ url_for('static', filename='image/logo juanda 2.png')}} alt="Logo Juanda" class="hero-logo mb-4">
+      <img src="{{ url_for('static', filename='image/logo juanda 2.png') }}" alt="Logo Juanda" class="hero-logo mb-4">
       
       <div class="hero-box mx-auto">
         <h1 class="hero-title">Cek Laporan Kehilangan</h1>
@@ -62,7 +58,7 @@
 
         <div class="form-container mx-auto mt-4">
           <input type="email" id="emailInput" placeholder="Masukkan Email Anda" class="form-control mb-3">
-          <button id="cekLaporanBtn" class="btn-cek" onclick="cekLaporan()">
+          <button id="cekLaporanBtn" class="btn-cek">
             <i class="fas fa-search"></i> Cek Laporan
           </button>
         </div>
@@ -83,57 +79,51 @@
           Silakan ajukan laporan kehilangan terlebih dahulu atau klik <b>“Beranda”</b> untuk kembali.
         </p>
         <div class="d-flex justify-content-center gap-3 mt-3">
-          <a href="indexx.html" class="btn btn-secondary px-4">Beranda</a>
-          <a href="form_kehilangan.html" class="btn btn-primary px-4" style="background-color:#004b8d;">Kehilangan</a>
+          <a href="{{ url_for('main.home') }}" class="btn btn-secondary px-4">Beranda</a>
+          <a href="{{ url_for('main.form_kehilangan') }}" class="btn btn-primary px-4" style="background-color:#004b8d;">Kehilangan</a>
         </div>
       </div>
     </div>
   </div>
 
-<!-- Footer -->
-<section class="footer" id="kontak">
-  <footer class="footer text-white" id="kontak">
-    <div class="footer-container">
-      <div class="footer-top">
-        <!-- Logo di pojok kiri -->
-        <div class="footer-logo">
-          <img src={{ url_for('static', filename='image/logo putih.png')}} alt="InJourney Airports">
+  <!-- Footer -->
+  <section class="footer" id="kontak">
+    <footer class="footer text-white" id="kontak">
+      <div class="footer-container">
+        <div class="footer-top">
+          <div class="footer-logo">
+            <img src="{{ url_for('static', filename='image/logo putih.png') }}" alt="InJourney Airports">
+          </div>
+
+          <div class="footer-address">
+            <p>Jl. Juanda, Segoro Tambak, Kec. Sedati,<br>
+            Kabupaten Sidoarjo, Jawa Timur 61253 - Indonesia</p>
+          </div>
+
+          <div class="footer-contact">
+            <p><strong>Contact Center :</strong> @ccinjourneyairports</p>
+            <p>📞 172 &nbsp; | &nbsp; 📧 cc172@injourneyairports.id</p>
+            <p>Ph : T1 (+62 31 2986200) &nbsp; | &nbsp; T2 (+62 31 2986700)</p>
+          </div>
+
+          <div class="footer-icons">
+            <a href="tel:(0623)12986200" class="text-white"><i class="fas fa-phone"></i></a>
+            <a href="mailto:humas.sub@ap1.co.id" class="text-white"><i class="fas fa-envelope"></i></a>
+            <a href="https://www.instagram.com/juanda_airport" target="_blank" class="text-white"><i class="fab fa-instagram"></i></a>
+          </div>
         </div>
 
-        <!-- Alamat -->
-        <div class="footer-address">
-          <p>Jl. Juanda, Segoro Tambak, Kec. Sedati,<br>
-          Kabupaten Sidoarjo, Jawa Timur 61253 - Indonesia</p>
-        </div>
+        <hr class="footer-divider">
 
-        <!-- Kontak Center -->
-        <div class="footer-contact">
-          <p><strong>Contact Center :</strong> @ccinjourneyairports</p>
-          <p>📞 172 &nbsp; | &nbsp; 📧 cc172@injourneyairports.id</p>
-          <p>Ph : T1 (+62 31 2986200) &nbsp; | &nbsp; T2 (+62 31 2986700)</p>
-        </div>
-
-        <!-- Ikon Sosial di pojok kanan -->
-        <div class="footer-icons">
-          <a href="tel:(0623)12986200" class="text-white"><i class="fas fa-phone"></i></a>
-          <a href="mailto:humas.sub@ap1.co.id" class="text-white"><i class="fas fa-envelope"></i></a>
-          <a href="https://www.instagram.com/juanda_airport" target="_blank" class="text-white"><i class="fab fa-instagram"></i></a>
+        <div class="footer-bottom text-center small">
+          © 2025 PT. ANGKASA PURA | BANDARA INTERNASIONAL JUANDA
         </div>
       </div>
+    </footer>
+  </section>
 
-      <hr class="footer-divider">
-
-      <!-- Copyright -->
-      <div class="footer-bottom text-center small">
-        © 2025 PT. ANGKASA PURA | BANDARA INTERNASIONAL JUANDA
-      </div>
-    </div>
-  </footer>
-</section>
-
-
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src={{ url_for('static', filename='js/cek_laporan.js') }}></script>
+  <!-- JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="{{ url_for('static', filename='js/cek_laporan.js') }}"></script>
 </body>
 </html>
