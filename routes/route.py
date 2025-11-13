@@ -4,6 +4,7 @@ from datetime import datetime
 from werkzeug.utils import secure_filename
 from models import fetch_public_penemuan, get_penemuan_by_kode, fetch_barang_publik_terbaru
 from models import get_laporan_by_email
+from config import get_db_connection
 import os
 import mysql.connector
 
@@ -348,16 +349,57 @@ def hasil_cek():
 
     return render_template("user/hasil_cek.html", email=email, laporan=laporan)
 
-@main.route('/detail-cek/<kode>')
-def detail_cek(kode):
+@main.route("/detail-cek/<kode_kehilangan>")
+def detail_cek(kode_kehilangan):
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM kehilangan WHERE kode_kehilangan = %s", (kode,))
+
+    # Ambil data utama laporan kehilangan
+    cursor.execute("""
+        SELECT * FROM kehilangan 
+        WHERE kode_kehilangan = %s
+    """, (kode_kehilangan,))
     laporan = cursor.fetchone()
+
+    # Jika tidak ditemukan
+    if not laporan:
+        cursor.close()
+        db.close()
+        return render_template("user/not_found.html"), 404
+
+    # Ambil histori status (jika tabel riwayat_laporan ada)
+    cursor.execute("""
+        SELECT tanggal_update, status, catatan 
+        FROM riwayat_laporan 
+        WHERE kode_laporan = %s
+        ORDER BY tanggal_update ASC
+    """, (kode_kehilangan,))
+    riwayat = cursor.fetchall()
+
     cursor.close()
     db.close()
 
-    if not laporan:
-        return redirect(url_for('main.cek_laporan'))
+    # Format tanggal & waktu submit
+    if laporan:
+        tgl = laporan.get("tanggal_submit")
+        wkt = laporan.get("waktu_submit")
+        try:
+            laporan["tanggal_submit_fmt"] = f"{tgl} {wkt}"
+        except:
+            laporan["tanggal_submit_fmt"] = tgl or "-"
 
-    return render_template("user/detail_cek.html", laporan=laporan)
+        # Perbaiki path foto
+        if laporan.get("foto"):
+            laporan["foto_url"] = f"/static/uploads/{laporan['foto']}"
+        else:
+            laporan["foto_url"] = "/static/image/no-image.png"
+
+    # Format tanggal di riwayat
+    for r in riwayat:
+        try:
+            tgl_obj = datetime.strptime(str(r["tanggal_update"]), "%Y-%m-%d %H:%M:%S")
+            r["tanggal_update_fmt"] = tgl_obj.strftime("%d/%m/%Y %H:%M")
+        except:
+            r["tanggal_update_fmt"] = r["tanggal_update"]
+
+    return render_template("user/detail_cek.html", laporan=laporan, riwayat=riwayat)
