@@ -6,11 +6,9 @@
   <title>Edit Laporan Kehilangan</title>
 
   <link rel="stylesheet" href="{{ url_for('admin_bp.static', filename='css/beranda.css') }}">
-  <link rel="stylesheet" href="{{ url_for('admin_bp.static', filename='css/daftar_kehilangan.css') }}">
   <link rel="stylesheet" href="{{ url_for('admin_bp.static', filename='css/detail_kehilangan.css') }}">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body>
 
@@ -40,12 +38,12 @@
     </a>
   </div>
 
-  <!-- Main Content -->
+  <!-- MAIN CONTENT -->
   <div class="content">
     <div class="header">
       <div class="logo-wrapper">
-        <img src="{{ url_for('admin_bp.static', filename='image/rectangle2.png')}}" class="rectangle-bg">
-        <img src="{{ url_for('admin_bp.static', filename='image/image5.png')}}" class="logo-front">
+        <img src="{{ url_for('admin_bp.static', filename='image/rectangle2.png')}}" alt="Rectangle Background" class="rectangle-bg">
+        <img src="{{ url_for('admin_bp.static', filename='image/image5.png')}}" alt="Logo Header" class="logo-front">
       </div>
       <h2>Edit Laporan Kehilangan</h2>
       <div class="profile-icon">
@@ -58,117 +56,164 @@
         <img id="fotoBarang" class="foto-barang" 
              src="{{ url_for('admin_bp.static', filename='upload/' + (laporan.foto if laporan.foto else 'placeholder.png')) }}" 
              alt="Foto Barang">
-        <div id="kodeLaporan" class="kode-laporan">{{ laporan.kode }}</div>
+        <div id="kodeLaporan" class="kode-laporan">{{ laporan.kode_kehilangan }}</div>
       </div>
 
-      <div class="right-panel">
-        <!-- === FORM EDIT LAPORAN === -->
-        <form action="{{ url_for('admin_bp.edit_kehilangan') }}?kode={{ laporan.kode }}" method="POST">
-          
-          <!-- Data Pelapor -->
-          <div class="data-section">
-            <h3>Data Pelapor</h3>
-            <div class="data-row"><span>Nama :</span><input type="text" value="{{ laporan.nama_pelapor }}"></div>
-            <div class="data-row"><span>No. Telp :</span><input type="text" value="{{ laporan.no_telp }}"></div>
-            <div class="data-row"><span>Email :</span><input type="email" value="{{ laporan.email }}"></div>
-          </div>
+<div class="right-panel">
+  <form id="formEditKehilangan"
+        action="{{ url_for('admin_bp.edit_kehilangan') }}?kode={{ laporan.kode_kehilangan }}"
+        method="POST">
 
-          <!-- Data Barang -->
-          <div class="data-section">
-            <h3>Data Barang</h3>
-            <div class="data-row"><span>Nama Barang :</span><input id="namaBarang" type="text" value="{{ laporan.nama_barang }}"></div>
-            <div class="data-row"><span>Kategori :</span>
-              <select id="kategori" name="kategori" class="form-select">
-                <option value="Elektronik" {% if laporan.kategori == 'Elektronik' %}selected{% endif %}>Elektronik</option>
-                <option value="Dompet" {% if laporan.kategori == 'Dompet' %}selected{% endif %}>Dompet</option>
-                <option value="Tas" {% if laporan.kategori == 'Tas' %}selected{% endif %}>Tas</option>
-                <option value="Kunci" {% if laporan.kategori == 'Kunci' %}selected{% endif %}>Kunci</option>
-                <option value="Pakaian & Aksesori" {% if laporan.kategori == 'Pakaian & Aksesori' %}selected{% endif %}>Pakaian & Aksesori</option>
-                <option value="Kendaraan & Aksesori Kendaraan" {% if laporan.kategori == 'Kendaraan & Aksesori Kendaraan' %}selected{% endif %}>Kendaraan & Aksesori Kendaraan</option>
-                <option value="Barang Lainnya" {% if laporan.kategori == 'Barang Lainnya' %}selected{% endif %}>Barang Lainnya</option>
-              </select>
-            </div>
-            <div class="data-row"><span>Jenis Laporan :</span><input id="jenisLaporan" type="text" value="{{ laporan.jenis_laporan }}"></div>
-    <label for="terminal">Terminal:</label>
-<select id="terminal">
-  <option value="">Pilih Terminal</option>
-  <option value="T1">Terminal 1</option>
-  <option value="T2">Terminal 2</option>
-</select>
+    <!-- === DATA PELAPOR === -->
+    <div class="data-section">
+      <h3>Data Pelapor</h3>
 
-<label for="lokasi">Lokasi:</label>
-<select id="lokasi">
-  <option value="">Pilih Lokasi</option>
-</select>
+      <div class="data-row">
+        <span>Nama :</span>
+        <input type="text" name="nama_pelapor" value="{{ laporan.nama_pelapor }}">
+      </div>
 
-<input type="text" id="lokasi_lain" placeholder="Tulis lokasi lain" style="display:none;">
+      <div class="data-row">
+        <span>No. Telp :</span>
+        <input type="text" name="no_telp" value="{{ laporan.no_telp }}">
+      </div>
 
-<script>
-  const terminalSelect = document.getElementById('terminal');
-  const lokasiSelect = document.getElementById('lokasi');
-  const lokasiLain = document.getElementById('lokasi_lain');
+      <div class="data-row">
+        <span>Email :</span>
+        <input type="email" name="email" value="{{ laporan.email }}">
+      </div>
 
-  const lokasiData = {
-    T1: ['Gate A', 'Gate B', 'Waiting Area T1', 'Lainnya'],
-    T2: ['Gate C', 'Gate D', 'Waiting Area T2', 'Lainnya']
-  };
+      <div class="data-row">
+        <span>Asal Negara :</span>
+        <input type="text" name="asal_negara" value="{{ laporan.asal_negara }}">
+      </div>
 
-  terminalSelect.addEventListener('change', function() {
-    const terminal = this.value;
-    lokasiSelect.innerHTML = '<option value="">Pilih Lokasi</option>';
-    if(lokasiData[terminal]){
-      lokasiData[terminal].forEach(loc => {
-        const option = document.createElement('option');
-        option.value = loc;
-        option.textContent = loc;
-        lokasiSelect.appendChild(option);
-      });
-    }
-    lokasiLain.style.display = 'none';
-  });
+      <div class="data-row">
+        <span>Kota :</span>
+        <input type="text" name="kota" value="{{ laporan.kota }}">
+      </div>
+    </div>
 
-  lokasiSelect.addEventListener('change', function() {
-    if(this.value === 'Lainnya'){
-      lokasiLain.style.display = 'block';
-    } else {
-      lokasiLain.style.display = 'none';
-    }
-  });
-</script>
+    <!-- === DATA BARANG === -->
+    <div class="data-section">
+      <h3>Data Barang</h3>
 
-            <div class="data-row"><span>Deskripsi :</span><textarea id="deskripsi" name="deskripsi" rows="2">{{ laporan.deskripsi }}</textarea></div>
-          </div>
+      <div class="data-row">
+        <span>Nama Barang :</span>
+        <input type="text" name="nama_barang" value="{{ laporan.nama_barang }}">
+      </div>
 
-          <!-- Status & Tanggal -->
-          <div class="data-section">
-            <div class="data-row"><span>Tanggal Lapor :</span><input type="text" value="{{ laporan.tanggal_lapor }}" readonly></div>
-            <div class="data-row">
-              <span>Update Terakhir :</span>
-              <input id="updateTerakhir" name="update_terakhir" type="text" 
-                    value="{{ laporan.update_terakhir }}">
-            </div>
-            <div class="data-row">
-              <span>Status :</span>
-              <select id="status" name="status" class="status-select">
-                <option value="Pending" {% if laporan.status == 'Pending' %}selected{% endif %}>Pending</option>
-                <option value="Terkonfirmasi" {% if laporan.status == 'Terkonfirmasi' %}selected{% endif %}>Terkonfirmasi</option>
-                <option value="Diklaim" {% if laporan.status == 'Diklaim' %}selected{% endif %}>Diklaim</option>
-              </select>
-            </div>
-          </div>
+      <div class="data-row">
+        <span>Kategori :</span>
+        <select name="kategori">
+          <option value="Elektronik" {% if laporan.kategori == 'Elektronik' %}selected{% endif %}>Elektronik</option>
+          <option value="Dompet" {% if laporan.kategori == 'Dompet' %}selected{% endif %}>Dompet</option>
+          <option value="Tas" {% if laporan.kategori == 'Tas' %}selected{% endif %}>Tas</option>
+          <option value="Kunci" {% if laporan.kategori == 'Kunci' %}selected{% endif %}>Kunci</option>
+          <option value="Pakaian & Aksesori" {% if laporan.kategori == 'Pakaian & Aksesori' %}selected{% endif %}>Pakaian & Aksesori</option>
+          <option value="Kendaraan & Aksesori Kendaraan" {% if laporan.kategori == 'Kendaraan & Aksesori Kendaraan' %}selected{% endif %}>Kendaraan & Aksesori Kendaraan</option>
+          <option value="Barang Lainnya" {% if laporan.kategori == 'Barang Lainnya' %}selected{% endif %}>Barang Lainnya</option>
+        </select>
+      </div>
 
-          <!-- Tombol -->
+      <div class="data-row">
+        <span>Jenis Laporan :</span>
+        <input type="text" name="jenis_laporan" value="{{ laporan.jenis_laporan }}">
+      </div>
+
+<div class="data-row">
+  <span>Lokasi Kehilangan</span>
+</div>
+
+<div class="form-row">
+  <label for="terminal">Terminal :</label>
+  <select 
+    id="terminal" 
+    name="terminal" 
+    required 
+    data-terminal="{{ laporan.terminal or '' }}">
+    <option value="">Pilih Terminal</option>
+    <option value="Terminal 1" {% if laporan.terminal == 'Terminal 1' %}selected{% endif %}>Terminal 1</option>
+    <option value="Terminal 2" {% if laporan.terminal == 'Terminal 2' %}selected{% endif %}>Terminal 2</option>
+  </select>
+</div>
+
+<div class="form-row">
+  <label for="tempat">Tempat :</label>
+  <select 
+    id="tempat" 
+    name="tempat" 
+    required 
+    data-tempat="{{ laporan.tempat or '' }}">
+    <option value="">Pilih Lokasi</option>
+  </select>
+</div>
+
+<div id="lokasiLainContainer" style="display:none;">
+  <label for="lokasi_lain">Tulis Lokasi Lainnya :</label>
+  <input
+    type="text"
+    id="lokasi_lain"
+    name="lokasi_lain"
+    placeholder="Contoh: Toilet dekat Gate D"
+    value="{{ laporan.lokasi_lain or '' }}">
+</div>
+
+<input type="hidden" id="lokasi" name="lokasi" value="{{ laporan.lokasi }}">
+<div class="data-row">
+  <span>Deskripsi :</span>
+  <textarea name="deskripsi" rows="2">{{ laporan.deskripsi }}</textarea>
+</div>
+
+      <div class="data-row">
+        <span>Catatan :</span>
+        <textarea name="catatan" rows="2">{{ laporan.catatan }}</textarea>
+      </div>
+    </div>
+
+    <!-- === WAKTU & STATUS === -->
+    <div class="data-section">
+      <h3>Waktu & Status</h3>
+
+      <div class="data-row">
+        <span>Tanggal Kehilangan :</span>
+        <input type="text" value="{{ laporan.tanggal_kehilangan }}" readonly>
+      </div>
+
+      <div class="data-row">
+        <span>Tanggal Submit :</span>
+        <input type="text" value="{{ laporan.tanggal_submit }} {{ laporan.waktu_submit }}" readonly>
+      </div>
+
+      <div class="data-row">
+        <span>Update Terakhir :</span>
+        <input id="updateTerakhir" name="update_terakhir" type="text" value="{{ laporan.update_terakhir }}" readonly>
+      </div>
+
+      <div class="data-row">
+        <span>Status :</span>
+        <select id="status" name="status" class="status-select">
+          <option value="Pending" {% if laporan.status == 'Pending' %}selected{% endif %}>Pending</option>
+          <option value="Verifikasi" {% if laporan.status == 'Verifikasi' %}selected{% endif %}>Verifikasi</option>
+          <option value="Dalam Pencarian" {% if laporan.status == 'Dalam Pencarian' %}selected{% endif %}>Dalam Pencarian</option>
+          <option value="Barang Ditemukan" {% if laporan.status == 'Barang Ditemukan' %}selected{% endif %}>Barang Ditemukan</option>
+          <option value="Selesai" {% if laporan.status == 'Selesai' %}selected{% endif %}>Selesai</option>
+        </select>
+      </div>
+    </div>
+
+          <!-- === BUTTON === -->
           <div class="button-group">
             <button type="button" id="btnKembali" class="btn btn-secondary">Kembali</button>
-            <button type="submit" id="btnSimpan" class="btn btn-primary">Simpan Perubahan</button>
+            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
           </div>
         </form>
       </div>
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="{{ url_for('admin_bp.static', filename='js/edit_kehilangan.js') }}"></script>
   <script src="{{ url_for('admin_bp.static', filename='js/logout.js') }}"></script>
-  
 </body>
 </html>

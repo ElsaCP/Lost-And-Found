@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify, redirect, url_for, session
+from flask import Blueprint, render_template, request, jsonify, redirect, url_for, session, flash 
 import mysql.connector
 from datetime import datetime
 import os
@@ -90,7 +90,7 @@ def daftar_kehilangan():
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM kehilangan ORDER BY tanggal_lapor DESC")
+    cursor.execute("SELECT * FROM kehilangan ORDER BY tanggal_submit DESC, waktu_submit DESC")
     kehilangan_list = cursor.fetchall()
     conn.close()
 
@@ -132,12 +132,13 @@ def tambah_kehilangan():
     cursor = conn.cursor()
     cursor.execute("""
         INSERT INTO kehilangan 
-        (kode, nama_pelapor, email, no_telp, nama_barang, kategori, jenis_laporan, deskripsi, lokasi, tanggal_lapor, update_terakhir, status, foto)
-        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        (kode, nama_pelapor, email, no_telp, nama_barang, kategori, jenis_laporan, deskripsi, lokasi, tanggal_submit, tanggal_lapor, update_terakhir, status, foto)
+        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
     """, (
         f"LF-{int(datetime.now().timestamp())}", nama_pelapor, email, no_telp,
-        nama_barang, kategori, jenis_laporan, deskripsi, lokasi, tanggal_lapor,
-        tanggal_lapor, status, foto_filename
+        nama_barang, kategori, jenis_laporan, deskripsi, lokasi,
+        datetime.now().strftime("%Y-%m-%d %H:%M:%S"),  # 🕓 Tanggal Submit User
+        tanggal_lapor, tanggal_lapor, status, foto_filename
     ))
     conn.commit()
     conn.close()
@@ -152,41 +153,53 @@ def detail_kehilangan():
     if not session.get('admin_logged_in'):
         return redirect(url_for('admin_bp.login_admin'))
 
-    kode = request.args.get('kode')
+    # Ambil parameter ?kode=LF-L001
+    kode_kehilangan = request.args.get('kode')
+
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM kehilangan WHERE kode=%s", (kode,))
+    cursor.execute("SELECT * FROM kehilangan WHERE kode_kehilangan = %s", (kode_kehilangan,))
     laporan = cursor.fetchone()
+    cursor.close()
     conn.close()
 
-    return render_template('detail_kehilangan.html', laporan=laporan, role=session.get('role'))
+    if not laporan:
+        return "Data tidak ditemukan", 404
 
+    return render_template('detail_kehilangan.html', laporan=laporan, role=session.get('role'))
 
 # ======================
 # 🔄 API: Update Status Kehilangan
 # ======================
 @admin_bp.route('/api/kehilangan/update_status', methods=['POST'])
-def api_update_status():
-    if not session.get('admin_logged_in'):
-        return jsonify({'success': False, 'message': 'Unauthorized'})
-
+def update_status_kehilangan():
     data = request.get_json()
     kode = data.get('kode')
     status = data.get('status')
 
+    # Cegah input kosong
+    if not kode or not status:
+        return jsonify({'success': False, 'message': 'Data tidak lengkap!'}), 400
+
     conn = get_db_connection()
     cursor = conn.cursor()
+
+    # Update hanya kolom status dan update_terakhir
+    waktu_update = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     cursor.execute("""
-        UPDATE kehilangan
-        SET status=%s, update_terakhir=%s
-        WHERE kode=%s
-    """, (status, datetime.now().date(), kode))
+        UPDATE kehilangan 
+        SET status = %s, update_terakhir = %s
+        WHERE kode = %s
+    """, (status, waktu_update, kode))
     conn.commit()
+
+    cursor.close()
     conn.close()
 
     return jsonify({
         'success': True,
-        'update_terakhir': datetime.now().strftime("%Y-%m-%d")
+        'message': 'Status berhasil diperbarui!',
+        'update_terakhir': waktu_update
     })
 
 # ======================
@@ -197,35 +210,108 @@ def edit_kehilangan():
     if not session.get('admin_logged_in'):
         return redirect(url_for('admin_bp.login_admin'))
 
-    kode = request.args.get('kode')
+    kode_kehilangan = request.args.get('kode')
+    if not kode_kehilangan:
+        return "Kode kehilangan tidak ditemukan", 400
 
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    # === MODE GET ===
     if request.method == 'GET':
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM kehilangan WHERE kode=%s", (kode,))
+        cursor.execute("SELECT * FROM kehilangan WHERE kode_kehilangan=%s", (kode_kehilangan,))
         laporan = cursor.fetchone()
+        cursor.close()
         conn.close()
+
+        if not laporan:
+            return "Data tidak ditemukan", 404
+
+        # ---- Format tanggal_submit agar tampil di halaman edit ----
+        from datetime import datetime
+        tanggal_submit = laporan.get('tanggal_submit')
+
+        if tanggal_submit:
+            try:
+                if isinstance(tanggal_submit, str):
+                    try:
+                        dt_submit = datetime.strptime(tanggal_submit, "%Y-%m-%d %H:%M:%S")
+                    except ValueError:
+                        dt_submit = datetime.strptime(tanggal_submit, "%Y-%m-%d %H:%M")
+                else:
+                    dt_submit = tanggal_submit
+
+                laporan['tanggal_submit_formatted'] = dt_submit.strftime("%d/%m/%Y %H:%M")
+            except Exception as e:
+                print("❌ Gagal format tanggal_submit:", e)
+                laporan['tanggal_submit_formatted'] = "-"
+        else:
+            laporan['tanggal_submit_formatted'] = "-"
+
         return render_template('edit_kehilangan.html', laporan=laporan, role=session.get('role'))
 
-    # === Ambil data dari form ===
-    kategori = request.form.get('kategori')
-    deskripsi = request.form.get('deskripsi')
-    status = request.form.get('status')
-    update_terakhir = request.form.get('update_terakhir')  # Ambil dari form
+    # === MODE POST ===
+    elif request.method == 'POST':
+        try:
+            nama_pelapor = request.form['nama_pelapor']
+            no_telp = request.form['no_telp']
+            nama_barang = request.form['nama_barang']
+            deskripsi = request.form['deskripsi']
+            terminal = request.form['terminal']
+            tempat = request.form['tempat']
+            lokasi_lain = request.form.get('lokasi_lain', '')
+            lokasi = request.form['lokasi']
+            update_terakhir = request.form['update_terakhir']
 
-    print("=== FORM DATA ===", kategori, deskripsi, status, update_terakhir)  # DEBUG
+            cursor.execute("""
+                UPDATE kehilangan
+                SET nama_pelapor=%s,
+                    no_telp=%s,
+                    nama_barang=%s,
+                    deskripsi=%s,
+                    terminal=%s,
+                    tempat=%s,
+                    lokasi_lain=%s,
+                    lokasi=%s,
+                    update_terakhir=%s
+                WHERE kode_kehilangan=%s
+            """, (nama_pelapor, no_telp, nama_barang, deskripsi,
+                  terminal, tempat, lokasi_lain, lokasi, update_terakhir, kode_kehilangan))
 
-    # === Update ke database ===
+            conn.commit()
+            cursor.close()
+            conn.close()
+
+            flash("Data kehilangan berhasil diperbarui!", "success")
+            return redirect(url_for('admin_bp.daftar_kehilangan'))
+
+        except Exception as e:
+            conn.rollback()
+            cursor.close()
+            conn.close()
+            print("❌ Error saat update kehilangan:", e)
+            return f"Terjadi kesalahan: {e}", 500
+
+# ======================
+# 🗑️ ROUTE: Hapus Data Kehilangan
+# ======================
+@admin_bp.route('/kehilangan/hapus/<int:id>', methods=['GET'])
+def hapus_kehilangan(id):
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("""
-        UPDATE kehilangan 
-        SET kategori=%s, deskripsi=%s, status=%s, update_terakhir=%s 
-        WHERE kode=%s
-    """, (kategori, deskripsi, status, update_terakhir, kode))
-    conn.commit()
-    conn.close()
 
+    try:
+        # Hapus data berdasarkan ID
+        cursor.execute("DELETE FROM kehilangan WHERE id = %s", (id,))
+        conn.commit()
+        print(f"✅ Data kehilangan dengan ID {id} berhasil dihapus.")
+    except Exception as e:
+        print("❌ Error saat menghapus data:", e)
+    finally:
+        cursor.close()
+        conn.close()
+
+    # Kembali ke daftar kehilangan setelah hapus
     return redirect(url_for('admin_bp.daftar_kehilangan'))
 
 # ======================

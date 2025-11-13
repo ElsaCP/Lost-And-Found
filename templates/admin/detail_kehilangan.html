@@ -11,6 +11,7 @@
 </head>
 <body>
 
+<!-- SIDEBAR -->
 <div class="sidebar">
   <div>
     <div class="logo-wrapper">
@@ -36,6 +37,7 @@
   </a>
 </div>
 
+<!-- MAIN CONTENT -->
 <div class="content">
   <div class="header">
     <div class="logo-wrapper">
@@ -49,21 +51,27 @@
   </div>
 
   <div class="detail-container">
+    <!-- LEFT PANEL -->
     <div class="left-panel">
       <img id="fotoBarang" class="foto-barang" 
-           src="{{ url_for('admin_bp.static', filename='upload/' + (laporan.foto if laporan.foto else 'placeholder.png')) }}" 
-           alt="Foto Barang">
-      <div id="kodeLaporan" class="kode-laporan">{{ laporan.kode }}</div>
+        src="{{ url_for('admin_bp.static', filename='upload/' + (laporan.foto if laporan.foto else 'placeholder.png')) }}" 
+        alt="Foto Barang">
+    <div id="kodeLaporan" class="kode-laporan">{{ laporan.kode }}</div>
     </div>
 
+    <!-- RIGHT PANEL -->
     <div class="right-panel">
+      <!-- === DATA PELAPOR === -->
       <div class="data-section">
         <h3>Data Pelapor</h3>
         <div class="data-row"><span>Nama :</span><strong>{{ laporan.nama_pelapor }}</strong></div>
         <div class="data-row"><span>No. Telp :</span><strong>{{ laporan.no_telp }}</strong></div>
         <div class="data-row"><span>Email :</span><strong>{{ laporan.email }}</strong></div>
+        <div class="data-row"><span>Asal Negara :</span><strong>{{ laporan.asal_negara }}</strong></div>
+        <div class="data-row"><span>Kota :</span><strong>{{ laporan.kota }}</strong></div>
       </div>
 
+      <!-- === DATA BARANG === -->
       <div class="data-section">
         <h3>Data Barang</h3>
         <div class="data-row"><span>Nama Barang :</span><strong>{{ laporan.nama_barang }}</strong></div>
@@ -71,26 +79,32 @@
         <div class="data-row"><span>Jenis Laporan :</span><strong>{{ laporan.jenis_laporan }}</strong></div>
         <div class="data-row"><span>Lokasi :</span><strong>{{ laporan.lokasi }}</strong></div>
         <div class="data-row"><span>Deskripsi :</span><strong>{{ laporan.deskripsi }}</strong></div>
+        <div class="data-row"><span>Catatan :</span><strong>{{ laporan.catatan if laporan.catatan else '-' }}</strong></div>
       </div>
 
+      <!-- === WAKTU & STATUS === -->
       <div class="data-section">
-        <div class="data-row"><span>Tanggal Lapor :</span><strong>{{ laporan.tanggal_lapor }}</strong></div>
+        <h3>Waktu & Status</h3>
+        <div class="data-row"><span>Tanggal Kehilangan :</span><strong>{{ laporan.tanggal_kehilangan }}</strong></div>
+        <div class="data-row"><span>Tanggal Submit :</span><strong>{{ laporan.tanggal_submit }} {{ laporan.waktu_submit }}</strong></div>
         <div class="data-row"><span>Update Terakhir :</span><strong id="updateTerakhir">{{ laporan.update_terakhir }}</strong></div>
+
         <div class="data-row">
           <span>Status :</span>
           <select id="status" class="status-select">
             <option value="Pending" {% if laporan.status == 'Pending' %}selected{% endif %}>Pending</option>
             <option value="Verifikasi" {% if laporan.status == 'Verifikasi' %}selected{% endif %}>Verifikasi</option>
-            <option value="Dicari" {% if laporan.status == 'Dicari' %}selected{% endif %}>Dalam Pencarian</option>
-            <option value="Diproses" {% if laporan.status == 'Diproses' %}selected{% endif %}>Barang Ditemukan</option>
+            <option value="Dalam Pencarian" {% if laporan.status == 'Dalam Pencarian' %}selected{% endif %}>Dalam Pencarian</option>
+            <option value="Barang Ditemukan" {% if laporan.status == 'Barang Ditemukan' %}selected{% endif %}>Barang Ditemukan</option>
             <option value="Selesai" {% if laporan.status == 'Selesai' %}selected{% endif %}>Selesai</option>
           </select>
         </div>
       </div>
 
+      <!-- === BUTTON === -->
       <div class="button-group">
         <button id="btnKembali" class="btn btn-secondary">Kembali</button>
-        <button id="btnUpdateStatus" class="btn btn-primary" data-kode="{{ laporan.kode }}">Update Status</button>
+        <button id="btnUpdateStatus" class="btn btn-primary" data-kode="{{ laporan.kode_kehilangan }}">Update Status</button>
       </div>
     </div>
   </div>

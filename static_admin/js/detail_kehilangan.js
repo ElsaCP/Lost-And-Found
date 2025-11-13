@@ -41,13 +41,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Tombol kembali
-  document.getElementById("btnKembali").addEventListener("click", () => {
-    const from = new URLSearchParams(window.location.search).get("from");
-    if (from === "daftar_kehilangan") {
-      window.location.href = "/admin/kehilangan/daftar";
-    } else {
-      window.history.back();
-    }
-  });
+// Tombol kembali (detail_kehilangan.js dan edit_kehilangan.js)
+document.getElementById("btnKembali").addEventListener("click", () => {
+  const from = new URLSearchParams(window.location.search).get("from");
+  if (from === "daftar_kehilangan") {
+    window.location.href = "/admin/kehilangan/daftar_kehilangan"; // sesuai nama fungsi route Flask
+  } else if (from === "beranda") {
+    window.location.href = "/admin/beranda_admin";
+  } else {
+    window.history.back();
+  }
+});
 });
