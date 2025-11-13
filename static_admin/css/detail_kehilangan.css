@@ -200,7 +200,7 @@
 .data-row input,
 .data-row textarea,
 .data-row select {
-  width: 250px; /* samakan semua lebar */
+  width: 512px; /* samakan semua lebar */
   padding: 6px 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
@@ -216,4 +216,82 @@
   .data-row select {
     width: 100%;
   }
+}
+/* === Samakan gaya form-row dengan data-row === */
+.data-row,
+.form-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+/* Label dan span di kiri punya lebar yang sama */
+.data-row span,
+.form-row label {
+  width: 150px; /* samakan dengan lebar label/spannya */
+  font-weight: 500;
+  color: #333;
+  display: inline-block;
+}
+
+/* Input dan select di kanan pakai lebar konsisten */
+.data-row input,
+.data-row select,
+.data-row textarea,
+.form-row select,
+#lokasiLainContainer input {
+  flex: 1;
+  width: 100%;
+  max-width: 480px;
+  padding: 7px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+/* Biar container lokasi tambahan juga sejajar */
+#lokasiLainContainer {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+#lokasiLainContainer label {
+  width: 150px;
+  font-weight: 500;
+  color: #333;
+  display: inline-block;
+}
+
+/* Jarak dari deskripsi biar gak mepet */
+.lokasi-section {
+  margin-top: 25px;
+}
+
+/* === Jarak antara garis dan judul biru === */
+.data-section h3 {
+  margin-top: 12px;  /* atur jarak dari garis atas */
+  margin-bottom: 15px; /* jarak bawah biar rapi */
+  color: #003c7a;  /* warna biru */
+  font-weight: 600;
+  border-left: 4px solid #0090ff;
+  padding-left: 8px;
+}
+
+/* === Styling untuk input readonly === */
+input[readonly] {
+  border: none;              /* hilangkan kotak */
+  background-color: transparent; /* hilangkan warna latar */
+  color: #333;               /* warna teks tetap terbaca */
+  padding-left: 0;           /* sejajarkan dengan teks biasa */
+  cursor: default;           /* ubah kursor jadi normal */
+  font-weight: 500;          /* sedikit tebal biar beda */
+}
+
+/* Tapi tetap pertahankan border pada input yang bisa diedit */
+input:not([readonly]),
+textarea,
+select {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #fff;
 }

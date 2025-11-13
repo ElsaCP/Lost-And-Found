@@ -34,63 +34,75 @@
 
     <a href="{{ url_for('admin_bp.logout_admin') }}" class="logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
   </div>
-
-  <!-- MAIN CONTENT -->
-  <div class="content">
-    <div class="header">
-      <div class="logo-wrapper">
-        <img src="{{ url_for('admin_bp.static', filename='image/rectangle2.png')}}" alt="Rectangle Background" class="rectangle-bg">
-        <img src="{{ url_for('admin_bp.static', filename='image/image5.png')}}" alt="Logo Header" class="logo-front">
-      </div>
-      <h2>Kehilangan - Daftar Laporan Barang</h2>
-      <div class="profile-icon">
-        <i class="bi bi-person-circle"></i>
-      </div>
+<!-- MAIN CONTENT -->
+<div class="content">
+  <div class="header">
+    <div class="logo-wrapper">
+      <img src="{{ url_for('admin_bp.static', filename='image/rectangle2.png')}}" alt="Rectangle Background" class="rectangle-bg">
+      <img src="{{ url_for('admin_bp.static', filename='image/image5.png')}}" alt="Logo Header" class="logo-front">
     </div>
-
-    <div class="search-box">
-      <input type="text" id="searchInput" placeholder="Cari laporan...">
+    <h2>Kehilangan - Daftar Laporan Barang</h2>
+    <div class="profile-icon">
+      <i class="bi bi-person-circle"></i>
     </div>
-
-    <table id="dataTable">
-      <thead>
-        <tr>
-          <th>Kode</th>
-          <th>Nama Barang</th>
-          <th>Kategori</th>
-          <th>Status</th>
-          <th>Aksi</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for item in kehilangan_list %}
-        <tr>
-          <td>{{ item.kode }}</td>
-          <td>{{ item.nama_barang }}</td>
-          <td>{{ item.jenis_laporan }}</td>
-          <td>
-            <select>
-              <option value="Pending" {% if item.status == 'Pending' %}selected{% endif %}>Pending</option>
-              <option value="Verifikasi" {% if item.status == 'Verifikasi' %}selected{% endif %}>Verifikasi</option>
-              <option value="Dalam Pencarian" {% if item.status == 'Dalam Pencarian' %}selected{% endif %}>Dalam Pencarian</option>
-              <option value="Barang Ditemukan" {% if item.status == 'Barang Ditemukan' %}selected{% endif %}>Barang Ditemukan</option>
-              <option value="Selesai" {% if item.status == 'Selesai' %}selected{% endif %}>Selesai</option>
-            </select>
-          </td>
-          <td class="aksi">
-            <button class="btn-view"><i class="bi bi-eye"></i></button>
-            <button class="btn-edit"><i class="bi bi-pencil"></i></button>
-            <button class="btn-delete"><i class="bi bi-trash"></i></button>
-            <button class="btn-verify"><i class="bi bi-check-circle-fill"></i></button>
-            <button class="btn-archive"><i class="bi bi-folder-fill"></i></button>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
   </div>
 
-  <script src="{{ url_for('admin_bp.static', filename='js/daftar_kehilangan.js') }}"></script>
-  <script src="{{ url_for('admin_bp.static', filename='js/logout.js') }}"></script>
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Cari laporan...">
+  </div>
+
+  <table id="dataTable">
+    <thead>
+      <tr>
+        <th>kode Kehilangan</th>
+        <th>Nama Barang</th>
+        <th>Kategori</th>
+        <th>Jenis Laporan</th>
+        <th>Status</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in kehilangan_list %}
+      <tr>
+        <td>{{ item.kode_kehilangan }}</td>
+        <td>{{ item.nama_barang }}</td>
+        <td>{{ item.kategori }}</td>
+        <td>{{ item.jenis_laporan }}</td>
+        <td>
+          <select class="status-select" data-id="{{ item.id }}">
+            <option value="Pending" {% if item.status == 'Pending' %}selected{% endif %}>Pending</option>
+            <option value="Verifikasi" {% if item.status == 'Verifikasi' %}selected{% endif %}>Verifikasi</option>
+            <option value="Dalam Pencarian" {% if item.status == 'Dalam Pencarian' %}selected{% endif %}>Dalam Pencarian</option>
+            <option value="Barang Ditemukan" {% if item.status == 'Barang Ditemukan' %}selected{% endif %}>Barang Ditemukan</option>
+            <option value="Selesai" {% if item.status == 'Selesai' %}selected{% endif %}>Selesai</option>
+          </select>
+        </td>
+        <td class="aksi">
+          <a href="{{ url_for('admin_bp.detail_kehilangan', kode=item.kode_kehilangan) }}" class="btn-detail" title="Lihat Detail">
+            <i class="bi bi-eye"></i>
+          </a>
+          <a href="{{ url_for('admin_bp.edit_kehilangan') }}?kode={{ item.kode_kehilangan }}" class="btn-edit" title=" Edit">
+            <i class="bi bi-pencil"></i>
+          </a>
+          <a href="{{ url_for('admin_bp.hapus_kehilangan', id=item.id) }}" class="btn-delete" title="Hapus" onclick="return confirm('Yakin ingin menghapus data ini?')">
+            <i class="bi bi-trash"></i>
+          </a>
+          <button class="btn-verify" title="Verifikasi">
+            <i class="bi bi-check-circle-fill"></i>
+          </button>
+          <button class="btn-archive" title="Arsipkan">
+            <i class="bi bi-folder-fill"></i>
+          </button>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<script src="{{ url_for('admin_bp.static', filename='js/daftar_kehilangan.js') }}"></script>
+<script src="{{ url_for('admin_bp.static', filename='js/logout.js') }}"></script>
+
 </body>
 </html>
