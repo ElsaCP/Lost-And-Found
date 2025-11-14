@@ -138,3 +138,25 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    const terminalSelect = document.getElementById("terminal");
+    const tempatSelect = document.getElementById("tempat");
+
+    // === Muat tempat berdasarkan terminal saat halaman pertama dibuka ===
+    const terminalValue = terminalSelect.value;
+
+    if (terminalValue !== "") {
+        loadTempatByTerminal(terminalValue, function () {
+            const selectedTempat = tempatSelect.dataset.selected;
+            if (selectedTempat) {
+                tempatSelect.value = selectedTempat;
+            }
+        });
+    }
+
+    // === Saat user mengganti terminal ===
+    terminalSelect.addEventListener("change", function () {
+        loadTempatByTerminal(this.value);
+    });
+});

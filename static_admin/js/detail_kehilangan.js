@@ -9,21 +9,26 @@ document.addEventListener("DOMContentLoaded", () => {
       const response = await fetch(`/admin/api/kehilangan/update_status`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ kode: kode, status: newStatus })
+        body: JSON.stringify({
+            kode: kode,            // WAJIB: sesuai yang dibaca Flask
+            status: newStatus      // WAJIB: variabel yang benar
+        })
       });
 
       const result = await response.json();
 
       if (result.success) {
-        Swal.fire({
-          icon: "success",
-          title: "Status Diperbarui!",
-          text: `Status berhasil diubah menjadi "${newStatus}".`,
-          timer: 2000,
-          showConfirmButton: false
-        });
+      Swal.fire({
+        icon: "success",
+        title: "Status Diperbarui!",
+        text: `Status berhasil diubah menjadi "${newStatus}".`,
+        timer: 1500,
+        showConfirmButton: false
+      }).then(() => {
+        // 🔥 setelah update → kembali ke daftar
+        window.location.href = "/admin/kehilangan/daftar";
+      });
 
-        document.getElementById("updateTerakhir").textContent = result.update_terakhir;
       } else {
         Swal.fire({
           icon: "error",

@@ -189,7 +189,7 @@ def update_status_kehilangan():
     cursor.execute("""
         UPDATE kehilangan 
         SET status = %s, update_terakhir = %s
-        WHERE kode = %s
+        WHERE kode_kehilangan = %s
     """, (status, waktu_update, kode))
     conn.commit()
 
@@ -221,62 +221,91 @@ def edit_kehilangan():
     if request.method == 'GET':
         cursor.execute("SELECT * FROM kehilangan WHERE kode_kehilangan=%s", (kode_kehilangan,))
         laporan = cursor.fetchone()
-        cursor.close()
-        conn.close()
 
-        if not laporan:
-            return "Data tidak ditemukan", 404
+        # Pisahkan lokasi "Terminal 2 - Bagasi"
+        lokasi_full = laporan.get('lokasi', '')
 
-        # ---- Format tanggal_submit agar tampil di halaman edit ----
-        from datetime import datetime
-        tanggal_submit = laporan.get('tanggal_submit')
-
-        if tanggal_submit:
-            try:
-                if isinstance(tanggal_submit, str):
-                    try:
-                        dt_submit = datetime.strptime(tanggal_submit, "%Y-%m-%d %H:%M:%S")
-                    except ValueError:
-                        dt_submit = datetime.strptime(tanggal_submit, "%Y-%m-%d %H:%M")
-                else:
-                    dt_submit = tanggal_submit
-
-                laporan['tanggal_submit_formatted'] = dt_submit.strftime("%d/%m/%Y %H:%M")
-            except Exception as e:
-                print("❌ Gagal format tanggal_submit:", e)
-                laporan['tanggal_submit_formatted'] = "-"
+        if " - " in lokasi_full:
+            terminal, tempat = lokasi_full.split(" - ", 1)
         else:
-            laporan['tanggal_submit_formatted'] = "-"
+            terminal, tempat = lokasi_full, ""
 
-        return render_template('edit_kehilangan.html', laporan=laporan, role=session.get('role'))
+        laporan['terminal'] = terminal
+        laporan['tempat'] = tempat
+
+        # TEMPAT FIX (dropdown)
+        tempat_list = [
+            "Check-in",
+            "Boarding Room",
+            "Kedatangan",
+            "Ruang Tunggu",
+            "Bagasi",
+            "Drop Zone",
+            "Toilet",
+            "Musala",
+            "Foodcourt",
+            "Area Parkir"
+        ]
+
+        return render_template(
+            'edit_kehilangan.html',
+            laporan=laporan,
+            tempat_list=tempat_list,
+            role=session.get('role')
+        )
 
     # === MODE POST ===
     elif request.method == 'POST':
         try:
             nama_pelapor = request.form['nama_pelapor']
             no_telp = request.form['no_telp']
+            email = request.form['email']
+            asal_negara = request.form['asal_negara']
+            kota = request.form['kota']
+            
             nama_barang = request.form['nama_barang']
-            deskripsi = request.form['deskripsi']
+            kategori = request.form['kategori']
             terminal = request.form['terminal']
             tempat = request.form['tempat']
-            lokasi_lain = request.form.get('lokasi_lain', '')
-            lokasi = request.form['lokasi']
+            lokasi = f"{terminal} - {tempat}"
+            deskripsi = request.form['deskripsi']
+            catatan = request.form['catatan']
+            status = request.form['status']
             update_terakhir = request.form['update_terakhir']
+
+            # 🔥 Ambil STATUS dari dropdown
+            status = request.form['status']
 
             cursor.execute("""
                 UPDATE kehilangan
                 SET nama_pelapor=%s,
                     no_telp=%s,
+                    email=%s,
+                    asal_negara=%s,
+                    kota=%s,
                     nama_barang=%s,
-                    deskripsi=%s,
-                    terminal=%s,
-                    tempat=%s,
-                    lokasi_lain=%s,
+                    kategori=%s,
                     lokasi=%s,
+                    deskripsi=%s,
+                    catatan=%s,
+                    status=%s,
                     update_terakhir=%s
                 WHERE kode_kehilangan=%s
-            """, (nama_pelapor, no_telp, nama_barang, deskripsi,
-                  terminal, tempat, lokasi_lain, lokasi, update_terakhir, kode_kehilangan))
+            """, (
+                nama_pelapor,
+                no_telp,
+                email,
+                asal_negara,
+                kota,
+                nama_barang,
+                kategori,
+                lokasi,
+                deskripsi,
+                catatan,
+                status,
+                update_terakhir,
+                kode_kehilangan
+            ))
 
             conn.commit()
             cursor.close()

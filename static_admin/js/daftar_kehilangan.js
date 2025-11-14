@@ -3,6 +3,7 @@
 // ===============================
 
 document.addEventListener("DOMContentLoaded", function () {
+
   // === Fitur ubah status dengan SweetAlert2 ===
   const statusSelects = document.querySelectorAll("#dataTable select");
   statusSelects.forEach(select => {
@@ -43,6 +44,7 @@ document.addEventListener("DOMContentLoaded", function () {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ kode, status: selectedStatus }),
           });
+
         } else {
           this.selectedIndex = prevIndex;
           e.preventDefault();
@@ -59,11 +61,22 @@ document.addEventListener("DOMContentLoaded", function () {
     const row = btn.closest("tr");
     const kode = row?.querySelector("td:first-child")?.textContent.trim();
 
+    // === VIEW ===
     if (btn.classList.contains("btn-view")) {
       window.location.href = `/admin/kehilangan/detail?kode=${kode}`;
-    } else if (btn.classList.contains("btn-edit")) {
+      return;
+    }
+
+    // === EDIT ===
+    if (btn.classList.contains("btn-edit")) {
       window.location.href = `/admin/kehilangan/edit?kode=${kode}`;
-    } else if (btn.classList.contains("btn-delete")) {
+      return;
+    }
+
+    // === DELETE ===
+    if (btn.classList.contains("btn-delete")) {
+      const id = btn.dataset.id;
+
       Swal.fire({
         title: "Hapus Laporan?",
         text: `Apakah kamu yakin ingin menghapus laporan ${kode}?`,
@@ -75,33 +88,93 @@ document.addEventListener("DOMContentLoaded", function () {
         cancelButtonText: "Batal",
       }).then((result) => {
         if (result.isConfirmed) {
-          row.remove();
-          Swal.fire({
-            icon: "success",
-            title: "Dihapus!",
-            text: "Data laporan berhasil dihapus.",
-            timer: 2000,
-            showConfirmButton: false,
+
+          fetch("/admin/api/kehilangan/delete", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id })
+          })
+          .then(res => res.json())
+          .then(data => {
+
+            if (data.success) {
+              Swal.fire({
+                icon: "success",
+                title: "Dihapus!",
+                text: `Laporan ${kode} berhasil dihapus.`,
+                timer: 1500,
+                showConfirmButton: false
+              }).then(() => {
+                window.location.reload();
+              });
+
+            } else {
+              Swal.fire("Gagal!", "Terjadi kesalahan saat menghapus.", "error");
+            }
+
           });
+
         }
       });
-    } else if (btn.classList.contains("btn-archive")) {
+      return;
+    }
+
+    // === VERIFIKASI ===
+    if (btn.classList.contains("btn-verify")) {
+
       Swal.fire({
-        title: "Arsipkan Laporan?",
-        text: `Apakah kamu yakin ingin memindahkan laporan ${kode} ke arsip?`,
-        icon: "info",
+        title: "Verifikasi Laporan?",
+        text: `Ubah status laporan ${kode} menjadi 'Verifikasi'?`,
+        icon: "question",
         showCancelButton: true,
-        confirmButtonColor: "#17a2b8",
+        confirmButtonColor: "#3085d6",
         cancelButtonColor: "#6c757d",
-        confirmButtonText: "Ya, arsipkan",
+        confirmButtonText: "Ya, verifikasi!",
         cancelButtonText: "Batal",
       }).then((result) => {
         if (result.isConfirmed) {
-          window.location.href = "/admin/arsip";
+
+          fetch("/admin/api/kehilangan/update_status", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              kode: kode,
+              status: "Verifikasi"
+            })
+          })
+          .then(res => res.json())
+          .then(data => {
+
+            if (data.success) {
+              Swal.fire({
+                icon: "success",
+                title: "Diverifikasi!",
+                text: `Status laporan ${kode} berhasil diubah menjadi Verifikasi.`,
+                timer: 1500,
+                showConfirmButton: false
+              });
+
+              // update dropdown status
+              const statusSelect = row.querySelector(".status-select");
+              if (statusSelect) {
+                statusSelect.value = "Verifikasi";
+              }
+
+              row.classList.add("status-updated");
+              setTimeout(() => row.classList.remove("status-updated"), 1200);
+
+            } else {
+              Swal.fire("Gagal!", "Terjadi kesalahan saat memperbarui status.", "error");
+            }
+
+          });
+
         }
       });
+      return;
     }
-  });
+
+  }); // END tombol aksi
 
   // === Fitur Pencarian ===
   const searchInput = document.getElementById("searchInput");
@@ -116,4 +189,5 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
   }
-});
+
+}); // END DOMContentLoaded

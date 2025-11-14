@@ -118,7 +118,7 @@
 
       <div class="data-row">
         <span>Jenis Laporan :</span>
-        <input type="text" name="jenis_laporan" value="{{ laporan.jenis_laporan }}">
+        <input type="text" name="jenis_laporan" value="{{ laporan.jenis_laporan }}" readonly>
       </div>
 
 <div class="data-row">
@@ -127,25 +127,21 @@
 
 <div class="form-row">
   <label for="terminal">Terminal :</label>
-  <select 
-    id="terminal" 
-    name="terminal" 
-    required 
-    data-terminal="{{ laporan.terminal or '' }}">
-    <option value="">Pilih Terminal</option>
-    <option value="Terminal 1" {% if laporan.terminal == 'Terminal 1' %}selected{% endif %}>Terminal 1</option>
-    <option value="Terminal 2" {% if laporan.terminal == 'Terminal 2' %}selected{% endif %}>Terminal 2</option>
+  <select id="terminal" name="terminal" class="form-select" required>
+      <option value="">Pilih Terminal</option>
+      <option value="Terminal 1" {% if laporan.terminal == "Terminal 1" %}selected{% endif %}>Terminal 1</option>
+      <option value="Terminal 2" {% if laporan.terminal == "Terminal 2" %}selected{% endif %}>Terminal 2</option>
   </select>
 </div>
 
 <div class="form-row">
   <label for="tempat">Tempat :</label>
-  <select 
-    id="tempat" 
-    name="tempat" 
-    required 
-    data-tempat="{{ laporan.tempat or '' }}">
-    <option value="">Pilih Lokasi</option>
+  <select id="tempat" name="tempat" class="form-select" required>
+      {% for t in tempat_list %}
+          <option value="{{ t }}" {% if laporan.tempat == t %}selected{% endif %}>
+              {{ t }}
+          </option>
+      {% endfor %}
   </select>
 </div>
 
