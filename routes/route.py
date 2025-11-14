@@ -139,6 +139,18 @@ def submit_kehilangan():
 
         cursor.execute(query, values)
         db.commit()
+        
+        # === Simpan riwayat status pertama ===
+        cursor = db.cursor()
+        cursor.execute("""
+            INSERT INTO riwayat_status (kode_kehilangan, status, catatan, waktu_update)
+            VALUES (%s, %s, %s, NOW())
+        """, (
+            kode_kehilangan,
+            "Pending",
+            "Menunggu verifikasi oleh admin"
+        ))
+        db.commit()
 
         # === Tutup koneksi ===
         cursor.close()
@@ -354,52 +366,111 @@ def detail_cek(kode_kehilangan):
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
-    # Ambil data utama laporan kehilangan
+    # ====== AMBIL DATA LAPORAN KEHILANGAN ======
     cursor.execute("""
-        SELECT * FROM kehilangan 
+        SELECT *
+        FROM kehilangan
         WHERE kode_kehilangan = %s
+        LIMIT 1
     """, (kode_kehilangan,))
     laporan = cursor.fetchone()
 
-    # Jika tidak ditemukan
     if not laporan:
         cursor.close()
         db.close()
         return render_template("user/not_found.html"), 404
 
-    # Ambil histori status (jika tabel riwayat_laporan ada)
+    # ====== FORMAT FOTO ======
+    if laporan.get("foto"):
+        laporan["foto_url"] = f"/static/uploads/{laporan['foto']}"
+    else:
+        laporan["foto_url"] = "/static/image/no-image.png"
+
+    # ====== FORMAT TANGGAL SUBMIT (dd/mm/yyyy) ======
+    try:
+        laporan["tanggal_submit_fmt"] = datetime.strptime(
+            laporan["tanggal_submit"], "%d/%m/%Y"
+        ).strftime("%d %B %Y")
+    except:
+        laporan["tanggal_submit_fmt"] = laporan["tanggal_submit"]
+
+    # ====== FORMAT WAKTU SUBMIT ======
+    laporan["waktu_submit_fmt"] = laporan["waktu_submit"]
+
+    # ====== FORMAT UPDATE TERAKHIR ======
+    try:
+        laporan["update_terakhir_fmt"] = datetime.strptime(
+            laporan["update_terakhir"], "%Y-%m-%d %H:%M:%S"
+        ).strftime("%d/%m/%Y %H:%M")
+    except:
+        laporan["update_terakhir_fmt"] = laporan["update_terakhir"]
+
+    # ====== AMBIL RIWAYAT STATUS ======
     cursor.execute("""
-        SELECT tanggal_update, status, catatan 
-        FROM riwayat_laporan 
-        WHERE kode_laporan = %s
-        ORDER BY tanggal_update ASC
+        SELECT status, catatan, waktu_update
+        FROM riwayat_status
+        WHERE kode_kehilangan = %s
+        ORDER BY waktu_update DESC
     """, (kode_kehilangan,))
     riwayat = cursor.fetchall()
+
+    # FORMAT TANGGAL RIWAYAT
+    for r in riwayat:
+        try:
+            r["waktu_update_fmt"] = datetime.strptime(
+                r["waktu_update"], "%Y-%m-%d %H:%M:%S"
+            ).strftime("%d/%m/%Y %H:%M")
+        except:
+            r["waktu_update_fmt"] = r["waktu_update"]
 
     cursor.close()
     db.close()
 
-    # Format tanggal & waktu submit
-    if laporan:
-        tgl = laporan.get("tanggal_submit")
-        wkt = laporan.get("waktu_submit")
-        try:
-            laporan["tanggal_submit_fmt"] = f"{tgl} {wkt}"
-        except:
-            laporan["tanggal_submit_fmt"] = tgl or "-"
+    return render_template(
+        "user/detail_cek.html",
+        laporan=laporan,
+        riwayat=riwayat
+    )
+@main.route("/update-status/<kode_kehilangan>", methods=["POST"])
+def update_status(kode_kehilangan):
+    try:
+        status_baru = request.form.get("status")
+        catatan = request.form.get("catatan") or ""
 
-        # Perbaiki path foto
-        if laporan.get("foto"):
-            laporan["foto_url"] = f"/static/uploads/{laporan['foto']}"
-        else:
-            laporan["foto_url"] = "/static/image/no-image.png"
+        db = get_db_connection()
+        cursor = db.cursor()
 
-    # Format tanggal di riwayat
-    for r in riwayat:
-        try:
-            tgl_obj = datetime.strptime(str(r["tanggal_update"]), "%Y-%m-%d %H:%M:%S")
-            r["tanggal_update_fmt"] = tgl_obj.strftime("%d/%m/%Y %H:%M")
-        except:
-            r["tanggal_update_fmt"] = r["tanggal_update"]
+        # Ambil status lama
+        cursor.execute("SELECT status FROM kehilangan WHERE kode_kehilangan=%s", (kode_kehilangan,))
+        old_status = cursor.fetchone()
 
-    return render_template("user/detail_cek.html", laporan=laporan, riwayat=riwayat)
+        if not old_status:
+            return jsonify({"success": False, "message": "Data tidak ditemukan"})
+
+        old_status = old_status[0]
+
+        # Jika status tidak berubah, tidak perlu menambah riwayat
+        if old_status == status_baru:
+            return jsonify({"success": False, "message": "Status sama, tidak diubah"})
+
+        # Update status di tabel kehilangan
+        cursor.execute("""
+            UPDATE kehilangan 
+            SET status=%s, update_terakhir=NOW(), catatan=%s 
+            WHERE kode_kehilangan=%s
+        """, (status_baru, catatan, kode_kehilangan))
+
+        # Tambahkan ke riwayat_status
+        cursor.execute("""
+            INSERT INTO riwayat_status (kode_kehilangan, status, catatan, waktu_update)
+            VALUES (%s, %s, %s, NOW())
+        """, (kode_kehilangan, status_baru, catatan))
+
+        db.commit()
+        cursor.close()
+        db.close()
+
+        return jsonify({"success": True, "message": "Status berhasil diperbarui"})
+
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)})

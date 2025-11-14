@@ -131,21 +131,34 @@ body {
   }
 }
 .header-detail {
-    background-color: #004b8d;
+    background-color: #ffffff;
     color: white;
     padding: 15px 20px;
     border-radius: 0 0 15px 15px;
+    margin-top: 75px;   /* 👈 TURUNKAN DI BAWAH NAVBAR */
+    position: relative;
+    z-index: 1;
 }
+
+/* Panah */
+.back-arrow-header {
+    margin-left: -50px;   /* 👉 dorong lebih ke kiri */
+}
+
 .back-arrow-header i {
-    font-size: 1.5rem;
-    color: white;
-    transition: 0.2s;
+    font-size: 2.0rem;   /* 👉 panah lebih besar */
+    color: #0056a6;
+    transition: 0.25s;
 }
+
 .back-arrow-header i:hover {
-    transform: translateX(-3px);
+    transform: translateX(-4px);
 }
+
+/* Logo */
 .logo-juanda2 {
-    height: 45px;
+    height: 55px;
+    margin-right: -50px;
 }
 .detail-card {
     background: white;
@@ -167,8 +180,80 @@ body {
     border-radius: 8px;
 }
 .status.Pending { background: #ffeeba; color: #856404; }
+.status.Verifikasi { background: #dedddd; color: #000000; }
 .status.Selesai { background: #d4edda; color: #155724; }
 .status.Ditolak { background: #f8d7da; color: #721c24; }
+
+.nama-barang {
+  margin-bottom: 15px;   /* Jarak antara nama barang dan detail */
+}
+
+.foto-barang {
+  width: 100%;
+  max-width: 250px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+/* =========================
+   TIMELINE RIWAYAT STATUS
+========================= */
+.timeline {
+  margin-top: 20px;
+  border-left: 3px solid #0056a6;
+  padding-left: 20px;
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 25px;
+}
+
+.timeline-dot {
+  width: 14px;
+  height: 14px;
+  background: #0056a6;
+  border-radius: 50%;
+  position: absolute;
+  left: -31px;
+  top: 5px;
+  border: 3px solid white;
+  box-shadow: 0 0 5px rgba(0,0,0,0.3);
+}
+
+.timeline-content {
+  background: #f5f8ff;
+  padding: 15px 18px;
+  border-radius: 10px;
+  border: 1px solid #d3e5ff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.info-card {
+    background: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.info-item {
+    margin-bottom: 13px;
+}
+
+.info-item span {
+    font-size: 13px;
+    color: #6c757d;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+
+.info-item p {
+    font-size: 16px;
+    margin: 3px 0 0;
+    font-weight: 500;
+    color: #333;
+}
+
 
 footer {
   background: #0056a6;

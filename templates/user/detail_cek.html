@@ -41,55 +41,139 @@
     </div>
   </nav>
   
- <!-- Header -->
-  <section class="header-detail d-flex align-items-center justify-content-between">
-    <a href="javascript:history.back()" class="back-arrow-header"><i class="fa-solid fa-arrow-left"></i></a>
-    <img src="{{ url_for('static', filename='image/logo juanda 2.png') }}" alt="Logo Juanda 2" class="logo-juanda2">
-  </section>
+<!-- Header -->
+<section class="header-detail container d-flex align-items-center justify-content-between"> 
+    <a href="javascript:history.back()" class="back-arrow-header">
+        <i class="fa-solid fa-arrow-left"></i>
+    </a>
 
-  <!-- Detail Laporan -->
-  <div class="container">
-    <div class="detail-card">
-      <div class="row g-4 align-items-center">
+    <img src="{{ url_for('static', filename='image/logo juanda 2.png') }}" 
+         alt="Logo Juanda 2" 
+         class="logo-juanda2">
+</section>
+
+<!-- Judul -->
+<div class="container mt-3">
+    <h3 class="fw-bold text-center">Detail Laporan Kehilangan</h3>
+</div>
+
+
+<!-- Detail Card -->
+<div class="container detail-card">
+    <!-- ===================== -->
+    <!-- Bagian Foto + Info Utama -->
+    <!-- ===================== -->
+    <div class="row">
         <div class="col-md-4 text-center">
-          <img src="{{ laporan.foto_url }}" alt="Foto Barang" class="foto-barang">
+            <img src="{{ laporan.foto_url }}" class="foto-barang" alt="Foto Barang">
         </div>
 
         <div class="col-md-8">
-          <h4 class="fw-bold text-primary">{{ laporan.nama_barang }}</h4>
-          <p class="mb-1"><b>Kategori:</b> {{ laporan.kategori }}</p>
-          <p class="mb-1"><b>Kode Laporan:</b> {{ laporan.kode_kehilangan }}</p>
-          <p class="mb-1"><b>Nama Pelapor:</b> {{ laporan.nama_pelapor }}</p>
-          <p class="mb-1"><b>Email:</b> {{ laporan.email }}</p>
-          <p class="mb-1"><b>No. Telepon:</b> {{ laporan.no_telp }}</p>
-          <p class="mb-1"><b>Lokasi:</b> {{ laporan.lokasi }}</p>
-          <p class="mb-1"><b>Tanggal Kehilangan:</b> {{ laporan.tanggal_kehilangan }}</p>
-          <p class="mb-1"><b>Waktu Submit:</b> {{ laporan.tanggal_submit_fmt }}</p>
-          <p class="mb-1"><b>Status:</b> 
-            <span class="status {{ laporan.status }}">{{ laporan.status }}</span>
-          </p>
-          <p class="mt-3"><b>Deskripsi:</b><br>{{ laporan.deskripsi }}</p>
+            <h4 class="fw-bold nama-barang" style="color:#0056a6;">{{ laporan.nama_barang }}</h4>
+
+            <p><b>Kode Laporan:</b> {{ laporan.kode_kehilangan }}</p>
+            <p><b>Kategori:</b> {{ laporan.kategori }}</p>
+
+            <p>
+                <b>Status:</b>
+                <span class="status {{ laporan.status }}">{{ laporan.status }}</span>
+            </p>
+
+            <p><b>Tanggal Submit:</b> {{ laporan.tanggal_submit_fmt }} ({{ laporan.waktu_submit_fmt }})</p>
+            <p><b>Update Terakhir:</b> {{ laporan.update_terakhir_fmt }}</p>
         </div>
-      </div>
     </div>
 
-    {% if riwayat and riwayat|length > 0 %}
-    <div class="detail-card mt-4">
-      <h5 class="fw-bold text-primary mb-3">Riwayat Status Laporan</h5>
-      <ul class="list-group">
-        {% for r in riwayat %}
-        <li class="list-group-item d-flex justify-content-between align-items-start">
-          <div>
-            <strong>{{ r.status }}</strong><br>
-            <small class="text-muted">{{ r.catatan }}</small>
-          </div>
-          <small class="text-secondary">{{ r.tanggal_update_fmt }}</small>
-        </li>
-        {% endfor %}
-      </ul>
+    <hr>
+
+    <!-- ===================== -->
+    <!-- 2 Kolom Data Pelapor & Detail Kehilangan -->
+    <!-- ===================== -->
+    <div class="row mt-4">
+
+        <!-- Data Pelapor -->
+        <div class="col-md-5">
+            <div class="info-card p-4">
+                <h5 class="fw-bold mb-3" style="color:#0056a6;"> Data Pelapor</h5>
+
+                <div class="info-item">
+                    <span>Nama</span>
+                    <p>{{ laporan.nama_pelapor }}</p>
+                </div>
+
+                <div class="info-item">
+                    <span>Email</span>
+                    <p>{{ laporan.email }}</p>
+                </div>
+
+                <div class="info-item">
+                    <span>No. Telepon</span>
+                    <p>{{ laporan.no_telp }}</p>
+                </div>
+
+                <div class="info-item">
+                    <span>Kota / Negara</span>
+                    <p>{{ laporan.kota }} / {{ laporan.asal_negara }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detail Kehilangan -->
+        <div class="col-md-7">
+            <div class="info-card p-4">
+                <h5 class="fw-bold mb-3" style="color:#0056a6;"> Detail Kehilangan</h5>
+
+                <div class="info-item">
+                    <span>Jenis Laporan</span>
+                    <p>{{ laporan.jenis_laporan }}</p>
+                </div>
+
+                <div class="info-item">
+                    <span>Lokasi Kehilangan</span>
+                    <p>{{ laporan.lokasi }}</p>
+                </div>
+
+                <div class="info-item">
+                    <span>Tanggal Kehilangan</span>
+                    <p>{{ laporan.tanggal_kehilangan.strftime("%d/%m/%Y") }}</p>
+                </div>
+
+                <div class="info-item">
+                    <span>Deskripsi</span>
+                    <p>{{ laporan.deskripsi }}</p>
+                </div>
+            </div>
+        </div>
+
     </div>
+</div>
+
+<!-- ========================= RIWAYAT STATUS ========================= -->
+<div class="container mt-4 mb-4">
+    <h4 class="fw-bold">Riwayat Perubahan Status</h4>
+
+    {% if riwayat|length == 0 %}
+        <div class="alert alert-info mt-3">Belum ada riwayat perubahan status.</div>
+    {% else %}
+
+        <div class="timeline">
+            {% for r in riwayat %}
+            <div class="timeline-item">
+
+                <div class="timeline-dot"></div>
+
+                <div class="timeline-content">
+                    <h6 class="fw-bold">{{ r.status }}</h6>
+                    <p class="text-muted">{{ r.tanggal_update_fmt }}</p>
+                    <p>{{ r.catatan }}</p>
+                </div>
+
+            </div>
+            {% endfor %}
+        </div>
+
     {% endif %}
-  </div>
+</div>
 
   <!-- Footer -->
   <section class="footer" id="kontak">
