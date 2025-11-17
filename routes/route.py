@@ -484,15 +484,11 @@ def rekomendasi(kode_kehilangan):
     # Ambil data kehilangan
     cursor.execute("SELECT * FROM kehilangan WHERE kode_kehilangan = %s", (kode_kehilangan,))
     lost = cursor.fetchone()
-
     if not lost:
         return jsonify([])
 
-    # ============================
-    # Ambil terminal (1, 2 atau 3)
-    # ============================
+    # Tentukan terminal
     lokasi = lost["lokasi"].lower()
-
     terminal = ""
     if "terminal 1" in lokasi:
         terminal = "terminal 1"
@@ -501,9 +497,7 @@ def rekomendasi(kode_kehilangan):
     elif "terminal 3" in lokasi:
         terminal = "terminal 3"
 
-    # ============================
     # Query rekomendasi
-    # ============================
     sql = """
         SELECT kode_barang, nama_barang, kategori, lokasi, tanggal_lapor, gambar_barang
         FROM penemuan
@@ -512,43 +506,34 @@ def rekomendasi(kode_kehilangan):
         AND DATEDIFF(%s, tanggal_lapor) BETWEEN -30 AND 30
         LIMIT 6
     """
-
-    params = [
-        lost["kategori"],
-        f"%{terminal}%",
-        lost["tanggal_kehilangan"]
-    ]
-
+    params = [lost["kategori"], f"%{terminal}%", lost["tanggal_kehilangan"]]
     cursor.execute(sql, params)
     hasil = cursor.fetchall()
 
-    # Tambahkan URL gambar
+    # Format tanggal menjadi hanya "dd/mm/yyyy" + URL gambar
     for h in hasil:
+        if h.get("tanggal_lapor"):
+            h["tanggal_lapor"] = h["tanggal_lapor"].strftime("%d/%m/%Y")
         h["gambar_barang_url"] = (
-            f"/static/uploads/{h['gambar_barang']}"
-            if h["gambar_barang"] else "/static/image/no-image.png"
+            f"/static/uploads/{h['gambar_barang']}" if h["gambar_barang"] else "/static/image/no-image.png"
         )
 
     cursor.close()
     db.close()
-
     return jsonify(hasil)
+
 
 @main.route("/api/rekomendasi_baru/<kode_kehilangan>")
 def rekomendasi_baru(kode_kehilangan):
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
-    # Ambil data kehilangan dulu
     cursor.execute("SELECT kategori FROM kehilangan WHERE kode_kehilangan = %s", (kode_kehilangan,))
     lost = cursor.fetchone()
-
     if not lost:
         return jsonify([])
 
     kategori = lost["kategori"]
-
-    # Ambil data penemuan sesuai kategori, acak
     cursor.execute("""
         SELECT kode_barang, nama_barang, kategori, lokasi, tanggal_lapor, gambar_barang
         FROM penemuan
@@ -556,15 +541,13 @@ def rekomendasi_baru(kode_kehilangan):
         ORDER BY RAND()
         LIMIT 6
     """, (kategori,))
-
     hasil = cursor.fetchall()
 
-    # Tambahkan URL gambar
     for h in hasil:
+        if h.get("tanggal_lapor"):
+            h["tanggal_lapor"] = h["tanggal_lapor"].strftime("%d/%m/%Y")
         h["gambar_barang_url"] = (
-            f"/static/uploads/{h['gambar_barang']}"
-            if h["gambar_barang"] 
-            else "/static/image/no-image.png"
+            f"/static/uploads/{h['gambar_barang']}" if h["gambar_barang"] else "/static/image/no-image.png"
         )
 
     cursor.close()

@@ -278,11 +278,20 @@ body {
     color: #0056a6;
 }
 
-/* REKOMENDASI CARD */
+.rekomendasi-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+    margin-top: 25px;
+    margin-bottom: 100px; /* 👈 pastikan tidak nempel ke footer */
+}
+
 .rekom-card {
     border-radius: 12px;
     overflow: hidden;
-    transition: .2s;
+    transition: transform 0.2s;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .rekom-card:hover {
@@ -293,6 +302,22 @@ body {
     height: 180px;
     width: 100%;
     object-fit: cover;
+}
+
+.rekom-nama {
+    padding: 10px 12px;
+    font-weight: 600;
+    font-size: 14px;
+    color: #333;
+    text-align: center;
+}
+
+#barangSerupaContainer {
+    margin-bottom: 50px; /* jarak dari footer */
+}
+
+.mt-4.d-flex.justify-content-between {
+    margin-bottom: 80px; /* lebih aman untuk tombol */
 }
 
 
