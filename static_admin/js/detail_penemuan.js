@@ -3,84 +3,61 @@ document.addEventListener("DOMContentLoaded", () => {
   const kode = urlParams.get("kode");
   const from = urlParams.get("from") || "daftar_penemuan";
 
-  const dataPenemuan = [
-    {
-      kode: "LF-F001",
-      namaPelapor: "Elsa Claudia P.",
-      email: "elsa@gmail.com",
-      noTelp: "08321xxxxxx",
-      namaBarang: "Dompet Kulit Buaya",
-      deskripsi: "Warna coklat",
-      lokasi: "Terminal 1, Kedatangan",
-      tanggalLapor: "21/09/2025",
-      updateTerakhir: "21/09/2025",
-      status: "Pending",
-      foto: "https://placehold.co/344x375?text=Dompet"
-    },
-    {
-      kode: "LF-F002",
-      namaPelapor: "Aulia Agstya H.",
-      email: "aulia@gmail.com",
-      noTelp: "08214xxxxxx",
-      namaBarang: "Tas Punggung Hitam",
-      deskripsi: "Tas punggung warna hitam, terdapat gantungan kunci kecil di resleting.",
-      lokasi: "Terminal 2, Keberangkatan",
-      tanggalLapor: "24/09/2025",
-      updateTerakhir: "25/09/2025",
-      status: "Diverifikasi",
-      foto: "https://placehold.co/344x375?text=Tas"
-    }
-  ];
+  // =====================
+  //  BUTTON UPDATE STATUS
+  // =====================
+  const btnUpdate = document.getElementById("btnUpdate");
+  if (btnUpdate) {
+    btnUpdate.addEventListener("click", async () => {
+      const newStatus = document.getElementById("status").value;
 
-  const laporan = dataPenemuan.find(item => item.kode === kode);
-  if (!laporan) {
-    Swal.fire("Oops!", "Data laporan tidak ditemukan!", "error");
-    return;
-  }
+      try {
+        const response = await fetch(`/admin/api/penemuan/update_status`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            kode: kode,
+            status: newStatus
+          })
+        });
 
-  document.getElementById("kodeLaporan").textContent = laporan.kode;
-  document.getElementById("fotoBarang").src = laporan.foto;
-  document.getElementById("namaPelapor").textContent = laporan.namaPelapor;
-  document.getElementById("noTelp").textContent = laporan.noTelp;
-  document.getElementById("email").textContent = laporan.email;
-  document.getElementById("namaBarang").textContent = laporan.namaBarang;
-  document.getElementById("deskripsi").textContent = laporan.deskripsi;
-  document.getElementById("lokasi").textContent = laporan.lokasi;
-  document.getElementById("tanggalLapor").textContent = laporan.tanggalLapor;
-  document.getElementById("updateTerakhir").textContent = laporan.updateTerakhir;
-  document.getElementById("status").value = laporan.status;
+        const result = await response.json();
 
-  // Tombol Update
-  document.getElementById("btnUpdate").addEventListener("click", () => {
-    const newStatus = document.getElementById("status").value;
-    Swal.fire({
-      icon: "success",
-      title: "Status Diperbarui!",
-      text: `Status barang berhasil diubah menjadi "${newStatus}".`,
-      showConfirmButton: false,
-      timer: 2000
-    });
-  });
+        if (result.success) {
+          Swal.fire({
+            icon: "success",
+            title: "Status Diperbarui!",
+            text: `Status berhasil diubah menjadi "${newStatus}".`,
+            timer: 1500,
+            showConfirmButton: false
+          }).then(() => {
+            window.location.href = "/admin/penemuan/daftar";   // <-- FIXED
+          });
 
-  // Tombol Klaim
-  document.getElementById("btnKlaim").addEventListener("click", () => {
-    Swal.fire({
-      title: "Klaim Barang?",
-      text: "Apakah kamu ingin mengajukan klaim untuk barang ini?",
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "Ya, klaim",
-      cancelButtonText: "Batal",
-      confirmButtonColor: "#0055B8"
-    }).then((result) => {
-      if (result.isConfirmed) {
-        window.location.href = `klaim_barang.html?kode=${laporan.kode}`;
+        } else {
+          Swal.fire("Gagal!", "Tidak dapat memperbarui status.", "error");
+        }
+
+      } catch (error) {
+        console.error(error);
+        Swal.fire("Error!", "Terjadi kesalahan pada server.", "error");
       }
     });
-  });
+  }
 
-  // Tombol Kembali (sama seperti detail kehilangan)
-  document.getElementById("btnKembali").addEventListener("click", () => {
-    window.location.href = `${from}.html`;
-  });
+  // =====================
+  //  TOMBOL KEMBALI
+  // =====================
+  const btnKembali = document.getElementById("btnKembali");
+  if (btnKembali) {
+    btnKembali.addEventListener("click", () => {
+      if (from === "daftar_penemuan") {
+        window.location.href = "/admin/penemuan/daftar";   // <-- FIXED
+      } else if (from === "beranda") {
+        window.location.href = "/admin/beranda_admin";
+      } else {
+        window.history.back();
+      }
+    });
+  }
 });

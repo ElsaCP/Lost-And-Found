@@ -1,61 +1,133 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const form = document.querySelector("form");
+  const form = document.getElementById("formTambah");
   const btnCancel = document.querySelector(".btn-cancel");
 
-  // Saat klik tombol SIMPAN
-  form.addEventListener("submit", function (e) {
-    e.preventDefault();
+  const terminalSelect = document.getElementById("terminal");
+  const tempatSelect = document.getElementById("tempat");
+  const lokasiLainContainer = document.getElementById("lokasiLainContainer");
+  const lokasiLain = document.getElementById("lokasi_lain");
+  const lokasiInput = document.getElementById("lokasi");
 
-    // Ambil semua input dan select di form
-    const inputs = form.querySelectorAll("input, select, textarea");
+  const tempatData = {
+    "Terminal 1": ["Gate A", "Gate B", "Waiting Area T1", "Bagasi", "Lainnya"],
+    "Terminal 2": ["Gate C", "Gate D", "Waiting Area T2", "Bagasi", "Lainnya"]
+  };
 
-    // Cek apakah ada yang kosong
-    let isEmpty = false;
-    inputs.forEach((el) => {
-      if (el.type !== "file" && !el.value.trim()) {
-        isEmpty = true;
-      }
-    });
+  // =========================
+  // UPDATE LOKASI OTOMATIS
+  // =========================
+  function updateLokasi() {
+    const terminal = terminalSelect.value;
+    const tempat = tempatSelect.value;
+    const lainnya = lokasiLain.value.trim();
 
-    if (isEmpty) {
-      Swal.fire({
-        icon: "warning",
-        title: "Data belum lengkap!",
-        text: "Harap isi semua kolom sebelum menyimpan.",
-        confirmButtonText: "OK",
-        confirmButtonColor: "#f8bb86",
-      });
-      return; // stop proses simpan
+    if (tempat === "Lainnya") {
+      lokasiInput.value = lainnya ? `${terminal} - ${lainnya}` : "";
+    } else {
+      lokasiInput.value = terminal && tempat ? `${terminal} - ${tempat}` : "";
     }
+  }
 
-    // Jika semua terisi, tampilkan notifikasi sukses
-    Swal.fire({
-      icon: "success",
-      title: "Berhasil!",
-      text: "Data kehilangan berhasil disimpan.",
-      confirmButtonText: "OK",
-      confirmButtonColor: "#3085d6",
-      timer: 2500,
-      timerProgressBar: true,
-    }).then(() => {
-      window.location.href = "daftar_kehilangan.html";
-    });
+  terminalSelect.addEventListener("change", () => {
+    const selected = terminalSelect.value;
+    tempatSelect.innerHTML = '<option value="">Pilih Lokasi</option>';
+
+    lokasiLainContainer.style.display = "none";
+    lokasiLain.value = "";
+
+    if (tempatData[selected]) {
+      tempatData[selected].forEach(item => {
+        const opt = document.createElement("option");
+        opt.value = item;
+        opt.textContent = item;
+        tempatSelect.appendChild(opt);
+      });
+    }
+    updateLokasi();
   });
 
-  // Saat klik tombol BATAL
-  btnCancel.addEventListener("click", function () {
+  tempatSelect.addEventListener("change", () => {
+    lokasiLainContainer.style.display = tempatSelect.value === "Lainnya" ? "block" : "none";
+    updateLokasi();
+  });
+
+  lokasiLain.addEventListener("input", updateLokasi);
+
+  // =========================
+  // VALIDASI WAJIB DIISI
+  // =========================
+form.addEventListener("submit", function (e) {
+  e.preventDefault();
+
+  let errors = [];
+
+  function cek(name, label) {
+    const el = form.querySelector(`[name="${name}"]`);
+    if (!el || !el.value.trim()) {
+      errors.push(label);
+    }
+  }
+
+  // CEK FIELD WAJIB
+  cek("nama_pelapor", "Nama Pelapor");
+  cek("no_telp", "Nomor Telepon");
+  cek("email", "Email");
+  cek("asal_negara", "Asal Negara");
+  cek("kota", "Kota");
+  cek("nama_barang", "Nama Barang");
+  cek("kategori", "Kategori");
+  cek("tanggal_kehilangan", "Tanggal Kehilangan");
+  cek("deskripsi", "Deskripsi");
+
+  // Lokasi khusus
+  if (!terminalSelect.value.trim()) errors.push("Terminal");
+  if (!tempatSelect.value.trim()) errors.push("Tempat");
+
+  // Jika memilih "Lainnya"
+  if (tempatSelect.value === "Lainnya" && !lokasiLain.value.trim()) {
+    errors.push("Lokasi Lainnya");
+  }
+
+  // Foto barang
+  const foto = form.querySelector('[name="foto"]');
+  if (!foto.files.length) {
+    errors.push("Foto Barang");
+  }
+
+  // TAMPILKAN ERROR
+  if (errors.length > 0) {
+    Swal.fire({
+      icon: "warning",
+      title: "Form belum lengkap!",
+      html: "<b>Harap isi:</b><br>" + errors.join("<br>"),
+      confirmButtonText: "OK"
+    });
+    return;
+  }
+
+  // Jika sudah lengkap → submit
+  Swal.fire({
+    icon: "success",
+    title: "Menyimpan...",
+    timer: 800,
+    showConfirmButton: false
+  }).then(() => form.submit());
+});
+
+  // =========================
+  // BUTTON CANCEL
+  // =========================
+  btnCancel.addEventListener("click", () => {
     Swal.fire({
       icon: "question",
-      title: "Batalkan perubahan?",
+      title: "Batalkan?",
       text: "Data yang belum disimpan akan hilang.",
       showCancelButton: true,
-      confirmButtonText: "Ya, batalkan",
-      cancelButtonText: "Tidak",
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        window.location.href = "daftar_kehilangan.html";
+      confirmButtonText: "Ya",
+      cancelButtonText: "Tidak"
+    }).then(res => {
+      if (res.isConfirmed) {
+        window.location.href = "/admin/kehilangan/daftar";
       }
     });
   });

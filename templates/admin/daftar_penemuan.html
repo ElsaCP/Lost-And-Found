@@ -66,57 +66,56 @@
       <input type="text" id="searchInput" placeholder="Search...">
     </div>
 
-    <table id="dataTable">
-      <thead>
-        <tr>
-          <th>Kode</th>
-          <th>Nama Barang</th>
-          <th>Jenis</th>
-          <th>Status</th>
-          <th>Aksi</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>LF-F001</td>
-          <td>Dompet Kulit Buaya</td>
-          <td>Penemuan</td>
-          <td>
-            <select>
-              <option selected>Pending</option>
-              <option>Verifikasi</option>
-              <option>Selesai</option>
-            </select>
-          </td>
-          <td class="aksi">
-            <button class="btn-detail" title="Lihat Detail"><i class="bi bi-eye"></i></button>
-            <button class="btn-edit" title="Edit Data"><i class="bi bi-pencil"></i></button>
-            <button class="btn-delete" title="Hapus Data"><i class="bi bi-trash"></i></button>
-            <button class="btn-verify" title="Verifikasi"><i class="bi bi-check-circle-fill"></i></button>
-            <button class="btn-archive"><i class="bi bi-folder-fill"></i></button>
-          </td>
-        </tr>
-        <tr>
-          <td>LF-F002</td>
-          <td>Tas Punggung Hitam</td>
-          <td>Penemuan</td>
-          <td>
-            <select>
-              <option>Pending</option>
-              <option selected>Verifikasi</option>
-              <option>Selesai</option>
-            </select>
-          </td>
-          <td class="aksi">
-            <button class="btn-detail" title="Lihat Detail"><i class="bi bi-eye"></i></button>
-            <button class="btn-edit" title="Edit Data"><i class="bi bi-pencil"></i></button>
-            <button class="btn-delete" title="Hapus Data"><i class="bi bi-trash"></i></button>
-            <button class="btn-verify" title="Verifikasi"><i class="bi bi-check-circle-fill"></i></button>
-            <button class="btn-archive"><i class="bi bi-folder-fill"></i></button>
-          </td>
-        </tr>
-      </tbody>
-    </table> 
+<table id="dataTable">
+  <thead>
+    <tr>
+      <th>Kode Penemuan</th>
+      <th>Nama Barang</th>
+      <th>Jenis Laporan</th>
+      <th>Status</th>
+      <th>Aksi</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for barang in penemuan_list %}
+    <tr>
+      <td>{{ barang.kode_barang }}</td>
+      <td>{{ barang.nama_barang }}</td>
+      <td>{{ barang.jenis_laporan }}</td>
+      <td>
+        <select class="status-select" data-id="{{ barang.kode_barang }}">
+          <option value="Pending" {% if barang.status == 'Pending' %}selected{% endif %}>Pending</option>
+          <option value="Verifikasi" {% if barang.status == 'Verifikasi' %}selected{% endif %}>Verifikasi</option>
+          <option value="Selesai" {% if barang.status == 'Selesai' %}selected{% endif %}>Selesai</option>
+        </select>
+      </td>
+      <td class="aksi">
+        <a href="{{ url_for('admin_bp.detail_penemuan') }}?kode={{ barang.kode_barang }}">
+          <i class="bi bi-eye"></i>
+        </a>
+
+        <a href="{{ url_for('admin_bp.edit_penemuan') }}?kode={{ barang.kode_barang }}" class="btn-edit">
+          <i class="bi bi-pencil"></i>
+        </a>
+
+        <button class="btn-delete" data-kode="{{ barang.kode_barang }}">
+          <i class="bi bi-trash"></i>
+        </button>
+
+        <button class="btn-verify" data-kode="{{ barang.kode_barang }}">
+          <i class="bi bi-check-circle-fill"></i>
+        </button>
+
+        <button class="btn-archive" data-kode="{{ barang.kode_barang }}">
+          <i class="bi bi-folder-fill"></i>
+        </button>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+
+</table>
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="{{ url_for('admin_bp.static', filename='js/daftar_penemuan.js') }}"></script>

@@ -56,7 +56,6 @@
       <tr>
         <th>kode Kehilangan</th>
         <th>Nama Barang</th>
-        <th>Kategori</th>
         <th>Jenis Laporan</th>
         <th>Status</th>
         <th>Aksi</th>
@@ -67,7 +66,6 @@
       <tr>
         <td>{{ item.kode_kehilangan }}</td>
         <td>{{ item.nama_barang }}</td>
-        <td>{{ item.kategori }}</td>
         <td>{{ item.jenis_laporan }}</td>
         <td>
           <select class="status-select" data-id="{{ item.id }}">
@@ -85,7 +83,7 @@
           <a href="{{ url_for('admin_bp.edit_kehilangan') }}?kode={{ item.kode_kehilangan }}" class="btn-edit" title=" Edit">
             <i class="bi bi-pencil"></i>
           </a>
-          <button class="btn-delete" title="Hapus" data-id="{{ item.id }}">
+          <button class="btn-delete" title="Hapus" data-kode="{{ item.kode_kehilangan }}">
             <i class="bi bi-trash"></i>
           </button>
           <button class="btn-verify" title="Verifikasi" data-kode="{{ item.kode_kehilangan }}">
