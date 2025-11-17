@@ -3,149 +3,115 @@
 <head>
   <meta charset="UTF-8">
   <title>Detail Laporan | Sistem Lost & Found</title>
+
   <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
   <!-- Bootstrap Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-  <!-- Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Protest+Strike&display=swap" rel="stylesheet">
+
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
   <!-- Custom CSS -->
-  <link rel="stylesheet" href={{ url_for('static', filename='css/detail_cek.css') }}>
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Reddit+Sans+Condensed:wght@700;800&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/detail_cek.css') }}">
 </head>
 
 <body>
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#">
-        <img src={{ url_for('static', filename='image/logo injourney.png') }} alt="Logo">
-      </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-        <ul class="navbar-nav align-items-center">
-          <li class="nav-item"><a class="nav-link active" href="{{ url_for('main.home') }}#hero">Beranda</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('main.home') }}#listBarang">List Barang</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('main.home') }}#panduan">Panduan</a></li>
-          <li class="nav-item"><a class="nav-link" href="#kontak">Kontak</a></li>
-          <li class="nav-item ms-lg-3">
-            <a href="/login" class="profile-icon"><i class="bi bi-person-circle"></i></a>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
-  
-<!-- Header -->
-<section class="header-detail container d-flex align-items-center justify-content-between"> 
-    <a href="javascript:history.back()" class="back-arrow-header">
-        <i class="fa-solid fa-arrow-left"></i>
-    </a>
 
-    <img src="{{ url_for('static', filename='image/logo juanda 2.png') }}" 
-         alt="Logo Juanda 2" 
-         class="logo-juanda2">
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">
+      <img src="{{ url_for('static', filename='image/logo injourney.png') }}" alt="Logo">
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+      <ul class="navbar-nav align-items-center">
+        <li class="nav-item"><a class="nav-link active" href="{{ url_for('main.home') }}#hero">Beranda</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('main.home') }}#listBarang">List Barang</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('main.home') }}#panduan">Panduan</a></li>
+        <li class="nav-item"><a class="nav-link" href="#kontak">Kontak</a></li>
+        <li class="nav-item ms-lg-3">
+          <a href="/login" class="profile-icon"><i class="bi bi-person-circle"></i></a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Header -->
+<section class="header-detail container d-flex align-items-center justify-content-between">
+  <a href="javascript:history.back()" class="back-arrow-header">
+      <i class="fa-solid fa-arrow-left"></i>
+  </a>
+
+  <img src="{{ url_for('static', filename='image/logo juanda 2.png') }}" 
+       alt="Logo Juanda 2" 
+       class="logo-juanda2">
 </section>
 
-<!-- Judul -->
 <div class="container mt-3">
-    <h3 class="fw-bold text-center">Detail Laporan Kehilangan</h3>
+  <h3 class="fw-bold text-center">Detail Laporan Kehilangan</h3>
 </div>
 
-
-<!-- Detail Card -->
+<!-- ===================================== -->
+<!-- CARD DETAIL -->
+<!-- ===================================== -->
 <div class="container detail-card">
-    <!-- ===================== -->
-    <!-- Bagian Foto + Info Utama -->
-    <!-- ===================== -->
-    <div class="row">
-        <div class="col-md-4 text-center">
-            <img src="{{ laporan.foto_url }}" class="foto-barang" alt="Foto Barang">
-        </div>
 
-        <div class="col-md-8">
-            <h4 class="fw-bold nama-barang" style="color:#0056a6;">{{ laporan.nama_barang }}</h4>
-
-            <p><b>Kode Laporan:</b> {{ laporan.kode_kehilangan }}</p>
-            <p><b>Kategori:</b> {{ laporan.kategori }}</p>
-
-            <p>
-                <b>Status:</b>
-                <span class="status {{ laporan.status }}">{{ laporan.status }}</span>
-            </p>
-
-            <p><b>Tanggal Submit:</b> {{ laporan.tanggal_submit_fmt }} ({{ laporan.waktu_submit_fmt }})</p>
-            <p><b>Update Terakhir:</b> {{ laporan.update_terakhir_fmt }}</p>
-        </div>
+  <div class="row">
+    <div class="col-md-4 text-center">
+      <img src="{{ laporan.foto_url }}" class="foto-barang" alt="Foto Barang">
     </div>
 
-    <hr>
+    <div class="col-md-8">
+      <h4 class="fw-bold nama-barang" style="color:#0056a6;">{{ laporan.nama_barang }}</h4>
 
-    <!-- ===================== -->
-    <!-- 2 Kolom Data Pelapor & Detail Kehilangan -->
-    <!-- ===================== -->
-    <div class="row mt-4">
+      <p><b>Kode Laporan:</b> {{ laporan.kode_kehilangan }}</p>
+      <p><b>Kategori:</b> {{ laporan.kategori }}</p>
 
-        <!-- Data Pelapor -->
-        <div class="col-md-5">
-            <div class="info-card p-4">
-                <h5 class="fw-bold mb-3" style="color:#0056a6;"> Data Pelapor</h5>
+      <p>
+        <b>Status:</b>
+        <span class="status {{ laporan.status }}">{{ laporan.status }}</span>
+      </p>
 
-                <div class="info-item">
-                    <span>Nama</span>
-                    <p>{{ laporan.nama_pelapor }}</p>
-                </div>
-
-                <div class="info-item">
-                    <span>Email</span>
-                    <p>{{ laporan.email }}</p>
-                </div>
-
-                <div class="info-item">
-                    <span>No. Telepon</span>
-                    <p>{{ laporan.no_telp }}</p>
-                </div>
-
-                <div class="info-item">
-                    <span>Kota / Negara</span>
-                    <p>{{ laporan.kota }} / {{ laporan.asal_negara }}</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Detail Kehilangan -->
-        <div class="col-md-7">
-            <div class="info-card p-4">
-                <h5 class="fw-bold mb-3" style="color:#0056a6;"> Detail Kehilangan</h5>
-
-                <div class="info-item">
-                    <span>Jenis Laporan</span>
-                    <p>{{ laporan.jenis_laporan }}</p>
-                </div>
-
-                <div class="info-item">
-                    <span>Lokasi Kehilangan</span>
-                    <p>{{ laporan.lokasi }}</p>
-                </div>
-
-                <div class="info-item">
-                    <span>Tanggal Kehilangan</span>
-                    <p>{{ laporan.tanggal_kehilangan.strftime("%d/%m/%Y") }}</p>
-                </div>
-
-                <div class="info-item">
-                    <span>Deskripsi</span>
-                    <p>{{ laporan.deskripsi }}</p>
-                </div>
-            </div>
-        </div>
-
+      <p><b>Tanggal Submit:</b> {{ laporan.tanggal_submit_fmt }} ({{ laporan.waktu_submit_fmt }})</p>
+      <p><b>Update Terakhir:</b> {{ laporan.update_terakhir_fmt }}</p>
     </div>
+  </div>
+
+  <hr>
+
+  <div class="row mt-4">
+
+    <!-- DATA PELAPOR -->
+    <div class="col-md-5">
+      <div class="info-card p-4">
+        <h5 class="fw-bold mb-3" style="color:#0056a6;">Data Pelapor</h5>
+
+        <div class="info-item"><span>Nama</span><p>{{ laporan.nama_pelapor }}</p></div>
+        <div class="info-item"><span>Email</span><p>{{ laporan.email }}</p></div>
+        <div class="info-item"><span>No. Telepon</span><p>{{ laporan.no_telp }}</p></div>
+        <div class="info-item"><span>Kota / Negara</span><p>{{ laporan.kota }} / {{ laporan.asal_negara }}</p></div>
+      </div>
+    </div>
+
+    <!-- DETAIL KEHILANGAN -->
+    <div class="col-md-7">
+      <div class="info-card p-4">
+        <h5 class="fw-bold mb-3" style="color:#0056a6;">Detail Kehilangan</h5>
+
+        <div class="info-item"><span>Jenis Laporan</span><p>{{ laporan.jenis_laporan }}</p></div>
+        <div class="info-item"><span>Lokasi Kehilangan</span><p>{{ laporan.lokasi }}</p></div>
+        <div class="info-item"><span>Tanggal Kehilangan</span><p>{{ laporan.tanggal_kehilangan.strftime("%d/%m/%Y") }}</p></div>
+        <div class="info-item"><span>Deskripsi</span><p>{{ laporan.deskripsi }}</p></div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <!-- ========================= RIWAYAT STATUS ========================= -->
@@ -155,69 +121,138 @@
     {% if riwayat|length == 0 %}
         <div class="alert alert-info mt-3">Belum ada riwayat perubahan status.</div>
     {% else %}
-
         <div class="timeline">
             {% for r in riwayat %}
             <div class="timeline-item">
-
                 <div class="timeline-dot"></div>
-
                 <div class="timeline-content">
                     <h6 class="fw-bold">{{ r.status }}</h6>
-                    <p class="text-muted">{{ r.tanggal_update_fmt }}</p>
+                    <p class="text-muted">{{ r.waktu_update_fmt }}</p>
                     <p>{{ r.catatan }}</p>
                 </div>
-
             </div>
             {% endfor %}
         </div>
-
     {% endif %}
 </div>
 
-  <!-- Footer -->
-  <section class="footer" id="kontak">
-    <footer class="footer text-white" id="kontak">
-      <div class="footer-container">
-        <div class="footer-top">
-          <!-- Logo di pojok kiri -->
-          <div class="footer-logo">
-            <img src={{ url_for('static', filename='image/logo putih.png')}} alt="InJourney Airports">
-          </div>
+<!-- ========================= REKOMENDASI ========================= -->
+{% if status_laporan == 'Dalam Pencarian' %}
+<div class="container mt-5">
 
-          <!-- Alamat -->
-          <div class="footer-address">
-            <p>Jl. Juanda, Segoro Tambak, Kec. Sedati,<br>
-            Kabupaten Sidoarjo, Jawa Timur 61253 - Indonesia</p>
-          </div>
+  <h4 class="fw-bold mb-3">Rekomendasi Barang Serupa</h4>
 
-          <!-- Kontak Center -->
-          <div class="footer-contact">
-            <p><strong>Contact Center :</strong> @ccinjourneyairports</p>
-            <p>📞 172 &nbsp; | &nbsp; 📧 cc172@injourneyairports.id</p>
-            <p>Ph : T1 (+62 31 2986200) &nbsp; | &nbsp; T2 (+62 31 2986700)</p>
-          </div>
+  <div id="barangSerupaContainer" class="row g-3">
+      <!-- JS akan menambahkan card -->
+  </div>
 
-          <!-- Ikon Sosial di pojok kanan -->
-          <div class="footer-icons">
-            <a href="tel:(0623)12986200" class="text-white"><i class="fas fa-phone"></i></a>
-            <a href="mailto:humas.sub@ap1.co.id" class="text-white"><i class="fas fa-envelope"></i></a>
-            <a href="https://www.instagram.com/juanda_airport" target="_blank" class="text-white"><i class="fab fa-instagram"></i></a>
-          </div>
+  <div class="mt-4 d-flex justify-content-between">
+      <button class="btn btn-outline-secondary" id="btnBukanBarangSaya">Bukan Barang Saya</button>
+      <a href="{{ url_for('main.cari_barang') }}" class="btn btn-primary">Lihat Lainnya</a>
+  </div>
+
+</div>
+{% endif %}
+
+<!-- Footer -->
+<section class="footer" id="kontak">
+  <footer class="footer text-white" id="kontak">
+    <div class="footer-container">
+      <div class="footer-top">
+        <!-- Logo di pojok kiri -->
+        <div class="footer-logo">
+          <img src="{{ url_for('static', filename='image/logo putih.png')}}" alt="InJourney Airports">
         </div>
 
-        <hr class="footer-divider">
+        <!-- Alamat -->
+        <div class="footer-address">
+          <p>Jl. Juanda, Segoro Tambak, Kec. Sedati,<br>
+          Kabupaten Sidoarjo, Jawa Timur 61253 - Indonesia</p>
+        </div>
 
-        <!-- Copyright -->
-        <div class="footer-bottom text-center small">
-          © 2025 PT. ANGKASA PURA | BANDARA INTERNASIONAL JUANDA
+        <!-- Kontak Center -->
+        <div class="footer-contact">
+          <p><strong>Contact Center :</strong> @ccinjourneyairports</p>
+          <p>📞 172 &nbsp; | &nbsp; 📧 cc172@injourneyairports.id</p>
+          <p>Ph : T1 (+62 31 2986200) &nbsp; | &nbsp; T2 (+62 31 2986700)</p>
+        </div>
+
+        <!-- Ikon Sosial di pojok kanan -->
+        <div class="footer-icons">
+          <a href="tel:(0623)12986200" class="text-white"><i class="fas fa-phone"></i></a>
+          <a href="mailto:humas.sub@ap1.co.id" class="text-white"><i class="fas fa-envelope"></i></a>
+          <a href="https://www.instagram.com/juanda_airport" target="_blank" class="text-white"><i class="fab fa-instagram"></i></a>
         </div>
       </div>
-    </footer>
-  </section>
 
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script src={{ url_for('static', filename='js/detail_cek.js') }}></script>
+      <hr class="footer-divider">
+
+      <!-- Copyright -->
+      <div class="footer-bottom text-center small">
+        © 2025 PT. ANGKASA PURA | BANDARA INTERNASIONAL JUANDA
+      </div>
+    </div>
+  </footer>
+</section>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ url_for('static', filename='js/detail_cek.js') }}"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const kode = "{{ laporan.kode_kehilangan }}";
+    console.log("Kode kehilangan:", kode);
+
+    const container = document.getElementById("barangSerupaContainer");
+    if (!container) return;
+
+    const url = `/api/rekomendasi/${kode}`;
+    console.log("URL fetch:", url);
+
+    loadRekomendasi(url);
+
+    document.getElementById("btnBukanBarangSaya").addEventListener("click", () => {
+        loadRekomendasi(`/api/rekomendasi_baru/${kode}`);
+    });
+});
+
+function loadRekomendasi(url) {
+    fetch(url)
+        .then(res => {
+            console.log("Status response:", res.status);
+            return res.json();
+        })
+        .then(data => {
+            console.log("Data diterima:", data);
+
+            const container = document.getElementById("barangSerupaContainer");
+            container.innerHTML = "";
+
+            if (!data || data.length === 0) {
+                container.innerHTML = `<p class="text-muted">Tidak ada rekomendasi ditemukan.</p>`;
+                return;
+            }
+
+            data.forEach(item => {
+                const card = `
+                    <div class="col-md-4">
+                        <div class="card rekom-card shadow-sm">
+                            <img src="${item.gambar_barang_url}" class="rekom-foto" alt="">
+                            <div class="p-3">
+                                <h6 class="fw-bold">${item.nama_barang}</h6>
+                                <p class="mb-1"><b>Kategori:</b> ${item.kategori}</p>
+                                <p class="mb-1"><b>Lokasi:</b> ${item.lokasi}</p>
+                                <p><b>Tanggal:</b> ${item.tanggal_lapor}</p>
+                                <a href="/detail-barang/${item.kode_barang}" class="btn btn-primary btn-sm w-100 mt-2">Lihat Detail</a>
+                            </div>
+                        </div>
+                    </div>`;
+                container.innerHTML += card;
+            });
+        })
+        .catch(err => console.error("Fetch error:", err));
+}
+</script>
+
 </body>
 </html>

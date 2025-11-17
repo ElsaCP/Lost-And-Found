@@ -126,3 +126,4 @@ def get_laporan_by_email(email):
     db.close()
 
     return hasil
+
