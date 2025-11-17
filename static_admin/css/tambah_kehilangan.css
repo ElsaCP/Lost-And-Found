@@ -205,6 +205,24 @@ body {
   color: #004b8d;
 }
 
+/* Row lokasi bersampingan */
+.lokasi-row {
+  display: flex;
+  gap: 20px;           /* jarak antara Terminal & Tempat */
+  width: 100%;
+}
+
+/* Kedua kolom sama besar */
+.lokasi-col {
+  flex: 1;             /* bagi rata */
+}
+
+/* Select biar full width */
+.lokasi-col .form-select,
+#lokasi_lain {
+  width: 100%;
+}
+
 /* RESPONSIF */
 @media (max-width: 768px) {
   .container.tambah-kehilangan {

@@ -1,118 +1,116 @@
+/* ===== SIDEBAR SUBMENU ===== */
 .submenu {
-  margin-left: 30px;
+  margin-left: 20px;
   display: flex;
   flex-direction: column;
+  gap: 5px;
 }
 
 .submenu a {
-  font-size: 0.9rem;
-  color: #ddd;
-  padding: 6px 0;
-  text-decoration: none;
+  font-size: 16px;
 }
 
 .submenu a.active {
-  color: #fff;
-  font-weight: bold;
+  background-color: #fff;
+  color: #0056a6;
 }
 
-.back-btn {
-  margin-top: 20px;
-}
-
-.back-btn a {
-  text-decoration: none;
-  font-size: 18px;
-  color: #000;
-}
-
-.back-btn a:hover {
-  text-decoration: underline;
-}
-
-/* TOMBOL AKSI */
-.aksi button {
-  background: none;
-  border: none;
+/* ===== TOMBOL AKSI ===== */
+.aksi button,
+.aksi a {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
   cursor: pointer;
-  margin-right: 8px;
   font-size: 18px;
-  transition: 0.2s;
+  margin: 0 5px;
+  transition: transform 0.2s;
 }
 
-.aksi button:hover {
+.aksi button:hover,
+.aksi a:hover {
   transform: scale(1.1);
 }
 
-.btn-detail i { color: #007bff; }
+.btn-view i { color: #007bff; }
 .btn-edit i { color: #ffc107; }
 .btn-delete i { color: #dc3545; }
 .btn-verify i { color: #2ecc71; }
+.btn-archive i { color: #0056a6; }
 
-/* ==== SAMAKAN TAMPILAN LOGOUT DENGAN BERANDA (tetap pertahankan posisi) ==== */
-/* Letakkan ini di akhir daftar_penemuan.css agar mengoverride gaya visual,
-   tetapi TIDAK mengubah posisi (position/bottom/left tetap dari file daftar_penemuan.css). */
-
-.sidebar .logout,
-.sidebar a.logout {
-  /* jangan set position/bottom/left di sini — biarkan aturan posisi dari daftar_penemuan.css */
-  background: #004a93;            /* warna kotak seperti beranda.css */
-  color: #fff !important;         /* teks putih */
-  padding: 12px 15px;             /* ukuran kotak sama */
-  border-radius: 10px;            /* sudut bulat */
-  font-size: 16px;
+/* ===== HEADER ===== */
+.header {
+  background-color: #0056a6;
+  height: 70px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  text-decoration: none;
-  transition: background 0.25s ease, transform 0.12s ease;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.12); /* sedikit bayangan agar terasa 'kotak' */
+  justify-content: space-between;
+  padding: 0px;
 }
 
-/* hover — samakan juga dengan beranda.css */
-.sidebar .logout:hover,
-.sidebar a.logout:hover {
-  background: #003c7a;
-  transform: translateY(-1px);
-  text-decoration: none;
+.header .logo-wrapper .rectangle-bg {
+  height: 60px;
+}
+
+.header .logo-wrapper .logo-front {
+  height: 50px;
+  width: auto;
+}
+
+/* ===== TABEL ===== */
+#dataTable {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 12px;
+  overflow: hidden;
+  table-layout: fixed;
+  text-align: center;
+}
+
+#dataTable thead th {
+  background: #9fcaed;
+  font-weight: 600;
+  padding: 12px 10px;
+}
+
+#dataTable tbody td {
+  font-size: 15px;
+  padding: 12px 10px;
+  vertical-align: middle;
+  word-wrap: break-word;
+}
+
+#dataTable tbody tr:hover {
+  background-color: #f2f2f2;
+}
+
+/* Lebar kolom agar sama dengan Kehilangan */
+#dataTable thead th:nth-child(1) { width: 18%; }  /* Kode Penemuan */
+#dataTable thead th:nth-child(2) { width: 26%; }  /* Nama Barang */
+#dataTable thead th:nth-child(3) { width: 20%; }  /* Jenis Laporan */
+#dataTable thead th:nth-child(4) { width: 18%; }  /* Status */
+#dataTable thead th:nth-child(5) { width: 18%; }  /* Aksi */
+
+/* Select status rata tengah */
+#dataTable select {
+  text-align: center;
 }
 
 
-.sidebar a.logout {
-  font-size: 16px;       /* ukuran teks */
-  gap: 8px;              /* jarak antara ikon dan teks */
-  display: flex;
-  align-items: center;
+.aksi {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;        /* |⬅ lebih rapat */
+    padding: 0;
+    height: 100%;
 }
 
-.sidebar .logout i,
-.sidebar a.logout i {
-  font-size: 18px;       /* samakan ukuran ikon, bisa ubah ke 18px atau 22px jika perlu */
-  line-height: 1;        /* supaya sejajar vertikal */
-}
-
-/* ==== Naikkan posisi logout tanpa ubah ukuran kotak ==== */
-.sidebar {
-  position: relative; /* pastikan sidebar jadi patokan posisi */
-}
-
-.sidebar .logout {
-  position: absolute;
-  bottom: 7px; /* atur tinggi ke atas, misal 80–120px tergantung kebutuhan */
-  left: 16px;
-  width: 84%; /* biar ukuran kotaknya tetap lebar seperti sebelumnya */
-  padding: 12px 15px; /* jaga tinggi kotak tetap */
-  box-sizing: border-box;
-}
-
-/* ===== Tombol Arsip Tambahan ===== */
-.btn-archive i {
-  color: #0056a6; /* biru bandara */
-  margin-left: 8px; /* beri jarak dari tombol sebelumnya */
-  transition: color 0.2s, transform 0.2s;
-}
-
-.btn-archive:hover i {
-  color: #003c7a;
-  transform: scale(1.1);
+.aksi a,
+.aksi button {
+    padding: 0 !important;
+    margin: 0 !important;
+    text-decoration: none !important;
+    line-height: 1;
 }
