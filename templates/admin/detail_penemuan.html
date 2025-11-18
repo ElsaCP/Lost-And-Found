@@ -76,20 +76,21 @@
       </div>
 
       <!-- DATA BARANG -->
-      <div class="data-section">
-        <h3>Data Barang</h3>
-        <div class="data-row"><span>Nama Barang :</span><strong>{{ laporan.nama_barang }}</strong></div>
-        <div class="data-row"><span>Kategori :</span><strong>{{ laporan.kategori }}</strong></div>
-        <div class="data-row"><span>Jenis Laporan :</span><strong>Penemuan</strong></div>
-        <div class="data-row"><span>Lokasi :</span><strong>{{ laporan.lokasi }}</strong></div>
-        <div class="data-row"><span>Deskripsi :</span><strong>{{ laporan.deskripsi }}</strong></div>
-      </div>
+    <div class="data-section">
+      <h3>Data Barang</h3>
+      <div class="data-row"><span>Nama Barang :</span><strong>{{ laporan.nama_barang }}</strong></div>
+      <div class="data-row"><span>Kategori :</span><strong>{{ laporan.kategori }}</strong></div>
+      <div class="data-row"><span>Jenis Barang :</span><strong>{{ laporan.jenis_barang }}</strong></div>   <!-- BARU -->
+      <div class="data-row"><span>Jenis Laporan :</span><strong>Penemuan</strong></div>
+      <div class="data-row"><span>Lokasi :</span><strong>{{ laporan.lokasi }}</strong></div>
+      <div class="data-row"><span>Deskripsi :</span><strong>{{ laporan.deskripsi }}</strong></div>
+    </div>
 
       <!-- WAKTU & STATUS -->
       <div class="data-section">
         <h3>Waktu & Status</h3>
-        <div class="data-row"><span>Tanggal Lapor :</span><strong>{{ laporan.tanggal_lapor }}</strong></div>
-        <div class="data-row"><span>Update Terakhir :</span><strong id="updateTerakhir">{{ laporan.update_terakhir }}</strong></div>
+        <div class="data-row"><span>Tanggal Penemuan :</span><strong>{{ laporan.tanggal_lapor }}</strong></div>
+        <div class="data-row"><span>Update Terakhir :</span><strong id="updateTerakhir">{{ laporan.update_terakhir.strftime('%Y-%m-%d %H:%M') if laporan.update_terakhir else '-' }}</strong></div>
 
         <div class="data-row">
           <span>Status :</span>

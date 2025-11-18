@@ -79,7 +79,7 @@
 
   <tbody>
     {% for barang in penemuan_list %}
-    <tr>
+    <tr data-kode="{{ barang.kode_barang }}">
       <td>{{ barang.kode_barang }}</td>
       <td>{{ barang.nama_barang }}</td>
       <td>{{ barang.jenis_laporan }}</td>

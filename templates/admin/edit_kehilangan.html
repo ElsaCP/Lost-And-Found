@@ -6,6 +6,7 @@
   <title>Edit Laporan Kehilangan</title>
 
   <link rel="stylesheet" href="{{ url_for('admin_bp.static', filename='css/beranda.css') }}">
+  <link rel="stylesheet" href="{{ url_for('admin_bp.static', filename='css/daftar_kehilangan.css') }}">
   <link rel="stylesheet" href="{{ url_for('admin_bp.static', filename='css/detail_kehilangan.css') }}">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
@@ -19,20 +20,19 @@
         <img src="{{ url_for('admin_bp.static', filename='image/rectangle.png')}}" class="rectangle-bg">
         <img src="{{ url_for('admin_bp.static', filename='image/logo.png')}}" class="logo-front">
       </div>
-
-      <nav>
-        <a href="{{ url_for('admin_bp.beranda_admin') }}"><i class="bi bi-speedometer2"></i> Beranda</a>
-        <a href="#" class="active"><i class="bi bi-question-circle"></i> Kehilangan</a>
-        <div class="submenu">
-          <a href="{{ url_for('admin_bp.daftar_kehilangan') }}"><i class="bi bi-list-ul"></i> Daftar Barang</a>
-          <a href="{{ url_for('admin_bp.tambah_kehilangan') }}"><i class="bi bi-plus-circle"></i> Tambah</a>
-        </div>
-        <a href="{{ url_for('admin_bp.daftar_penemuan') }}"><i class="bi bi-archive"></i> Penemuan</a>
-        <a href="{{ url_for('admin_bp.arsip') }}"><i class="bi bi-folder"></i> Arsip</a>
-        <a href="{{ url_for('admin_bp.pengaturan') }}"><i class="bi bi-gear"></i> Pengaturan</a>
-      </nav>
-    </div>
-
+    <nav>
+      <a href="{{ url_for('admin_bp.beranda_admin') }}"><i class="bi bi-speedometer2"></i> Beranda</a>
+      <a href="#" class="active"><i class="bi bi-question-circle"></i> Kehilangan</a>
+      <div class="submenu">
+        <a href="{{ url_for('admin_bp.daftar_kehilangan') }}" class="active"><i class="bi bi-list-ul"></i> Daftar Barang</a>
+        <a href="{{ url_for('admin_bp.tambah_kehilangan') }}"><i class="bi bi-plus-circle"></i> Tambah</a>
+      </div>
+      <a href="{{ url_for('admin_bp.daftar_penemuan') }}"><i class="bi bi-archive"></i> Penemuan</a>
+      <a href="{{ url_for('admin_bp.arsip') }}"><i class="bi bi-folder"></i> Arsip</a>
+      <a href="{{ url_for('admin_bp.pengaturan') }}"><i class="bi bi-gear"></i> Pengaturan</a>
+    </nav>
+  </div>
+  
     <a href="{{ url_for('admin_bp.logout_admin') }}" class="logout">
       <i class="bi bi-box-arrow-right"></i> Logout
     </a>

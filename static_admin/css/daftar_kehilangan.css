@@ -1,136 +1,135 @@
-.sidebar .logo-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;       
-  justify-content: center;   
-  width: 178px;
-  height: 59px;           
-  margin: 0 auto;           
-}
-.sidebar .logo-wrapper .rectangle-bg {
-  width: 180px;
-  height: 58px;              
-  display: block;
-}
-.sidebar .logo-wrapper .logo-front {
-  position: absolute;
-  top: 52%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 100px;
-  height: auto;
-  z-index: 2;
-}
-
-.header {
-  background-color: #0056a6; 
-  height: 70px; 
-  display: flex;
-  align-items: center; 
-  justify-content: space-between; 
-  padding: 0px; 
-}
-
-.header .logo-wrapper .rectangle-bg {
-  height: 60px;
-}
-.header .logo-wrapper .logo-front {
-  height: 50px;
-}
-
-.header .logo-wrapper .logo-front {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  height: 50px;
-  width: auto;
-  z-index: 2;
-}
-
+/* ===== SIDEBAR SUBMENU ===== */
 .submenu {
   margin-left: 20px;
   display: flex;
   flex-direction: column;
   gap: 5px;
 }
+
 .submenu a {
   font-size: 16px;
 }
+
 .submenu a.active {
   background-color: #fff;
   color: #0056a6;
 }
 
+/* ===== HEADER ===== */
+.header {
+  background-color: #0056a6;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0px;
+}
+
+.header .logo-wrapper .rectangle-bg {
+  height: 60px;
+}
+
+.header .logo-wrapper .logo-front {
+  height: 50px;
+  width: auto;
+}
+
+/* ===== TABEL ===== */
 #dataTable {
+  width: 100%;
+  border-collapse: collapse;
   border-radius: 12px;
   overflow: hidden;
+  table-layout: fixed;
+  text-align: center;
 }
 
 #dataTable thead th {
   background: #9fcaed;
   font-weight: 600;
+  padding: 12px 10px;
 }
 
 #dataTable tbody td {
   font-size: 15px;
+  padding: 12px 10px;
+  vertical-align: middle;
+  word-wrap: break-word;
 }
 
-/* Tombol aksi */
+#dataTable tbody tr:hover {
+  background-color: #f2f2f2;
+}
+
+/* Lebar kolom agar sesuai isi */
+#dataTable thead th:nth-child(1) { width: 18%; }  /* Kode Kehilangan */
+#dataTable thead th:nth-child(2) { width: 24%; }  /* Nama Barang */
+#dataTable thead th:nth-child(3) { width: 20%; }  /* Jenis Laporan */
+#dataTable thead th:nth-child(4) { width: 22%; }  /* Status diperlebar */
+#dataTable thead th:nth-child(5) { width: 16%; }  /* Aksi */
+
+/* Select status tetap pakai garis kotak browser */
+#dataTable select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 4px 6px;
+  text-align: center;
+  font-size: 15px;
+  /* border default browser tetap ada */
+  background-color: #fff;
+  border-radius: 4px; /* opsional, biar sudut sedikit membulat */
+}
+
+/* ===== TOMBOL AKSI ===== */
+.aksi {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  height: 100%;
+}
+
+.aksi a,
 .aksi button {
-  border: none;
-  background: none;
-  cursor: pointer;
+  padding: 0 !important;
+  margin: 0 !important;
+  text-decoration: none !important;
+  line-height: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   font-size: 18px;
+  cursor: pointer;
   transition: transform 0.2s;
-}
-
-.aksi button:hover {
-  transform: scale(1.1);
-}
-
-.btn-view i { color: #007bff; }
-.btn-edit i { color: #ff9800; }
-.btn-delete i { color: #e53935; }
-.btn-verify i { color: #2ecc71; }
-
-.btn-view, .btn-edit, .btn-delete, .btn-approve, .btn-folder {
-  text-decoration: none !important;
-}
-
-.btn-view i, .btn-edit i, .btn-delete i, .btn-approve i, .btn-folder i {
-  text-decoration: none !important;
-}
-.aksi button,
-.aksi a {
-    background: transparent !important;
-    border: none !important;
-    outline: none !important;
-    box-shadow: none !important;
-}
-
-.aksi button i,
-.aksi a i {
-    background: transparent !important;
-    border: none !important;
-    outline: none !important;
-    box-shadow: none !important;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 .aksi button:hover,
 .aksi a:hover {
-    background: transparent !important;
-}
-.aksi .btn {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-}
-.aksi *:focus-visible {
-    outline: none !important;
-    box-shadow: none !important;
+  transform: scale(1.1);
 }
 
-.aksi a {
-    text-decoration: none !important;
+/* Ikon tombol turun sedikit supaya vertikal center */
+.aksi button i,
+.aksi a i {
+  display: inline-block;
+  transform: translateY(6px);
+}
+
+/* Warna ikon tombol */
+.btn-view i { color: #007bff; }
+.btn-edit i { color: #ffc107; }
+.btn-delete i { color: #dc3545; }
+.btn-verify i { color: #2ecc71; }
+.btn-archive i { color: #0056a6; }
+
+/* Hilangkan border sel di kolom aksi & padding */
+#dataTable tbody td.aksi {
+  border: none;
+  padding: 8px 0;
+  vertical-align: middle;
 }

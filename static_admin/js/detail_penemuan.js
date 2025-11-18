@@ -1,22 +1,21 @@
 document.addEventListener("DOMContentLoaded", () => {
   const urlParams = new URLSearchParams(window.location.search);
-  const kode = urlParams.get("kode");
+  const kode_barang = urlParams.get("kode");
   const from = urlParams.get("from") || "daftar_penemuan";
 
-  // =====================
-  //  BUTTON UPDATE STATUS
-  // =====================
   const btnUpdate = document.getElementById("btnUpdate");
   if (btnUpdate) {
     btnUpdate.addEventListener("click", async () => {
       const newStatus = document.getElementById("status").value;
+      if (!newStatus)
+        return Swal.fire("Peringatan!", "Pilih status dulu.", "warning");
 
       try {
         const response = await fetch(`/admin/api/penemuan/update_status`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            kode: kode,
+            kode: kode_barang,  
             status: newStatus
           })
         });
@@ -31,28 +30,24 @@ document.addEventListener("DOMContentLoaded", () => {
             timer: 1500,
             showConfirmButton: false
           }).then(() => {
-            window.location.href = "/admin/penemuan/daftar";   // <-- FIXED
+            window.location.href = "/admin/penemuan/daftar";
           });
-
         } else {
-          Swal.fire("Gagal!", "Tidak dapat memperbarui status.", "error");
+          Swal.fire("Gagal!", result.message || "Tidak dapat memperbarui status.", "error");
         }
 
       } catch (error) {
-        console.error(error);
+        console.error("JS Error:", error);
         Swal.fire("Error!", "Terjadi kesalahan pada server.", "error");
       }
     });
   }
-
-  // =====================
-  //  TOMBOL KEMBALI
-  // =====================
+  
   const btnKembali = document.getElementById("btnKembali");
   if (btnKembali) {
     btnKembali.addEventListener("click", () => {
       if (from === "daftar_penemuan") {
-        window.location.href = "/admin/penemuan/daftar";   // <-- FIXED
+        window.location.href = "/admin/penemuan/daftar";
       } else if (from === "beranda") {
         window.location.href = "/admin/beranda_admin";
       } else {

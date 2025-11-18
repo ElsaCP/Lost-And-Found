@@ -560,6 +560,50 @@ def detail_penemuan():
 
     return render_template('detail_penemuan.html', laporan=laporan, role=session.get('role'))
 
+@admin_bp.route('/api/penemuan/update_status', methods=['POST'])
+def update_status_penemuan():
+    if not session.get('admin_logged_in'):
+        return jsonify({"success": False, "message": "Unauthorized"}), 401
+
+    data = request.get_json()
+    kode = data.get('kode')   # FIX DI SINI
+    status_baru = data.get('status')
+
+    if not kode or not status_baru:
+        return jsonify({"success": False, "message": "Kode atau status tidak ada"}), 400
+
+    try:
+        print("📌 Debug Input → Kode:", kode, "| Status baru:", status_baru)
+
+        conn = get_db_connection()
+        cursor = conn.cursor(buffered=True)
+
+        update_terakhir = datetime.now().strftime("%Y-%m-%d %H:%M")
+
+        query = """
+            UPDATE penemuan
+            SET status = %s,
+                update_terakhir = %s
+            WHERE kode_barang = %s
+        """
+        cursor.execute(query, (status_baru, update_terakhir, kode))
+        conn.commit()
+
+        print("🔍 Rows affected:", cursor.rowcount)
+
+        if cursor.rowcount == 0:
+            return jsonify({"success": False, "message": "Kode tidak ditemukan"}), 404
+
+        return jsonify({"success": True})
+
+    except Exception as e:
+        print("❌ Error update_status_penemuan:", str(e))
+        return jsonify({"success": False, "message": str(e)}), 500
+
+    finally:
+        cursor.close()
+        conn.close()
+
 # ================== EDIT PENEMUAN ====================
 @admin_bp.route('/penemuan/edit', methods=['GET', 'POST'])
 def edit_penemuan():
@@ -570,15 +614,22 @@ def edit_penemuan():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
+    # ========== GET (TAMPILKAN FORM EDIT) ==========
     if request.method == 'GET':
         cursor.execute("SELECT * FROM penemuan WHERE kode_barang=%s", (kode,))
         laporan = cursor.fetchone()
         conn.close()
+
         if not laporan:
             return "Data tidak ditemukan", 404
-        return render_template('edit_penemuan.html', laporan=laporan, role=session.get('role'))
 
-    # POST
+        return render_template(
+            'edit_penemuan.html',
+            laporan=laporan,
+            role=session.get('role')
+        )
+
+    # ========== POST (UPDATE DATA) ==========
     nama_pelapor = request.form['nama_pelapor']
     no_telp = request.form['no_telp']
     email = request.form['email']
@@ -587,20 +638,26 @@ def edit_penemuan():
     lokasi = request.form['lokasi']
     deskripsi = request.form['deskripsi']
     status = request.form['status']
+
+    # ⭐ Tambahan field baru
+    jenis_barang = request.form['jenis_barang']
+
     update_terakhir = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     cursor.execute("""
         UPDATE penemuan
         SET nama_pelapor=%s, no_telp=%s, email=%s,
             nama_barang=%s, kategori=%s, lokasi=%s,
-            deskripsi=%s, status=%s, update_terakhir=%s
+            deskripsi=%s, status=%s, jenis_barang=%s,
+            update_terakhir=%s
         WHERE kode_barang=%s
     """, (
         nama_pelapor, no_telp, email,
         nama_barang, kategori, lokasi,
-        deskripsi, status, update_terakhir,
-        kode
+        deskripsi, status, jenis_barang,
+        update_terakhir, kode
     ))
+
     conn.commit()
     conn.close()
 

@@ -7,117 +7,200 @@
 
   <link rel="stylesheet" href="{{ url_for('admin_bp.static', filename='css/beranda.css') }}">
   <link rel="stylesheet" href="{{ url_for('admin_bp.static', filename='css/daftar_penemuan.css') }}">
-  <link rel="stylesheet" href="{{ url_for('admin_bp.static', filename='css/detail_penemuan.css') }}">
+  <link rel="stylesheet" href="{{ url_for('admin_bp.static', filename='css/detail_kehilangan.css') }}">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </head>
 
 <body>
-
-  <!-- ===== CONTENT ===== -->
-  <div class="content">
-    <div class="header">
-      <h2>Edit Laporan Penemuan</h2>
+<div class="sidebar">
+  <div>
+    <div class="logo-wrapper">
+      <img src="{{ url_for('admin_bp.static', filename='image/rectangle.png')}}" class="rectangle-bg">
+      <img src="{{ url_for('admin_bp.static', filename='image/logo.png')}}" class="logo-front">
     </div>
 
-    <div class="detail-container">
-      <div class="left-panel">
-        <img id="fotoBarang" class="foto-barang"
-             src="{{ laporan.gambar_barang or '/static/img/no-image.png' }}"
-             alt="Foto Barang">
-
-        <div id="kodeLaporan" class="kode-laporan">{{ laporan.kode_barang }}</div>
+    <nav>
+      <a href="{{ url_for('admin_bp.beranda_admin') }}"><i class="bi bi-speedometer2"></i> Beranda</a>
+      <a href="{{ url_for('admin_bp.daftar_kehilangan') }}"><i class="bi bi-question-circle"></i> Kehilangan</a>
+      <a href="{{ url_for('admin_bp.daftar_penemuan') }}" class="active"><i class="bi bi-archive"></i> Penemuan</a>
+      <div class="submenu">
+        <a href="{{ url_for('admin_bp.daftar_penemuan') }}" class="active"><i class="bi bi-list-ul"></i> Daftar Barang</a>
+        <a href="{{ url_for('admin_bp.tambah_penemuan') }}"><i class="bi bi-plus-circle"></i> Tambah</a>
+        <a href="{{ url_for('admin_bp.klaim_penemuan') }}"><i class="bi bi-hand-thumbs-up"></i> Klaim Barang</a>
       </div>
+      <a href="{{ url_for('admin_bp.arsip') }}"><i class="bi bi-folder"></i> Arsip</a>
+      <a href="{{ url_for('admin_bp.pengaturan') }}"><i class="bi bi-gear"></i> Pengaturan</a>
+    </nav>
+  </div>
 
-      <div class="right-panel">
+  <a href="{{ url_for('admin_bp.logout_admin') }}" class="logout">
+    <i class="bi bi-box-arrow-right"></i> Logout
+  </a>
+</div>
 
-        <!-- FORM EDIT -->
-        <form method="POST" action="/admin/penemuan/edit?kode={{ laporan.kode_barang }}">
-
-          <div class="data-section">
-            <h3>Data Pelapor</h3>
-
-            <div class="data-row">
-              <span>Nama :</span>
-              <input name="nama_pelapor" type="text" value="{{ laporan.nama_pelapor }}">
-            </div>
-
-            <div class="data-row">
-              <span>No. Telp :</span>
-              <input name="no_telp" type="text" value="{{ laporan.no_telp }}">
-            </div>
-
-            <div class="data-row">
-              <span>Email :</span>
-              <input name="email" type="email" value="{{ laporan.email }}">
-            </div>
-          </div>
-
-          <div class="data-section">
-            <h3>Data Barang</h3>
-
-            <div class="data-row">
-              <span>Nama Barang :</span>
-              <input name="nama_barang" type="text" value="{{ laporan.nama_barang }}">
-            </div>
-
-            <div class="data-row">
-              <span>Jenis Laporan :</span>
-              <input type="text" value="Penemuan" readonly>
-            </div>
-
-            <div class="data-row">
-              <span>Kategori :</span>
-              <input name="kategori" type="text" value="{{ laporan.kategori }}">
-            </div>
-
-            <div class="data-row">
-              <span>Lokasi :</span>
-              <input name="lokasi" type="text" value="{{ laporan.lokasi }}">
-            </div>
-
-            <div class="data-row">
-              <span>Deskripsi :</span>
-              <textarea name="deskripsi" rows="2">{{ laporan.deskripsi }}</textarea>
-            </div>
-          </div>
-
-          <div class="data-section">
-            <div class="data-row">
-              <span>Tanggal Lapor :</span>
-              <input type="text" value="{{ laporan.tanggal_lapor }}" readonly>
-            </div>
-
-            <div class="data-row">
-              <span>Update Terakhir :</span>
-              <input id="updateTerakhir" type="text"
-                     name="update_terakhir"
-                     value="{{ laporan.update_terakhir }}">
-            </div>
-
-            <div class="data-row">
-              <span>Status :</span>
-              <select name="status" class="status-select">
-                <option value="Pending" {% if laporan.status == 'Pending' %}selected{% endif %}>Pending</option>
-                <option value="Diverifikasi" {% if laporan.status == 'Diverifikasi' %}selected{% endif %}>Diverifikasi</option>
-                <option value="Diklaim" {% if laporan.status == 'Diklaim' %}selected{% endif %}>Diklaim</option>
-                <option value="Selesai" {% if laporan.status == 'Selesai' %}selected{% endif %}>Selesai</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="button-group">
-            <button type="button" id="btnKembali" class="btn btn-secondary">Kembali</button>
-            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
-          </div>
-
-        </form>
-
-      </div>
+<!-- CONTENT -->
+<div class="content">
+  <div class="header">
+    <div class="logo-wrapper">
+      <img src="{{ url_for('admin_bp.static', filename='image/rectangle2.png')}}" class="rectangle-bg">
+      <img src="{{ url_for('admin_bp.static', filename='image/image5.png')}}" class="logo-front">
+    </div>
+    <h2>Edit Laporan Penemuan</h2>
+    <div class="profile-icon">
+      <i class="bi bi-person-circle"></i>
     </div>
   </div>
 
-  <script src="{{ url_for('admin_bp.static', filename='js/edit_penemuan.js') }}"></script>
+  <!-- pindahkan detail-container ke sini -->
+  <div class="detail-container">
+
+    <!-- LEFT -->
+    <div class="left-panel">
+      <img id="fotoBarang" class="foto-barang"
+           src="{{ laporan.gambar_barang or '/static/img/no-image.png' }}"
+           alt="Foto Barang">
+      <div id="kodeLaporan" class="kode-laporan">{{ laporan.kode_barang }}</div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="right-panel">
+
+      <form method="POST" action="/admin/penemuan/edit?kode={{ laporan.kode_barang }}">
+
+        <div class="data-section">
+          <h3>Data Pelapor</h3>
+
+          <div class="data-row">
+            <span>Nama :</span>
+            <input name="nama_pelapor" type="text" value="{{ laporan.nama_pelapor }}">
+          </div>
+
+          <div class="data-row">
+            <span>No. Telp :</span>
+            <input name="no_telp" type="text" value="{{ laporan.no_telp }}">
+          </div>
+
+          <div class="data-row">
+            <span>Email :</span>
+            <input name="email" type="email" value="{{ laporan.email }}">
+          </div>
+        </div>
+
+      <div class="data-section">
+        <h3>Data Barang</h3>
+
+        <div class="data-row">
+          <span>Nama Barang :</span>
+          <input name="nama_barang" type="text" value="{{ laporan.nama_barang }}">
+        </div>
+
+        <div class="data-row">
+          <span>Jenis Laporan :</span>
+          <input type="text" value="Penemuan" readonly>
+        </div>
+
+        <!-- === KATEGORI (Select seperti kehilangan) === -->
+        <div class="data-row">
+          <span>Kategori :</span>
+          <select name="kategori">
+            <option value="Elektronik" {% if laporan.kategori == 'Elektronik' %}selected{% endif %}>Elektronik</option>
+            <option value="Dompet" {% if laporan.kategori == 'Dompet' %}selected{% endif %}>Dompet</option>
+            <option value="Tas" {% if laporan.kategori == 'Tas' %}selected{% endif %}>Tas</option>
+            <option value="Kunci" {% if laporan.kategori == 'Kunci' %}selected{% endif %}>Kunci</option>
+            <option value="Pakaian & Aksesori" {% if laporan.kategori == 'Pakaian & Aksesori' %}selected{% endif %}>Pakaian & Aksesori</option>
+            <option value="Kendaraan & Aksesori Kendaraan" {% if laporan.kategori == 'Kendaraan & Aksesori Kendaraan' %}selected{% endif %}>Kendaraan & Aksesori Kendaraan</option>
+            <option value="Barang Lainnya" {% if laporan.kategori == 'Barang Lainnya' %}selected{% endif %}>Barang Lainnya</option>
+          </select>
+        </div>
+
+        <div class="data-row">
+            <span>Jenis Barang :</span>
+            <select id="jenis_barang" name="jenis_barang" class="input-data">
+                <option value="Publik" {% if laporan.jenis_barang == 'Publik' %}selected{% endif %}>Publik</option>
+                <option value="Privat" {% if laporan.jenis_barang == 'Privat' %}selected{% endif %}>Privat</option>
+            </select>
+        </div>
+
+        <div class="data-row">
+          <span>Lokasi Penemuan</span>
+        </div>
+
+        <div class="form-row">
+          <label for="terminal">Terminal :</label>
+          <select id="terminal" name="terminal" class="form-select" required>
+            <option value="">Pilih Terminal</option>
+            <option value="Terminal 1" {% if laporan.terminal == "Terminal 1" %}selected{% endif %}>Terminal 1</option>
+            <option value="Terminal 2" {% if laporan.terminal == "Terminal 2" %}selected{% endif %}>Terminal 2</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <label for="tempat">Tempat :</label>
+          <select id="tempat" name="tempat" class="form-select" required>
+            {% for t in tempat_list %}
+              <option value="{{ t }}" {% if laporan.tempat == t %}selected{% endif %}>{{ t }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div id="lokasiLainContainer" style="display:none;">
+          <label for="lokasi_lain">Tulis Lokasi Lainnya :</label>
+          <input
+            type="text"
+            id="lokasi_lain"
+            name="lokasi_lain"
+            placeholder="Contoh: Toilet dekat Gate C"
+            value="{{ laporan.lokasi_lain or '' }}">
+        </div>
+
+        <!-- Lokasi final -->
+        <input type="hidden" id="lokasi" name="lokasi" value="{{ laporan.lokasi }}">
+
+        <div class="data-row">
+          <span>Deskripsi :</span>
+          <textarea name="deskripsi" rows="2">{{ laporan.deskripsi }}</textarea>
+        </div>
+      </div>
+
+        <div class="data-section">
+          <div class="data-row">
+            <span>Tanggal Penemuan :</span>
+            <input type="text" value="{{ laporan.tanggal_lapor }}" readonly>
+          </div>
+
+          <div class="data-row">
+            <span>Update Terakhir :</span>
+            <input id="updateTerakhir" type="text"
+                   name="update_terakhir"
+                   value="{{ laporan.update_terakhir }}">
+          </div>
+          <div class="data-row">
+            <span>Status :</span>
+            <select id="status" name="status" class="status-select">
+              <option value="Pending" {% if laporan.status == 'Pending' %}selected{% endif %}>Pending</option>
+              <option value="Verifikasi" {% if laporan.status == 'Verifikasi' %}selected{% endif %}>Verifikasi</option>
+              <option value="Selesai" {% if laporan.status == 'Selesai' %}selected{% endif %}>Selesai</option>
+            </select>
+          </div>
+
+        <div class="button-group">
+        <button type="button"
+                id="btnKembali"
+                data-url="{{ url_for('admin_bp.daftar_penemuan') }}"
+                class="btn btn-secondary">
+            Kembali
+        </button>
+          <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+</div>
+
+<script src="{{ url_for('admin_bp.static', filename='js/edit_penemuan.js') }}"></script>
 </body>
 </html>

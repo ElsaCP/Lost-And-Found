@@ -56,63 +56,66 @@ document.addEventListener("DOMContentLoaded", () => {
   // =========================
   // VALIDASI WAJIB DIISI
   // =========================
-form.addEventListener("submit", function (e) {
-  e.preventDefault();
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
 
-  let errors = [];
+    let errors = [];
 
-  function cek(name, label) {
-    const el = form.querySelector(`[name="${name}"]`);
-    if (!el || !el.value.trim()) {
-      errors.push(label);
+    function cek(name, label) {
+      const el = form.querySelector(`[name="${name}"]`);
+      if (!el || !el.value.trim()) {
+        errors.push(label);
+      }
     }
-  }
 
-  // CEK FIELD WAJIB
-  cek("nama_pelapor", "Nama Pelapor");
-  cek("no_telp", "Nomor Telepon");
-  cek("email", "Email");
-  cek("asal_negara", "Asal Negara");
-  cek("kota", "Kota");
-  cek("nama_barang", "Nama Barang");
-  cek("kategori", "Kategori");
-  cek("tanggal_kehilangan", "Tanggal Kehilangan");
-  cek("deskripsi", "Deskripsi");
+    // CEK FIELD WAJIB
+    cek("nama_pelapor", "Nama Pelapor");
+    cek("no_telp", "Nomor Telepon");
+    cek("email", "Email");
+    cek("asal_negara", "Asal Negara");
+    cek("kota", "Kota");
+    cek("nama_barang", "Nama Barang");
+    cek("kategori", "Kategori");
+    cek("tanggal_kehilangan", "Tanggal Kehilangan");
+    cek("deskripsi", "Deskripsi");
 
-  // Lokasi khusus
-  if (!terminalSelect.value.trim()) errors.push("Terminal");
-  if (!tempatSelect.value.trim()) errors.push("Tempat");
+    // Lokasi khusus
+    if (!terminalSelect.value.trim()) errors.push("Terminal");
+    if (!tempatSelect.value.trim()) errors.push("Tempat");
 
-  // Jika memilih "Lainnya"
-  if (tempatSelect.value === "Lainnya" && !lokasiLain.value.trim()) {
-    errors.push("Lokasi Lainnya");
-  }
+    // Jika memilih "Lainnya"
+    if (tempatSelect.value === "Lainnya" && !lokasiLain.value.trim()) {
+      errors.push("Lokasi Lainnya");
+    }
 
-  // Foto barang
-  const foto = form.querySelector('[name="foto"]');
-  if (!foto.files.length) {
-    errors.push("Foto Barang");
-  }
+    // Foto barang
+    const foto = form.querySelector('[name="foto"]');
+    if (!foto.files.length) {
+      errors.push("Foto Barang");
+    }
 
-  // TAMPILKAN ERROR
-  if (errors.length > 0) {
+    // TAMPILKAN ERROR
+    if (errors.length > 0) {
+      Swal.fire({
+        icon: "warning",
+        title: "Form belum lengkap!",
+        html: "<b>Harap isi:</b><br>" + errors.join("<br>"),
+        confirmButtonText: "OK"
+      });
+      return;
+    }
+
+    // =========================
+    // SUBMIT LANGSUNG TANPA DETIK
+    // =========================
     Swal.fire({
-      icon: "warning",
-      title: "Form belum lengkap!",
-      html: "<b>Harap isi:</b><br>" + errors.join("<br>"),
-      confirmButtonText: "OK"
+      icon: "success",
+      title: "Menyimpan...",
+      showConfirmButton: false
     });
-    return;
-  }
 
-  // Jika sudah lengkap → submit
-  Swal.fire({
-    icon: "success",
-    title: "Menyimpan...",
-    timer: 800,
-    showConfirmButton: false
-  }).then(() => form.submit());
-});
+    form.submit();
+  });
 
   // =========================
   // BUTTON CANCEL
