@@ -1,5 +1,6 @@
 # models.py
 from config import get_db_connection
+from datetime import datetime
 
 def fetch_public_penemuan(q=None, kategori=None, dari=None, hingga=None, page=1, per_page=12):
     db = get_db_connection()
@@ -108,7 +109,24 @@ def insert_klaim_barang(data):
     db.commit()
     cursor.close()
     db.close()
-    
+
+def fetch_riwayat_klaim(email):
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    query = """
+        SELECT *
+        FROM klaim_barang
+        WHERE email = %s
+        ORDER BY id DESC
+    """
+    cursor.execute(query, (email,))
+    result = cursor.fetchall()
+
+    cursor.close()
+    db.close()
+    return result
+ 
 def get_laporan_by_email(email):
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
@@ -127,3 +145,19 @@ def get_laporan_by_email(email):
 
     return hasil
 
+def get_riwayat_klaim_by_email(email):
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    query = """
+        SELECT *
+        FROM klaim_barang
+        WHERE email = %s
+        ORDER BY id DESC
+    """
+    cursor.execute(query, (email,))
+    result = cursor.fetchall()
+
+    cursor.close()
+    db.close()
+    return result

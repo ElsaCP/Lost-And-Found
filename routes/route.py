@@ -3,7 +3,7 @@ from flask import Blueprint, request, jsonify, render_template,redirect, url_for
 from datetime import datetime
 from werkzeug.utils import secure_filename
 from models import fetch_public_penemuan, get_penemuan_by_kode, fetch_barang_publik_terbaru
-from models import get_laporan_by_email
+from models import get_laporan_by_email, get_riwayat_klaim_by_email
 from config import get_db_connection
 import os
 import mysql.connector
@@ -171,7 +171,89 @@ def submit_kehilangan():
 
 @main.route('/riwayat-klaim')
 def riwayat_klaim():
-    return render_template('user/riwayat_klaim.html', barang_id=id)
+    return render_template('user/riwayat_klaim.html')
+
+@main.route("/cek-riwayat", methods=["GET"])
+def cek_riwayat():
+    return render_template("user/cek_riwayat.html")
+
+
+@main.route("/api/cek-riwayat-klaim", methods=["POST"])
+def api_cek_riwayat_klaim():
+    data = request.get_json()
+    email = data.get("email")
+
+    if not email:
+        return jsonify({"status": "error", "message": "Email kosong"}), 400
+
+    from models import get_riwayat_klaim_by_email
+    riwayat = get_riwayat_klaim_by_email(email)
+
+    if not riwayat:
+        return jsonify({"status": "not_found"}), 200
+
+    return jsonify({
+        "status": "success",
+        "data": riwayat
+    }), 200
+
+@main.route("/hasil-riwayat-klaim", methods=["POST"])
+def hasil_riwayat_klaim():
+    email = request.form.get("email")
+
+    # Jika email tidak dikirim
+    if not email:
+        return render_template("user/hasil_riwayat_klaim.html",
+                               riwayat=None,
+                               email_error=True)
+
+    # Ambil data klaim dari database
+    from models import fetch_riwayat_klaim
+    riwayat = fetch_riwayat_klaim(email)
+
+    return render_template("user/hasil_riwayat_klaim.html",
+                           riwayat=riwayat,
+                           email_error=False,
+                           email=email)
+
+@main.route("/api/riwayat-klaim/<email>")
+def api_riwayat_klaim(email):
+    from models import get_riwayat_klaim_by_email
+
+    data = get_riwayat_klaim_by_email(email)
+
+    return jsonify(data)
+
+
+@main.route("/detail-klaim/<kode_laporan>")
+def detail_klaim(kode_laporan):
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT 
+            k.*, 
+            p.gambar_barang AS gambar_penemuan,
+            p.lokasi,
+            p.deskripsi
+        FROM klaim_barang k
+        LEFT JOIN penemuan p ON k.kode_barang = p.kode_barang
+        WHERE k.kode_laporan = %s
+    """, (kode_laporan,))
+
+    data = cursor.fetchone()
+    cursor.close()
+    db.close()
+
+    if not data:
+        return render_template("user/not_found.html"), 404
+
+    if data.get("foto_barang"):
+        data["foto_barang"] = f"/static/uploads/{data['foto_barang']}"
+    if data.get("gambar_penemuan"):
+        data["gambar_penemuan"] = f"/static/uploads/{data['gambar_penemuan']}"
+
+    return render_template("user/detail_riwayat_klaim.html", data=data)
 
 @main.route('/detail-barang/<kode>')
 def detail_barang(kode):
