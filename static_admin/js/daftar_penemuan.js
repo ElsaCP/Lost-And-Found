@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", function () {
     sel.dataset.prev = sel.value;
   });
 
+
   // =========================
   // FITUR UBAH STATUS
   // =========================
@@ -18,10 +19,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const prevStatus = select.dataset.prev;
 
     const row = select.closest("tr");
-    const kode = row.dataset.kode;     // <-- FIX PENTING
+    const kode = row.dataset.kode;
 
     if (!kode) {
-      console.error("❌ ERROR: data-kode tidak ditemukan pada <tr>.");
       Swal.fire("Error!", "Kode barang tidak ditemukan.", "error");
       select.value = prevStatus;
       return;
@@ -35,53 +35,43 @@ document.addEventListener("DOMContentLoaded", function () {
       confirmButtonText: "Ya",
       cancelButtonText: "Batal",
     }).then(result => {
-
-      // ==== JIKA BATAL ====
       if (!result.isConfirmed) {
         select.value = prevStatus;
         return;
       }
 
-      // ==== UPDATE KE SERVER ====
       fetch("/admin/api/penemuan/update_status", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ kode: kode, status: newStatus })
       })
-        .then(res => res.json())
-        .then(data => {
-
-          if (!data.success) {
-            Swal.fire("Gagal!", data.message || "Tidak dapat memperbarui status.", "error");
-            select.value = prevStatus;
-            return;
-          }
-
-          Swal.fire({
-            icon: "success",
-            title: "Status Diubah!",
-            timer: 1500,
-            showConfirmButton: false
-          });
-
-          // Simpan sebagai previous
-          select.dataset.prev = newStatus;
-
-          // Highlight baris
-          row.classList.add("status-updated");
-          setTimeout(() => row.classList.remove("status-updated"), 1000);
-        })
-        .catch(err => {
-          console.error(err);
-          Swal.fire("Error!", "Terjadi kesalahan server.", "error");
+      .then(res => res.json())
+      .then(data => {
+        if (!data.success) {
+          Swal.fire("Gagal!", data.message || "Tidak dapat memperbarui status.", "error");
           select.value = prevStatus;
+          return;
+        }
+
+        Swal.fire({
+          icon: "success",
+          title: "Status Diubah!",
+          timer: 1500,
+          showConfirmButton: false
         });
 
+        select.dataset.prev = newStatus;
+
+        row.classList.add("status-updated");
+        setTimeout(() => row.classList.remove("status-updated"), 800);
+      });
     });
   });
 
+
+
   // =========================
-  // FITUR BUTTON DETAIL/EDIT/DELETE/VERIFY/ARCHIVE
+  // FITUR DELETE / VERIFY / ARCHIVE
   // =========================
   document.addEventListener("click", function (e) {
     const btn = e.target.closest("button");
@@ -91,104 +81,102 @@ document.addEventListener("DOMContentLoaded", function () {
     const kode = row.dataset.kode;
 
     if (!kode) {
-      Swal.fire("Error!", "Kode barang tidak ditemukan.", "error");
+      Swal.fire("Error!", "Kode tidak ditemukan!", "error");
       return;
     }
 
-    // === DETAIL ===
-    if (btn.classList.contains("btn-detail")) {
-      window.location.href = `/admin/penemuan/detail?kode=${kode}`;
-    }
-
-    // === EDIT ===
-    else if (btn.classList.contains("btn-edit")) {
-      window.location.href = `/admin/penemuan/edit?kode=${kode}`;
-    }
-
     // === DELETE ===
-    else if (btn.classList.contains("btn-delete")) {
+    if (btn.classList.contains("btn-delete")) {
 
       Swal.fire({
-        title: "Hapus Data?",
-        text: `Data ${kode} akan dihapus permanen.`,
+        title: "Hapus Laporan?",
+        text: "Data yang dihapus tidak dapat dikembalikan.",
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "Hapus",
-        cancelButtonText: "Batal",
+        cancelButtonText: "Batal"
       }).then(result => {
+        if (!result.isConfirmed) return;
 
-        if (result.isConfirmed) {
+        fetch("/admin/penemuan/hapus", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ kode })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (!data.success) {
+            Swal.fire("Gagal!", data.message, "error");
+            return;
+          }
 
-          fetch("/admin/api/penemuan/delete", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ kode })
-          })
-            .then(res => res.json())
-            .then(data => {
+          Swal.fire({
+            icon: "success",
+            title: "Berhasil Dihapus!",
+            timer: 1500,
+            showConfirmButton: false
+          });
 
-              if (!data.success) {
-                Swal.fire("Error!", data.message, "error");
-                return;
-              }
-
-              Swal.fire({
-                icon: "success",
-                title: "Berhasil Dihapus!",
-                timer: 1500,
-                showConfirmButton: false
-              });
-
-              row.remove();
-            });
-        }
-
+          row.remove();
+        });
       });
+
+      return;
     }
 
-    // === VERIFY ===
-    else if (btn.classList.contains("btn-verify")) {
+
+// === VERIFIKASI ===
+if (btn.classList.contains("btn-verify")) {
+
+  const row = btn.closest("tr");
+  const kode = btn.dataset.kode;
+
+  Swal.fire({
+    title: "Verifikasi Barang?",
+    text: `Barang dengan kode ${kode} akan diverifikasi.`,
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonText: "Verifikasi",
+    cancelButtonText: "Batal",
+  }).then(result => {
+
+    if (!result.isConfirmed) return;
+
+    fetch("/admin/api/penemuan/verify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ kode })
+    })
+    .then(res => res.json())
+    .then(data => {
+
+      if (!data.success) {
+        Swal.fire("Error!", data.message, "error");
+        return;
+      }
 
       Swal.fire({
-        title: "Verifikasi Barang?",
-        text: `Barang dengan kode ${kode} akan diverifikasi.`,
-        icon: "question",
-        showCancelButton: true,
-        confirmButtonText: "Verifikasi",
-        cancelButtonText: "Batal",
-      }).then(result => {
-
-        if (result.isConfirmed) {
-
-          fetch("/admin/api/penemuan/verify", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ kode })
-          })
-            .then(res => res.json())
-            .then(data => {
-
-              if (!data.success) {
-                Swal.fire("Error!", data.message, "error");
-                return;
-              }
-
-              Swal.fire({
-                icon: "success",
-                title: "Berhasil Diverifikasi!",
-                timer: 1500,
-                showConfirmButton: false
-              });
-
-              row.classList.add("verified");
-            });
-        }
-
+        icon: "success",
+        title: "Berhasil Diverifikasi!",
+        timer: 1500,
+        showConfirmButton: false
       });
-    }
+
+      // === UBAH STATUS DI DROPDOWN ===
+      const select = row.querySelector(".status-select");
+      if (select) select.value = "Verifikasi";
+      // sesuaikan dengan opsi HTML
+
+      // === Tambahkan efek visual ===
+      row.classList.add("verified");
+    });
+  });
+
+  return;
+}
 
     // === ARCHIVE ===
-    else if (btn.classList.contains("btn-archive")) {
+    if (btn.classList.contains("btn-archive")) {
 
       Swal.fire({
         title: "Arsipkan Data?",
@@ -199,33 +187,33 @@ document.addEventListener("DOMContentLoaded", function () {
         cancelButtonText: "Batal",
       }).then(result => {
 
-        if (result.isConfirmed) {
+        if (!result.isConfirmed) return;
 
-          fetch("/admin/api/penemuan/archive", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ kode })
-          })
-            .then(res => res.json())
-            .then(data => {
+        fetch("/admin/api/penemuan/archive", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ kode })
+        })
+        .then(res => res.json())
+        .then(data => {
 
-              if (!data.success) {
-                Swal.fire("Error!", data.message, "error");
-                return;
-              }
+          if (!data.success) {
+            Swal.fire("Error!", data.message, "error");
+            return;
+          }
 
-              Swal.fire({
-                icon: "success",
-                title: "Diarsipkan!",
-                timer: 1500,
-                showConfirmButton: false
-              });
+          Swal.fire({
+            icon: "success",
+            title: "Diarsipkan!",
+            timer: 1500,
+            showConfirmButton: false
+          });
 
-              row.remove();
-            });
-        }
-
+          row.remove();
+        });
       });
+
+      return;
     }
 
   });
@@ -233,7 +221,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
   // =========================
-  // FITUR PENCARIAN
+  // FITUR SEARCH
   // =========================
   const searchInput = document.getElementById("searchInput");
   const rows = document.querySelectorAll("#dataTable tbody tr");
@@ -242,9 +230,7 @@ document.addEventListener("DOMContentLoaded", function () {
     searchInput.addEventListener("keyup", () => {
       const key = searchInput.value.toLowerCase();
       rows.forEach(row => {
-        row.style.display = row.textContent.toLowerCase().includes(key)
-          ? ""
-          : "none";
+        row.style.display = row.textContent.toLowerCase().includes(key) ? "" : "none";
       });
     });
   }

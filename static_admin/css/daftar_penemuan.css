@@ -120,3 +120,12 @@
     transform: translateY(6px);  /* geser ke bawah 3px, bisa disesuaikan */
 }
 
+.btn-warning {
+    background-color: #03bcff;
+    color: white;
+    border: none;
+}
+.btn-warning:hover {
+    background-color: #03bcff;
+}
+

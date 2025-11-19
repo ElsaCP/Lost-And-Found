@@ -55,12 +55,68 @@
       <div class="profile-icon"><i class="bi bi-person-circle"></i></div>
     </div>
 
-    <!-- DETAIL BARANG (KOSONG, ISI DARI JS) -->
-    <div class="detail-container">
-      <div class="left-column"></div>
-      <div class="right-column"></div>
+<!-- DETAIL BARANG -->
+<div class="detail-container">
+
+  <!-- KOLOM KIRI -->
+  <div class="left-column">
+
+    <div class="section">
+      <h3>Data Pelapor</h3>
+      <p><strong>Nama :</strong> <span id="namaPelapor"></span></p>
+      <p><strong>No. Telp :</strong> <span id="noTelp"></span></p>
+      <p><strong>Email :</strong> <span id="emailPelapor"></span></p>
     </div>
+
+    <div class="section">
+      <h3>Data Barang</h3>
+      <p><strong>Nama Barang :</strong> <span id="namaBarang"></span></p>
+      <p><strong>Jenis Laporan :</strong> <span id="jenisLaporan"></span></p>
+      <p><strong>Lokasi :</strong> <span id="lokasi"></span></p>
+      <p><strong>Deskripsi :</strong> <span id="deskripsi"></span></p>
+      <p><strong>Deskripsi Khusus :</strong> <span id="deskripsiKhusus"></span></p>
+    </div>
+
+    <div class="section">
+      <h3>Identitas Diri (KTP/Paspor/SIM)</h3>
+      <img id="imgIdentitas" class="gambar-detail" src="" alt="Identitas Diri">
+    </div>
+
+    <div class="section">
+      <h3>Bukti Laporan Kehilangan</h3>
+      <img id="imgBukti" class="gambar-detail" src="" alt="Bukti Laporan">
+    </div>
+
   </div>
+
+
+  <!-- KOLOM KANAN -->
+  <div class="right-column">
+
+    <div class="section">
+      <h3>Foto Barang Sebelum Hilang</h3>
+      <img id="imgSebelumHilang" class="gambar-detail" src="" alt="Foto Barang Sebelum Hilang">
+    </div>
+
+    <div class="section">
+      <p><strong>Tanggal Lapor :</strong> <span id="tanggalLapor"></span></p>
+      <p><strong>Update Terakhir :</strong> <span id="updateTerakhir"></span></p>
+      <p><strong>Status :</strong>
+        <span id="statusLaporan" class="status-badge"></span>
+      </p>
+
+      <p><strong>Catatan Admin :</strong></p>
+      <textarea id="catatanAdmin" class="catatan-admin" placeholder="Tambahkan catatan..."></textarea>
+    </div>
+
+    <div class="button-group">
+      <button id="btnKembali" class="btn btn-secondary">Kembali</button>
+      <button id="btnKlaim" class="btn btn-warning">Klaim Barang</button>
+      <button id="btnUpdate" class="btn btn-primary">Update Status</button>
+    </div>
+
+  </div>
+</div>
 
   <!-- SCRIPT -->
   <script src="detail_klaim_penemuan.js"></script>

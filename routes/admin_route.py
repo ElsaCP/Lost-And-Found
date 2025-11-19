@@ -493,16 +493,28 @@ def daftar_penemuan():
         role=session.get('role')
     )
 
-# ============ SATU ROUTE TAMBAH PENEMUAN ============
 @admin_bp.route('/penemuan/tambah', methods=['GET', 'POST'])
 def tambah_penemuan():
     if not session.get('admin_logged_in'):
         return redirect(url_for('admin_bp.login_admin'))
 
     if request.method == 'GET':
-        return render_template('tambah_penemuan.html', role=session.get('role'))
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT kode_barang FROM penemuan ORDER BY kode_barang DESC LIMIT 1")
+        last = cursor.fetchone()
+        conn.close()
 
-    # Ambil data dari form
+        if last:
+            last_num = int(last[0][-3:])
+            kode_baru = f"LF-L{last_num + 1:03d}"
+        else:
+            kode_baru = "LF-L001"
+
+        return render_template('tambah_penemuan.html', kode_baru=kode_baru)
+
+    # ===== POST METHOD =====
+    # Ambil data form
     nama_pelapor = request.form['nama_pelapor']
     no_telp = request.form['no_telp']
     email = request.form['email']
@@ -511,7 +523,13 @@ def tambah_penemuan():
     lokasi = request.form['lokasi']
     deskripsi = request.form['deskripsi']
     tanggal_lapor = request.form['tanggal_lapor']
-    jenis_barang = request.form['jenis_barang']
+
+    kode_barang = request.form['kode_barang']
+    jenis_laporan = request.form['jenis_laporan']   # Penemuan
+    status = request.form['status']                 # Pending
+
+    # Ambil jenis_barang (Publik/Privat)
+    jenis_barang = request.form.get('jenis_barang', "Publik")
 
     # Upload foto
     foto = request.files.get('foto')
@@ -525,17 +543,20 @@ def tambah_penemuan():
     # Simpan ke DB
     conn = get_db_connection()
     cursor = conn.cursor()
+
     cursor.execute("""
         INSERT INTO penemuan (
-            nama_pelapor, no_telp, email, nama_barang,
-            kategori, lokasi, deskripsi, tanggal_lapor,
-            jenis_barang, gambar_barang
-        ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+            kode_barang, nama_pelapor, no_telp, email, nama_barang,
+            kategori, jenis_laporan, lokasi, deskripsi, tanggal_lapor,
+            update_terakhir, status, gambar_barang, jenis_barang
+        )
+        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,NOW(),%s,%s,%s)
     """, (
-        nama_pelapor, no_telp, email, nama_barang,
-        kategori, lokasi, deskripsi, tanggal_lapor,
-        jenis_barang, foto_filename
+        kode_barang, nama_pelapor, no_telp, email, nama_barang,
+        kategori, jenis_laporan, lokasi, deskripsi, tanggal_lapor,
+        status, foto_filename, jenis_barang
     ))
+
     conn.commit()
     conn.close()
 
@@ -663,24 +684,148 @@ def edit_penemuan():
 
     return redirect(url_for('admin_bp.daftar_penemuan'))
 
-# ================== KLAIM PENEMUAN ===================
-@admin_bp.route('/penemuan/klaim')
-def klaim_penemuan():
+# ================== HAPUS PENEMUAN ===================
+@admin_bp.route('/penemuan/hapus', methods=['POST'])
+def hapus_penemuan():
     if not session.get('admin_logged_in'):
-        return redirect(url_for('admin_bp.login_admin'))
+        return jsonify({"success": False, "message": "Unauthorized"}), 401
 
+    data = request.get_json()
+    kode = data.get('kode')
+
+    if not kode:
+        return jsonify({"success": False, "message": "Kode tidak ditemukan"}), 400
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Hapus foto jika ada
+        cursor.execute("SELECT gambar_barang FROM penemuan WHERE kode_barang=%s", (kode,))
+        result = cursor.fetchone()
+        if result and result[0]:
+            foto_path = os.path.join('static_admin', 'upload', result[0])
+            if os.path.exists(foto_path):
+                os.remove(foto_path)
+
+        # Hapus dari database
+        cursor.execute("DELETE FROM penemuan WHERE kode_barang=%s", (kode,))
+        conn.commit()
+
+        if cursor.rowcount == 0:
+            return jsonify({"success": False, "message": "Kode tidak ditemukan"}), 404
+
+        return jsonify({"success": True})
+
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+    finally:
+        cursor.close()
+        conn.close()
+        
+@admin_bp.route("/api/penemuan/verify", methods=["POST"])
+def verify_barang():
+    try:
+        data = request.get_json()
+        kode = data.get("kode")
+
+        if not kode:
+            return jsonify({"success": False, "message": "Kode kosong"}), 400
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        query = """
+            UPDATE penemuan
+            SET status = 'Verifikasi',
+                update_terakhir = NOW()
+            WHERE kode_barang = %s
+        """
+        cursor.execute(query, (kode,))
+        conn.commit()
+
+        if cursor.rowcount == 0:
+            return jsonify({"success": False, "message": "Kode tidak ditemukan"}), 404
+
+        return jsonify({"success": True, "message": "Berhasil diverifikasi"})
+
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+    finally:
+        try:
+            cursor.close()
+            conn.close()
+        except:
+            pass
+  
+@admin_bp.route('/penemuan/klaim')
+def daftar_klaim_penemuan():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
+
     cursor.execute("""
-        SELECT kode_barang AS kode, nama_barang, status
-        FROM penemuan
-        WHERE status IN ('Pending', 'Verifikasi')
-        ORDER BY tanggal_lapor DESC
+        SELECT 
+            k.kode_klaim,
+            k.kode_barang,        -- ⭐ perlu untuk detail
+            k.nama_pelapor AS nama_pengklaim,
+            p.nama_barang,
+            k.status
+        FROM klaim_penemuan k
+        LEFT JOIN penemuan p ON k.kode_barang = p.kode_barang
+        ORDER BY k.id DESC
     """)
-    barang_klaim = cursor.fetchall()
+
+    data_klaim = cursor.fetchall()
+    cursor.close()
     conn.close()
 
-    return render_template('klaim_penemuan.html', barang_klaim=barang_klaim, role=session.get('role'))
+    return render_template("admin/klaim_penemuan.html", data_klaim=data_klaim)
+     
+@admin_bp.route('/penemuan/klaim/detail/<kode_barang>')
+def detail_klaim_penemuan(kode_barang):
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT 
+            k.kode_klaim,
+            k.kode_barang,
+            k.nama_pelapor,
+            k.no_telp,
+            k.email,
+            k.deskripsi,
+            k.identitas_gambar,
+            k.bukti_kehilangan,
+            k.foto_sebelum,
+            DATE_FORMAT(k.tanggal_lapor, '%Y-%m-%d %H:%i') AS tanggal_lapor,
+            DATE_FORMAT(k.update_terakhir, '%Y-%m-%d %H:%i') AS update_terakhir,
+            k.status,
+            k.admin_catatan,
+
+            p.nama_barang,
+            p.kategori,
+            p.jenis_laporan,
+            p.lokasi,
+            DATE_FORMAT(p.tanggal_ditemukan, '%Y-%m-%d %H:%i') AS tanggal_ditemukan,
+            p.foto AS foto_penemuan
+        FROM klaim_penemuan k
+        LEFT JOIN penemuan p ON k.kode_barang = p.kode_barang
+        WHERE k.kode_barang = %s
+        LIMIT 1
+    """, (kode_barang,))
+
+    klaim = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    if not klaim:
+        return "Data klaim tidak ditemukan", 404
+
+    return render_template("admin/detail_klaim_penemuan.html", klaim=klaim)
+
 
 # ======================
 # 📁 ARSIP & PENGATURAN

@@ -12,11 +12,12 @@
 </head>
 
 <body>
+  <!-- SIDEBAR -->
   <div class="sidebar">
     <div>
       <div class="logo-wrapper">
-        <img src="{{ url_for('admin_bp.static', filename='image/rectangle.png') }}" alt="Background Sidebar" class="rectangle-bg">
-        <img src="{{ url_for('admin_bp.static', filename='image/logo.png') }}" alt="Logo Bandara" class="logo-front">
+        <img src="{{ url_for('admin_bp.static', filename='image/rectangle.png') }}" class="rectangle-bg">
+        <img src="{{ url_for('admin_bp.static', filename='image/logo.png') }}" class="logo-front">
       </div>
 
       <nav>
@@ -29,6 +30,7 @@
         <a href="#" class="active">
           <i class="bi bi-archive"></i> Penemuan
         </a>
+
         <div class="submenu">
           <a href="{{ url_for('admin_bp.daftar_penemuan') }}">
             <i class="bi bi-list-ul"></i> Daftar Barang
@@ -36,10 +38,11 @@
           <a href="{{ url_for('admin_bp.tambah_penemuan') }}">
             <i class="bi bi-plus-circle"></i> Tambah
           </a>
-          <a href="{{ url_for('admin_bp.klaim_penemuan') }}" class="active">
+            <a href="{{ url_for('admin_bp.daftar_klaim_penemuan') }}" class="active">
             <i class="bi bi-hand-thumbs-up"></i> Klaim Barang
           </a>
         </div>
+
         <a href="{{ url_for('admin_bp.arsip') }}">
           <i class="bi bi-folder"></i> Arsip
         </a>
@@ -57,17 +60,21 @@
   <!-- HEADER -->
   <div class="header">
     <div class="logo-wrapper">
-      <img src="{{ url_for('admin_bp.static', filename='image/rectangle2.png') }}" alt="Rectangle Background" class="rectangle-bg">
-      <img src="{{ url_for('admin_bp.static', filename='image/image5.png') }}" alt="Logo Header" class="logo-front">
+      <img src="{{ url_for('admin_bp.static', filename='image/rectangle2.png') }}" class="rectangle-bg">
+      <img src="{{ url_for('admin_bp.static', filename='image/image5.png') }}" class="logo-front">
     </div>
+
     <h2>Penemuan - Klaim Barang</h2>
-    <div class="profile-icon"><i class="bi bi-person-circle"></i></div>
+
+    <div class="profile-icon">
+      <i class="bi bi-person-circle"></i>
+    </div>
   </div>
 
   <!-- MAIN CONTENT -->
   <div class="content">
     <div class="header-klaim">
-      <a href="{{ url_for('admin_bp.tambah_penemuan') }}" class="btn-tambah">
+      <a href="{{ url_for('admin_bp.tambah_klaim_penemuan') }}" class="btn-tambah">
         <i class="bi bi-plus-lg"></i> Tambah Klaim Barang
       </a>
     </div>
@@ -87,35 +94,27 @@
             <th>Aksi</th>
           </tr>
         </thead>
+
         <tbody>
+          {% for item in data_klaim %}
           <tr>
-            <td>LF-F001</td>
-            <td>Dompet Kulit Buaya</td>
-            <td>Angelina Werdita Leksono</td>
-            <td class="status pending">Pending</td>
+            <td>{{ item.kode_klaim }}</td>
+            <td>{{ item.nama_barang }}</td>
+            <td>{{ item.nama_pengklaim }}</td>
+
+            <td class="status {{ item.status|lower }}">
+              {{ item.status }}
+            </td>
+
             <td class="aksi">
-              <button class="btn-detail" data-kode="LF-F001"><i class="bi bi-eye"></i></button>
+                <button class="btn-detail" data-kode="{{ item.kode_barang }}">
+                  <i class="bi bi-eye"></i>
+                </button>
             </td>
           </tr>
-          <tr>
-            <td>LF-F002</td>
-            <td>Airpods Samsung Putih</td>
-            <td>Marsanda Sofi Aminarti</td>
-            <td class="status ditolak">Ditolak</td>
-            <td class="aksi">
-              <button class="btn-detail" data-kode="LF-F002"><i class="bi bi-eye"></i></button>
-            </td>
-          </tr>
-          <tr>
-            <td>LF-F003</td>
-            <td>Handphone Samsung Putih</td>
-            <td>Dwi Amanda Yona</td>
-            <td class="status pending">Pending</td>
-            <td class="aksi">
-              <button class="btn-detail" data-kode="LF-F003"><i class="bi bi-eye"></i></button>
-            </td>
-          </tr>
+          {% endfor %}
         </tbody>
+
       </table>
     </div>
   </div>
@@ -123,5 +122,6 @@
   <!-- SCRIPT -->
   <script src="{{ url_for('admin_bp.static', filename='js/klaim_penemuan.js') }}"></script>
   <script src="{{ url_for('admin_bp.static', filename='js/logout.js') }}"></script>
+
 </body>
 </html>
