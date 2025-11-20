@@ -1,194 +1,148 @@
-body {
-  margin: 0;
-  font-family: "Poppins", sans-serif;
-  background-color: #f8f8f8;
-}
-
-/* Submenu aktif */
-.sidebar .submenu a.active {
-  background-color: #fff;
-  color: #0b5394;
-  font-weight: 700;
-}
-
-/* ===== KONTENER DETAIL ===== */
-.detail-container {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  background-color: #fff;
-  width: 88%; /* sebelumnya 78%, biar kontainernya lebih lebar */
-  margin: 50px auto 30px auto; /* sebelumnya 90px auto 40px auto, biar jaraknya ke header lebih kecil */
-  border-radius: 15px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  padding: 40px 60px;
-  gap: 50px;
-}
-
-/* ===== KOLOM KIRI ===== */
-.left-column {
-  width: 38%;
-  text-align: center;
-  border-right: 2px solid #ddd;
-  padding-right: 40px;
-}
-
-.left-column img.item-img {
-  width: 260px;
-  height: 280px;
-  border-radius: 10px;
-  object-fit: cover;
-  margin-bottom: 15px;
-}
-
-.left-column h3 {
-  font-size: 19px;
-  font-weight: 700;
-  margin: 8px 0 4px 0;
-  color: #0b5394;
-}
-
-/* ===== KOLOM KANAN ===== */
-.right-column {
-  width: 62%;
-  padding-left: 45px;
-}
-
-.section {
-  margin-bottom: 30px;
-}
-
-.section h4 {
-  font-size: 18px;
-  color: #0b5394;
-  margin-bottom: 14px;
-  font-weight: 600;
-  border-left: 3px solid #2bc1f3;
-  padding-left: 10px;
-}
-
-/* ===== BARIS DATA ===== */
-.data-row {
-  display: flex;
-  align-items: flex-start;
-  margin-bottom: 12px;
-}
-
-.data-row span {
-  width: 210px;
-  font-weight: 500;
-  color: #333;
-  line-height: 1.6;
-  flex-shrink: 0;
-}
-
-.data-row p,
-.data-row button {
-  flex: 1;
-  margin: 0;
-  color: #111;
-  font-weight: 600;
-  line-height: 1.6;
-  word-wrap: break-word;
-  text-align: left;
-}
-
-/* ===== TOMBOL LIHAT GAMBAR ===== */
-.lihat-btn {
-  background-color: #a3c2f7;
-  color: #000;
-  border: none;
-  border-radius: 8px;
-  padding: 6px 12px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: 0.3s;
-}
-
-.lihat-btn:hover {
-  background-color: #82a9ee;
-}
-
-/* ===== INPUT, SELECT & TEXTAREA ===== */
-#status, #catatan {
-  padding: 7px 10px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 14px;
-  font-family: "Poppins", sans-serif;
-}
-
-#status {
-  width: 180px;
-}
-
-#catatan {
-  width: 100%;
-  height: 75px;
-  resize: none;
-  line-height: 1.6;
-}
-
-/* ====== TOMBOL (SAMA SEPERTI DETAIL KEHILANGAN) ====== */
-.button-group {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
+/* ======================================
+   WRAPPER
+====================================== */
+.detail-wrapper {
   margin-top: 25px;
-}
-
-.btn {
+  margin-left: 80px;
+  margin-right: 80px;
+  background: #fff;
+  border: 1px solid #2BC1F3;
+  border-radius: 18px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
+  padding: 30px 40px;
+  display: block;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 40px; /* lebih lega */
   font-family: "Poppins", sans-serif;
-  font-size: 14px;
-  font-weight: 500;
-  border: none;
-  border-radius: 6px;
-  padding: 6px 16px;
-  cursor: pointer;
-  transition: background-color 0.3s;
+  box-sizing: border-box;
+  max-width: 1000px;
 }
 
-/* tombol kembali */
-.btn-secondary {
-  background-color: #e9ecef;
-  color: #000;
+/* Flex kiri-kanan */
+.detail-flex {
+    display: flex;
+    gap: 25px;
+    align-items: flex-start;
 }
 
-.btn-secondary:hover {
-  background-color: #d6d8db;
+/* ======================================
+   LEFT (FOTO)
+====================================== */
+.left {
+    width: 350px;
+    flex-shrink: 0;
+    text-align: center;
 }
 
-/* tombol update */
-.btn-primary {
-  background-color: #0852c0;
-  color: #fff;
+.detail-photo-box {
+    width: 100%;
+    height: 250px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #f7f7f7;
+    box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.15);
 }
 
-.btn-primary:hover {
-  background-color: #0852c0;
+.detail-photo-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
-/* === Sidebar submenu tanpa jarak antar item === */
-.sidebar .submenu a {
-  width: auto !important;
-  display: inline-flex !important;
-  align-items: center;
-  gap: 10px;
-
-  /* hilangkan jarak vertikal antar submenu */
-  margin: 0 0 0 -3px !important;   /* atas, kanan, bawah, kiri → hanya indent kiri */
-  padding: 11px 19px !important;
-
-  border-radius: 12px;
-  background: transparent;
-  color: #e7f1ff;
-  line-height: 1.25;
-  text-align: left;
+.kode-barang-label {
+    margin-top: 10px;
+    font-weight: bold;
+    font-size: 17px;
+    color: #444;
 }
 
-.sidebar .submenu a.active {
-  background: #fff !important;
-  color: #0b5394 !important;
-  font-weight: 700;
+/* ======================================
+   RIGHT PANEL
+====================================== */
+.detail-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
 }
 
+.section-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+/* ======================================
+   TABEL INFORMASI
+====================================== */
+.info-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 3px;
+}
+
+.info-table td {
+    padding: 8px 0;
+}
+
+.info-label {
+    width: 160px;
+    font-weight: 600;
+    color: #333;
+}
+
+.info-value {
+    color: #555;
+}
+
+/* ======================================
+   FOTO IDENTITAS / BUKTI
+====================================== */
+.detail-photo-box.small {
+    width: 300px;
+    height: 200px;
+}
+
+/* ======================================
+   INPUT STATUS & CATATAN ADMIN
+====================================== */
+#statusSelect {
+    width: 200px;
+    padding: 7px;
+    border-radius: 8px;
+}
+
+#catatanAdmin {
+    width: 100%;
+    height: 90px;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+/* ======================================
+   BUTTON SECTION
+====================================== */
+.btn-section {
+    margin-top: 30px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.btn-kembali, .btn-update {
+    padding: 10px 25px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.btn-kembali {
+    background: #ccc;
+}
+
+.btn-update {
+    background: #1877f2;
+    color: #fff;
+}

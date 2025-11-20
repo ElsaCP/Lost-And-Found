@@ -84,38 +84,41 @@
     </div>
 
     <div class="table-container">
-      <table id="dataTable">
-        <thead>
-          <tr>
-            <th>Kode</th>
-            <th>Nama Barang</th>
-            <th>Nama Pengklaim</th>
-            <th>Status</th>
-            <th>Aksi</th>
-          </tr>
-        </thead>
+    <table id="dataTable">
+      <thead>
+        <tr>
+          <th>Kode</th>
+          <th>Nama Barang</th>
+          <th>Nama Pengklaim</th>
+          <th>Status</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
 
-        <tbody>
-          {% for item in data_klaim %}
-          <tr>
-            <td>{{ item.kode_klaim }}</td>
-            <td>{{ item.nama_barang }}</td>
-            <td>{{ item.nama_pengklaim }}</td>
-
-            <td class="status {{ item.status|lower }}">
-              {{ item.status }}
-            </td>
-
-            <td class="aksi">
-                <button class="btn-detail" data-kode="{{ item.kode_barang }}">
-                  <i class="bi bi-eye"></i>
-                </button>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-
-      </table>
+      <tbody>
+        {% for item in data_klaim %}
+        <tr>
+          <td>{{ item.kode_klaim }}</td>
+          <td>{{ item.nama_barang }}</td>
+          <td>{{ item.nama_pelapor }}</td>
+          <td>
+            <select class="status-select" data-id="{{ item.kode_barang }}">
+              <option value="Pending" {% if item.status == 'Pending' %}selected{% endif %}>Pending</option>
+              <option value="Verifikasi" {% if item.status == 'Verifikasi' %}selected{% endif %}>Verifikasi</option>
+              <option value="Ditolak" {% if item.status == 'Ditolak' %}selected{% endif %}>Ditolak</option>
+              <option value="Siap Diambil" {% if item.status == 'Siap Diambil' %}selected{% endif %}>Siap Diambil</option>
+              <option value="Selesai" {% if item.status == 'Selesai' %}selected{% endif %}>Selesai</option>
+            </select>
+          </td>
+          <td class="aksi">
+            <a href="{{ url_for('admin_bp.detail_klaim_penemuan', kode_klaim=item.kode_klaim) }}" class="btn-detail">
+              <i class="bi bi-eye"></i>
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
     </div>
   </div>
 

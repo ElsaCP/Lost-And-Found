@@ -1,26 +1,26 @@
 document.addEventListener("DOMContentLoaded", function () {
+
+  // tombol detail
   const detailButtons = document.querySelectorAll(".btn-detail");
 
-  detailButtons.forEach(button => {
-    button.addEventListener("click", () => {
-      const kode = button.getAttribute("data-kode");
-      if (!kode) return;
-
-      // FIX ROUTE DI SINI
-      window.location.href = `/admin/penemuan/klaim/${kode}`;
+  detailButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const kode = btn.getAttribute("data-klaim");
+      window.location.href = `/admin/penemuan/klaim/detail/${kode}`;
     });
   });
 
   // search
   const searchInput = document.getElementById("searchInput");
-  const tableRows = document.querySelectorAll("#dataTable tbody tr");
+  const rows = document.querySelectorAll("#klaimTable tbody tr");
 
   if (searchInput) {
-    searchInput.addEventListener("keyup", function () {
-      const keyword = this.value.toLowerCase();
-      tableRows.forEach(row => {
-        const text = row.textContent.toLowerCase();
-        row.style.display = text.includes(keyword) ? "" : "none";
+    searchInput.addEventListener("keyup", () => {
+      const keyword = searchInput.value.toLowerCase();
+      rows.forEach(row => {
+        row.style.display = row.textContent.toLowerCase().includes(keyword)
+          ? ""
+          : "none";
       });
     });
   }

@@ -34,7 +34,7 @@
           <a href="{{ url_for('admin_bp.tambah_penemuan') }}">
             <i class="bi bi-plus-circle"></i> Tambah
           </a>
-          <a href="{{ url_for('admin_bp.klaim_penemuan') }}">
+          <a href="{{ url_for('admin_bp.daftar_klaim_penemuan') }}">
             <i class="bi bi-hand-thumbs-up"></i> Klaim Barang
           </a>
         </div>
@@ -114,6 +114,10 @@
     </tr>
     {% endfor %}
   </tbody>
+  
+<script>
+  const kodeKlaim = "{{ kode_klaim }}";
+</script>
 
 </table>
 

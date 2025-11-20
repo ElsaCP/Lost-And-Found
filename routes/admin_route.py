@@ -509,7 +509,7 @@ def tambah_penemuan():
             last_num = int(last[0][-3:])
             kode_baru = f"LF-L{last_num + 1:03d}"
         else:
-            kode_baru = "LF-L001"
+            kode_baru = "LF-F001"
 
         return render_template('tambah_penemuan.html', kode_baru=kode_baru)
 
@@ -760,6 +760,9 @@ def verify_barang():
         except:
             pass
   
+# ======================
+# LIST KLAIM
+# ======================
 @admin_bp.route('/penemuan/klaim')
 def daftar_klaim_penemuan():
     conn = get_db_connection()
@@ -767,12 +770,13 @@ def daftar_klaim_penemuan():
 
     cursor.execute("""
         SELECT 
-            k.kode_klaim,
-            k.kode_barang,        -- ⭐ perlu untuk detail
-            k.nama_pelapor AS nama_pengklaim,
+            k.id,
+            k.kode_laporan AS kode_klaim,
+            k.kode_barang,
+            k.nama_pelapor,
             p.nama_barang,
             k.status
-        FROM klaim_penemuan k
+        FROM klaim_barang k
         LEFT JOIN penemuan p ON k.kode_barang = p.kode_barang
         ORDER BY k.id DESC
     """)
@@ -782,50 +786,80 @@ def daftar_klaim_penemuan():
     conn.close()
 
     return render_template("admin/klaim_penemuan.html", data_klaim=data_klaim)
-     
-@admin_bp.route('/penemuan/klaim/detail/<kode_barang>')
-def detail_klaim_penemuan(kode_barang):
+
+
+# ======================
+# HALAMAN HTML DETAIL (TANPA JSON)
+# ======================
+@admin_bp.route('/penemuan/klaim/detail/<kode_klaim>')
+def detail_klaim_penemuan(kode_klaim):
+    return render_template("admin/detail_klaim_penemuan.html", kode_klaim=kode_klaim)
+
+
+# ======================
+# API AMBIL DETAIL DATA (UNTUK FETCH JS)
+# ======================
+@admin_bp.route('/penemuan/klaim/api')
+def detail_klaim_penemuan_api():
+    kode = request.args.get("kode")
+
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
     cursor.execute("""
         SELECT 
-            k.kode_klaim,
-            k.kode_barang,
-            k.nama_pelapor,
-            k.no_telp,
-            k.email,
-            k.deskripsi,
-            k.identitas_gambar,
-            k.bukti_kehilangan,
-            k.foto_sebelum,
-            DATE_FORMAT(k.tanggal_lapor, '%Y-%m-%d %H:%i') AS tanggal_lapor,
-            DATE_FORMAT(k.update_terakhir, '%Y-%m-%d %H:%i') AS update_terakhir,
-            k.status,
-            k.admin_catatan,
-
+            k.*,
             p.nama_barang,
             p.kategori,
-            p.jenis_laporan,
             p.lokasi,
-            DATE_FORMAT(p.tanggal_ditemukan, '%Y-%m-%d %H:%i') AS tanggal_ditemukan,
             p.foto AS foto_penemuan
-        FROM klaim_penemuan k
+        FROM klaim_barang k
         LEFT JOIN penemuan p ON k.kode_barang = p.kode_barang
-        WHERE k.kode_barang = %s
+        WHERE k.kode_laporan = %s
         LIMIT 1
-    """, (kode_barang,))
+    """, (kode,))
 
-    klaim = cursor.fetchone()
+    data = cursor.fetchone()
 
     cursor.close()
     conn.close()
 
-    if not klaim:
-        return "Data klaim tidak ditemukan", 404
+    if not data:
+        return jsonify({"success": False})
 
-    return render_template("admin/detail_klaim_penemuan.html", klaim=klaim)
+    return jsonify({"success": True, "data": data})
 
+
+# ======================
+# UPDATE KLAIM
+# ======================
+@admin_bp.route('/penemuan/klaim/update', methods=['POST'])
+def update_klaim_penemuan():
+    data = request.get_json()
+    kode = data["kode_laporan"]
+    status = data["status"]
+    catatan = data["catatan_admin"]
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE klaim_barang
+        SET status = %s,
+            catatan_admin = %s,
+            update_terakhir = NOW()
+        WHERE kode_laporan = %s
+    """, (status, catatan, kode))
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return jsonify({"success": True})
+
+@admin_bp.route("/penemuan/klaim/tambah", methods=["GET", "POST"])
+def tambah_klaim_penemuan():
+    ...
 
 # ======================
 # 📁 ARSIP & PENGATURAN

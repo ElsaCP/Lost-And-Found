@@ -6,120 +6,231 @@
   <title>Detail Klaim Penemuan</title>
 
   <link rel="stylesheet" href="{{ url_for('admin_bp.static', filename='css/beranda.css') }}">
-  <link rel="stylesheet" href="{{ url_for('admin_bp.static', filename='css/daftar_penemuan.css') }}">
-  <link rel="stylesheet" href="{{ url_for('admin_bp.static', filename='css/klaim_penemuan.css') }}"> 
-  <link rel="stylesheet" href="{{ url_for('admin_bp.static', filename='css/detail_klaim_penemuan.css') }}">  
+  <link rel="stylesheet" href="{{ url_for('admin_bp.static', filename='css/detail_kehilangan.css') }}">
+  <link rel="stylesheet" href="{{ url_for('admin_bp.static', filename='css/detail_klaim_penemuan.css') }}">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
+
   <div class="sidebar">
     <div>
       <div class="logo-wrapper">
-        <img src="{{ url_for('admin_bp.static', filename='image/rectangle.png') }}" alt="Background Sidebar" class="rectangle-bg">
-        <img src="{{ url_for('admin_bp.static', filename='image/logo.png') }}" alt="Logo Bandara" class="logo-front">
+        <img src="{{ url_for('admin_bp.static', filename='image/rectangle.png')}}" class="rectangle-bg">
+        <img src="{{ url_for('admin_bp.static', filename='image/logo.png')}}" class="logo-front">
       </div>
 
       <nav>
-        <a href="beranda.html"><i class="bi bi-speedometer2"></i> Beranda</a>
-        <a href="daftar_kehilangan.html"><i class="bi bi-question-circle"></i> Kehilangan</a>
-
+        <a href="{{ url_for('admin_bp.beranda_admin') }}"><i class="bi bi-speedometer2"></i> Beranda</a>
+        <a href="{{ url_for('admin_bp.daftar_kehilangan') }}"><i class="bi bi-question-circle"></i> Kehilangan</a>
         <a href="#" class="active"><i class="bi bi-archive"></i> Penemuan</a>
+
         <div class="submenu">
-          <a href="daftar_penemuan.html"><i class="bi bi-list-ul"></i> Daftar Barang</a>
-          <a href="tambah_penemuan.html"><i class="bi bi-plus-circle"></i> Tambah</a>
-          <a href="klaim_penemuan.html" class="active" aria-current="page">
-            <i class="bi bi-hand-thumbs-up"></i> Klaim Barang
-          </a>
+          <a href="{{ url_for('admin_bp.daftar_penemuan') }}"><i class="bi bi-list-ul"></i> Daftar Barang</a>
+          <a href="{{ url_for('admin_bp.tambah_penemuan') }}"><i class="bi bi-plus-circle"></i> Tambah</a>
+          <a href="{{ url_for('admin_bp.daftar_klaim_penemuan') }}" class="active"><i class="bi bi-hand-thumbs-up"></i> Klaim Barang</a>
         </div>
 
-        <a href="arsip.html"><i class="bi bi-folder"></i> Arsip</a>
-        <a href="pengaturan.html"><i class="bi bi-gear"></i> Pengaturan</a>
+        <a href="{{ url_for('admin_bp.arsip') }}"><i class="bi bi-folder"></i> Arsip</a>
+        <a href="{{ url_for('admin_bp.pengaturan') }}"><i class="bi bi-gear"></i> Pengaturan</a>
       </nav>
     </div>
-    <a href="logout.html" class="logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
-  </div>
 
+    <a href="{{ url_for('admin_bp.logout_admin') }}" class="logout">
+      <i class="bi bi-box-arrow-right"></i> Logout
+    </a>
+  </div>
 
   <!-- KONTEN -->
   <div class="content">
-    <!-- HEADER -->
     <div class="header">
       <div class="logo-wrapper">
-        <img src="image/rectangle2.png" class="rectangle-bg" alt="">
-        <img src="image/image5.png" class="logo-front" alt="">
+        <img src="{{ url_for('admin_bp.static', filename='image/rectangle2.png')}}" class="rectangle-bg">
+        <img src="{{ url_for('admin_bp.static', filename='image/image5.png')}}" class="logo-front">
       </div>
       <h2>Penemuan - Detail Klaim Barang</h2>
       <div class="profile-icon"><i class="bi bi-person-circle"></i></div>
     </div>
 
-<!-- DETAIL BARANG -->
-<div class="detail-container">
+    <!-- =======================
+          WRAPPER DETAIL
+    ======================= -->
+    <div class="detail-wrapper">
+<div class="detail-flex">
 
-  <!-- KOLOM KIRI -->
-  <div class="left-column">
-
-    <div class="section">
-      <h3>Data Pelapor</h3>
-      <p><strong>Nama :</strong> <span id="namaPelapor"></span></p>
-      <p><strong>No. Telp :</strong> <span id="noTelp"></span></p>
-      <p><strong>Email :</strong> <span id="emailPelapor"></span></p>
-    </div>
-
-    <div class="section">
-      <h3>Data Barang</h3>
-      <p><strong>Nama Barang :</strong> <span id="namaBarang"></span></p>
-      <p><strong>Jenis Laporan :</strong> <span id="jenisLaporan"></span></p>
-      <p><strong>Lokasi :</strong> <span id="lokasi"></span></p>
-      <p><strong>Deskripsi :</strong> <span id="deskripsi"></span></p>
-      <p><strong>Deskripsi Khusus :</strong> <span id="deskripsiKhusus"></span></p>
-    </div>
-
-    <div class="section">
-      <h3>Identitas Diri (KTP/Paspor/SIM)</h3>
-      <img id="imgIdentitas" class="gambar-detail" src="" alt="Identitas Diri">
-    </div>
-
-    <div class="section">
-      <h3>Bukti Laporan Kehilangan</h3>
-      <img id="imgBukti" class="gambar-detail" src="" alt="Bukti Laporan">
-    </div>
-
+  <!-- ===================== -->
+  <!--   BAGIAN KIRI (FOTO)  -->
+  <!-- ===================== -->
+  <div class="left">
+      <div class="detail-photo-box">
+          <img id="imgFotoBarang" src="" alt="Foto Barang">
+      </div>
+      <div class="kode-barang-label" id="kodeBarang"></div>
   </div>
 
+  <!-- ===================== -->
+  <!--     BAGIAN KANAN      -->
+  <!-- ===================== -->
+  <div class="detail-right">
 
-  <!-- KOLOM KANAN -->
-  <div class="right-column">
+      <!-- ===================== -->
+      <!--     DATA PENGKLAIM    -->
+      <!-- ===================== -->
+      <div class="data-section">
+          <div class="section-header">
+              <h3>Data Pengklaim</h3>
+          </div>
 
-    <div class="section">
-      <h3>Foto Barang Sebelum Hilang</h3>
-      <img id="imgSebelumHilang" class="gambar-detail" src="" alt="Foto Barang Sebelum Hilang">
-    </div>
+          <div class="info-grid">
+              <div class="info-item">
+                  <label>Nama</label>
+                  <p id="namaPelapor"></p>
+              </div>
 
-    <div class="section">
-      <p><strong>Tanggal Lapor :</strong> <span id="tanggalLapor"></span></p>
-      <p><strong>Update Terakhir :</strong> <span id="updateTerakhir"></span></p>
-      <p><strong>Status :</strong>
-        <span id="statusLaporan" class="status-badge"></span>
-      </p>
+              <div class="info-item">
+                  <label>No. Telepon</label>
+                  <p id="noTelp"></p>
+              </div>
 
-      <p><strong>Catatan Admin :</strong></p>
-      <textarea id="catatanAdmin" class="catatan-admin" placeholder="Tambahkan catatan..."></textarea>
-    </div>
+              <div class="info-item">
+                  <label>Email</label>
+                  <p id="emailPelapor"></p>
+              </div>
+          </div>
+      </div>
 
-    <div class="button-group">
-      <button id="btnKembali" class="btn btn-secondary">Kembali</button>
-      <button id="btnKlaim" class="btn btn-warning">Klaim Barang</button>
-      <button id="btnUpdate" class="btn btn-primary">Update Status</button>
-    </div>
+      <!-- ===================== -->
+      <!--    INFORMASI KLAIM    -->
+      <!-- ===================== -->
+      <div class="data-section">
+          <div class="section-header">
+              <h3>Informasi Klaim</h3>
+          </div>
+
+          <div class="info-grid">
+              <div class="info-item">
+                  <label>Kode Klaim</label>
+                  <p id="kodeLaporan"></p>
+              </div>
+
+              <div class="info-item">
+                  <label>Nama Barang</label>
+                  <p id="namaBarang"></p>
+              </div>
+
+              <div class="info-item">
+                  <label>Deskripsi Khusus</label>
+                  <p id="deskripsiKhusus"></p>
+              </div>
+          </div>
+      </div>
+
+      <!-- ===================== -->
+      <!--    IDENTITAS DIRI     -->
+      <!-- ===================== -->
+      <div class="data-section">
+          <div class="section-header">
+              <h3>Identitas Diri</h3>
+          </div>
+
+          <div class="photo-mini">
+              <img id="imgIdentitas" class="zoomable" src="" alt="Identitas">
+          </div>
+      </div>
+
+      <!-- ===================== -->
+      <!--  BUKTI LAPORAN HILANG -->
+      <!-- ===================== -->
+      <div class="data-section">
+          <div class="section-header">
+              <h3>Bukti Laporan Kehilangan</h3>
+          </div>
+
+          <div class="photo-mini">
+              <img id="imgBukti" class="zoomable" src="" alt="Bukti Laporan">
+          </div>
+      </div>
+
+      <!-- ===================== -->
+      <!--    WAKTU & STATUS     -->
+      <!-- ===================== -->
+      <div class="data-section">
+          <div class="section-header">
+              <h3>Waktu & Status</h3>
+          </div>
+
+          <div class="info-grid">
+              <div class="info-item">
+                  <label>Tanggal Lapor</label>
+                  <p id="tanggalLapor"></p>
+              </div>
+
+              <div class="info-item">
+                  <label>Waktu Lapor</label>
+                  <p id="waktuLapor"></p>
+              </div>
+
+              <div class="info-item">
+                  <label>Update Terakhir</label>
+                  <p id="updateTerakhir"></p>
+              </div>
+
+              <div class="info-item">
+                  <label>Status Klaim</label>
+                  <select id="statusSelect">
+                      <option value="Pending">Pending</option>
+                      <option value="Verifikasi">Verifikasi</option>
+                      <option value="Ditolak">Ditolak</option>
+                      <option value="Siap Diambil">Siap Diambil</option>
+                      <option value="Selesai">Selesai</option>
+                  </select>
+              </div>
+
+              <div class="info-item">
+                  <label>Catatan Admin</label>
+                  <textarea id="catatanAdmin"></textarea>
+              </div>
+          </div>
+      </div>
 
   </div>
 </div>
 
-  <!-- SCRIPT -->
-  <script src="detail_klaim_penemuan.js"></script>
+      <!-- BUTTON -->
+      <div class="button-group">
+        <button id="btnKembali" class="btn-kembali">Kembali</button>
+        <button id="btnUpdate" class="btn-update">Update</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- LIGHTBOX -->
+  <div id="lightbox" class="lightbox">
+    <span class="lightbox-close">&times;</span>
+    <img id="lightbox-img" class="lightbox-img">
+  </div>
+
+  <script src="{{ url_for('admin_bp.static', filename='js/detail_klaim_penemuan.js') }}"></script>
   <script src="{{ url_for('admin_bp.static', filename='js/logout.js') }}"></script>
+
+  <script>
+    const zoomImgs = document.querySelectorAll(".zoomable");
+    const lightbox = document.getElementById("lightbox");
+    const lightboxImg = document.getElementById("lightbox-img");
+    const closeBtn = document.querySelector(".lightbox-close");
+
+    zoomImgs.forEach(img => {
+      img.addEventListener("click", () => {
+        lightbox.style.display = "flex";
+        lightboxImg.src = img.src;
+      });
+    });
+
+    closeBtn.onclick = () => lightbox.style.display = "none";
+    lightbox.onclick = e => { if (e.target === lightbox) lightbox.style.display = "none"; };
+  </script>
+
 </body>
 </html>
