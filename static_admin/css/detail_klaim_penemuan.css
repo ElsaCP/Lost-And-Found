@@ -1,148 +1,128 @@
-/* ======================================
-   WRAPPER
-====================================== */
+/* ==== WRAPPER ==== */
 .detail-wrapper {
   margin-top: 25px;
-  margin-left: 80px;
-  margin-right: 80px;
+  margin-left: auto;
+  margin-right: auto;
   background: #fff;
   border: 1px solid #2BC1F3;
   border-radius: 18px;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
-  padding: 30px 40px;
-  display: block;
-  justify-content: flex-start;
-  align-items: flex-start;
-  gap: 40px; /* lebih lega */
+  box-shadow: 0px 2px 4px rgba(0,0,0,0.25);
+  padding: 30px 60px;
+  display: flex;
+  gap: 40px;
   font-family: "Poppins", sans-serif;
-  box-sizing: border-box;
-  max-width: 1000px;
+  max-width: 700px;
+  justify-content: center;
+  text-align: left;
+
+  font-size: 16.3px;                /* 🔥 LEBIH BESAR */
 }
 
-/* Flex kiri-kanan */
-.detail-flex {
-    display: flex;
-    gap: 25px;
-    align-items: flex-start;
-}
-
-/* ======================================
-   LEFT (FOTO)
-====================================== */
 .left {
-    width: 350px;
-    flex-shrink: 0;
-    text-align: center;
+  width: 230px;
+  text-align: center;   /* 🔥 ini yang bikin foto bener² tengah */
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .detail-photo-box {
-    width: 100%;
-    height: 250px;
-    border-radius: 12px;
-    overflow: hidden;
-    background: #f7f7f7;
-    box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.15);
+  margin: 0 auto;   /* 🔥 paksa kotak foto ke tengah */
 }
 
 .detail-photo-box img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  display: block;
+  margin: 0 auto;
 }
 
-.kode-barang-label {
-    margin-top: 10px;
-    font-weight: bold;
-    font-size: 17px;
-    color: #444;
+/* Foto box */
+.detail-photo-box {
+  width: 230px;
+  height: 260px;
+  border: 1px solid #000;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-/* ======================================
-   RIGHT PANEL
-====================================== */
+/* ==== KANAN ==== */
 .detail-right {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
+  width: 450px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin: 0 auto;
+  text-align: left;
 }
 
-.section-title {
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 8px;
-    color: #333;
+/* ==== SECTION ==== */
+.data-section h3 {
+  font-size: 18.2px;                /* 🔥 Judul makin besar */
+  font-weight: 700;
+  color: #003c7a;
+  margin-bottom: 10px;
+  border-left: 4px solid #0090ff;
+  padding-left: 8px;
 }
 
-/* ======================================
-   TABEL INFORMASI
-====================================== */
-.info-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 3px;
+/* ==== BARIS DATA ==== */
+.data-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 13px;
+  line-height: 1.45;
 }
 
-.info-table td {
-    padding: 8px 0;
+/* Label */
+.data-row span {
+  min-width: 150px;                 /* tambah sedikit agar muat text lebih besar */
+  font-size: 16.3px;                /* 🔥 */
 }
 
-.info-label {
-    width: 160px;
-    font-weight: 600;
-    color: #333;
+/* Isi data */
+.data-row strong {
+  font-size: 16.3px;                /* 🔥 */
 }
 
-.info-value {
-    color: #555;
+/* ==== FORM ==== */
+.status-select,
+textarea {
+  width: 100%;
+  max-width: 480px;
+  padding: 9px 12px;                /* padding lebih besar */
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 16.3px;                /* 🔥 */
 }
 
-/* ======================================
-   FOTO IDENTITAS / BUKTI
-====================================== */
-.detail-photo-box.small {
-    width: 300px;
-    height: 200px;
+/* ==== FOTO MINI ==== */
+.foto-barang {
+  width: 230px;
+  height: auto;
+  border-radius: 6px;
 }
 
-/* ======================================
-   INPUT STATUS & CATATAN ADMIN
-====================================== */
-#statusSelect {
-    width: 200px;
-    padding: 7px;
-    border-radius: 8px;
-}
-
-#catatanAdmin {
-    width: 100%;
-    height: 90px;
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-}
-
-/* ======================================
-   BUTTON SECTION
-====================================== */
-.btn-section {
-    margin-top: 30px;
-    display: flex;
-    justify-content: space-between;
+/* ==== TOMBOL ==== */
+.button-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: auto;
+  align-self: flex-end;
 }
 
 .btn-kembali, .btn-update {
-    padding: 10px 25px;
-    border-radius: 8px;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-.btn-kembali {
-    background: #ccc;
+  padding: 11px 28px;               /* 🔥 tombol semakin proporsional */
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: none;
+  border: none;
+  font-size: 15.8px;                /* 🔥 */
+  background: #dcdcdc;
+  max-width: fit-content;
 }
 
 .btn-update {
-    background: #1877f2;
-    color: #fff;
+  background: #0055B8;
+  color: white;
 }

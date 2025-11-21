@@ -53,158 +53,122 @@
       <div class="profile-icon"><i class="bi bi-person-circle"></i></div>
     </div>
 
-    <!-- =======================
-          WRAPPER DETAIL
-    ======================= -->
-    <div class="detail-wrapper">
-<div class="detail-flex">
+<!-- ======================= WRAPPER DETAIL ======================= -->
+<div class="detail-wrapper">
+  <div class="detail-flex">
 
-  <!-- ===================== -->
-  <!--   BAGIAN KIRI (FOTO)  -->
-  <!-- ===================== -->
-  <div class="left">
-      <div class="detail-photo-box">
-          <img id="imgFotoBarang" src="" alt="Foto Barang">
-      </div>
-      <div class="kode-barang-label" id="kodeBarang"></div>
-  </div>
-
-  <!-- ===================== -->
-  <!--     BAGIAN KANAN      -->
-  <!-- ===================== -->
-  <div class="detail-right">
-
-      <!-- ===================== -->
-      <!--     DATA PENGKLAIM    -->
-      <!-- ===================== -->
-      <div class="data-section">
-          <div class="section-header">
-              <h3>Data Pengklaim</h3>
-          </div>
-
-          <div class="info-grid">
-              <div class="info-item">
-                  <label>Nama</label>
-                  <p id="namaPelapor"></p>
-              </div>
-
-              <div class="info-item">
-                  <label>No. Telepon</label>
-                  <p id="noTelp"></p>
-              </div>
-
-              <div class="info-item">
-                  <label>Email</label>
-                  <p id="emailPelapor"></p>
-              </div>
-          </div>
-      </div>
-
-      <!-- ===================== -->
-      <!--    INFORMASI KLAIM    -->
-      <!-- ===================== -->
-      <div class="data-section">
-          <div class="section-header">
-              <h3>Informasi Klaim</h3>
-          </div>
-
-          <div class="info-grid">
-              <div class="info-item">
-                  <label>Kode Klaim</label>
-                  <p id="kodeLaporan"></p>
-              </div>
-
-              <div class="info-item">
-                  <label>Nama Barang</label>
-                  <p id="namaBarang"></p>
-              </div>
-
-              <div class="info-item">
-                  <label>Deskripsi Khusus</label>
-                  <p id="deskripsiKhusus"></p>
-              </div>
-          </div>
-      </div>
-
-      <!-- ===================== -->
-      <!--    IDENTITAS DIRI     -->
-      <!-- ===================== -->
-      <div class="data-section">
-          <div class="section-header">
-              <h3>Identitas Diri</h3>
-          </div>
-
-          <div class="photo-mini">
-              <img id="imgIdentitas" class="zoomable" src="" alt="Identitas">
-          </div>
-      </div>
-
-      <!-- ===================== -->
-      <!--  BUKTI LAPORAN HILANG -->
-      <!-- ===================== -->
-      <div class="data-section">
-          <div class="section-header">
-              <h3>Bukti Laporan Kehilangan</h3>
-          </div>
-
-          <div class="photo-mini">
-              <img id="imgBukti" class="zoomable" src="" alt="Bukti Laporan">
-          </div>
-      </div>
-
-      <!-- ===================== -->
-      <!--    WAKTU & STATUS     -->
-      <!-- ===================== -->
-      <div class="data-section">
-          <div class="section-header">
-              <h3>Waktu & Status</h3>
-          </div>
-
-          <div class="info-grid">
-              <div class="info-item">
-                  <label>Tanggal Lapor</label>
-                  <p id="tanggalLapor"></p>
-              </div>
-
-              <div class="info-item">
-                  <label>Waktu Lapor</label>
-                  <p id="waktuLapor"></p>
-              </div>
-
-              <div class="info-item">
-                  <label>Update Terakhir</label>
-                  <p id="updateTerakhir"></p>
-              </div>
-
-              <div class="info-item">
-                  <label>Status Klaim</label>
-                  <select id="statusSelect">
-                      <option value="Pending">Pending</option>
-                      <option value="Verifikasi">Verifikasi</option>
-                      <option value="Ditolak">Ditolak</option>
-                      <option value="Siap Diambil">Siap Diambil</option>
-                      <option value="Selesai">Selesai</option>
-                  </select>
-              </div>
-
-              <div class="info-item">
-                  <label>Catatan Admin</label>
-                  <textarea id="catatanAdmin"></textarea>
-              </div>
-          </div>
-      </div>
-
-  </div>
-</div>
-
-      <!-- BUTTON -->
-      <div class="button-group">
-        <button id="btnKembali" class="btn-kembali">Kembali</button>
-        <button id="btnUpdate" class="btn-update">Update</button>
-      </div>
-
+    <!-- BAGIAN KIRI -->
+    <div class="left">
+        <div class="detail-photo-box">
+            <img id="imgFotoBarang" src="" alt="Foto Barang">
+        </div>
+        <div class="kode-barang-label" id="kodeBarang"></div>
     </div>
-  </div>
+
+    <!-- BAGIAN KANAN -->
+    <div class="detail-right">
+
+        <!-- DATA PENGKLAIM -->
+        <div class="data-section">
+            <h3>Data Pengklaim</h3>
+
+            <div class="data-row">
+                <span>Nama</span>
+                <strong id="namaPelapor"></strong>
+            </div>
+
+            <div class="data-row">
+                <span>No. Telepon</span>
+                <strong id="noTelp"></strong>
+            </div>
+
+            <div class="data-row">
+                <span>Email</span>
+                <strong id="emailPelapor"></strong>
+            </div>
+        </div>
+
+        <!-- INFORMASI KLAIM -->
+        <div class="data-section">
+            <h3>Informasi Klaim</h3>
+
+            <div class="data-row">
+                <span>Kode Klaim</span>
+                <strong id="kodeLaporan"></strong>
+            </div>
+
+            <div class="data-row">
+                <span>Nama Barang</span>
+                <strong id="namaBarang"></strong>
+            </div>
+
+            <div class="data-row">
+                <span>Deskripsi Khusus</span>
+                <strong id="deskripsiKhusus"></strong>
+            </div>
+        </div>
+
+        <!-- IDENTITAS DIRI -->
+        <div class="data-section">
+            <h3>Identitas Diri</h3>
+            <img id="imgIdentitas" class="foto-barang" style="width:230px; border:1px solid #000;">
+        </div>
+
+        <!-- BUKTI -->
+        <div class="data-section">
+            <h3>Bukti Laporan Kehilangan</h3>
+            <img id="imgBukti" class="foto-barang" style="width:230px; border:1px solid #000;">
+        </div>
+
+        <!-- WAKTU & STATUS -->
+        <div class="data-section">
+            <h3>Waktu & Status</h3>
+
+            <div class="data-row">
+                <span>Tanggal Lapor</span>
+                <strong id="tanggalLapor"></strong>
+            </div>
+
+            <div class="data-row">
+                <span>Waktu Lapor</span>
+                <strong id="waktuLapor"></strong>
+            </div>
+
+            <div class="data-row">
+                <span>Update Terakhir</span>
+                <strong id="updateTerakhir"></strong>
+            </div>
+
+            <div class="data-row">
+                <span>Status Klaim</span>
+                <select id="statusSelect" class="status-select">
+                    <option value="Pending">Pending</option>
+                    <option value="Verifikasi">Verifikasi</option>
+                    <option value="Ditolak">Ditolak</option>
+                    <option value="Siap Diambil">Siap Diambil</option>
+                    <option value="Selesai">Selesai</option>
+                </select>
+            </div>
+
+            <div class="data-row" style="align-items:flex-start;">
+                <span>Catatan Admin</span>
+                <textarea id="catatanAdmin" style="height:90px;"></textarea>
+            </div>
+        </div>
+
+        <!-- ===================== -->
+        <!--   BUTTON TURUN BAWAH  -->
+        <!-- ===================== -->
+        <div class="button-group">
+            <button id="btnKembali" class="btn-kembali">Kembali</button>
+            <button id="btnUpdate" class="btn-update">Update</button>
+        </div>
+
+    </div> <!-- end detail-right -->
+
+  </div> <!-- end detail-flex -->
+</div> <!-- end wrapper -->
+
 
   <!-- LIGHTBOX -->
   <div id="lightbox" class="lightbox">

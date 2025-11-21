@@ -802,30 +802,29 @@ def detail_klaim_penemuan(kode_klaim):
 @admin_bp.route('/penemuan/klaim/api')
 def detail_klaim_penemuan_api():
     kode = request.args.get("kode")
+    if not kode:
+        return jsonify({"success": False, "message": "Kode kosong"}), 400
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-
     cursor.execute("""
         SELECT 
             k.*,
             p.nama_barang,
             p.kategori,
             p.lokasi,
-            p.foto AS foto_penemuan
+            p.gambar_barang AS foto_penemuan
         FROM klaim_barang k
         LEFT JOIN penemuan p ON k.kode_barang = p.kode_barang
         WHERE k.kode_laporan = %s
         LIMIT 1
     """, (kode,))
-
     data = cursor.fetchone()
-
     cursor.close()
     conn.close()
 
     if not data:
-        return jsonify({"success": False})
+        return jsonify({"success": False, "message": "Data tidak ditemukan"}), 404
 
     return jsonify({"success": True, "data": data})
 
