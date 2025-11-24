@@ -3,8 +3,11 @@ from flask import Blueprint, request, jsonify, render_template,redirect, url_for
 from datetime import datetime
 from werkzeug.utils import secure_filename
 from models import fetch_public_penemuan, get_penemuan_by_kode, fetch_barang_publik_terbaru
-from models import get_laporan_by_email, get_riwayat_klaim_by_email
+from models import get_laporan_by_email, get_riwayat_klaim_by_email,tambah_riwayat_status, get_riwayat_status
 from config import get_db_connection
+from models import (fetch_public_penemuan, get_penemuan_by_kode, fetch_barang_publik_terbaru,
+                    get_laporan_by_email, get_riwayat_klaim_by_email,
+                    tambah_riwayat_status, get_riwayat_status)
 import os
 import mysql.connector
 
@@ -197,32 +200,39 @@ def api_cek_riwayat_klaim():
         "data": riwayat
     }), 200
 
-@main.route("/hasil-riwayat-klaim", methods=["POST"])
+@main.route("/hasil-riwayat-klaim")
 def hasil_riwayat_klaim():
-    email = request.form.get("email")
+    return render_template("user/hasil_riwayat_klaim.html")
 
-    # Jika email tidak dikirim
-    if not email:
-        return render_template("user/hasil_riwayat_klaim.html",
-                               riwayat=None,
-                               email_error=True)
-
-    # Ambil data klaim dari database
-    from models import fetch_riwayat_klaim
-    riwayat = fetch_riwayat_klaim(email)
-
-    return render_template("user/hasil_riwayat_klaim.html",
-                           riwayat=riwayat,
-                           email_error=False,
-                           email=email)
 
 @main.route("/api/riwayat-klaim/<email>")
 def api_riwayat_klaim(email):
-    from models import get_riwayat_klaim_by_email
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
 
-    data = get_riwayat_klaim_by_email(email)
+    query = """
+        SELECT
+            k.kode_laporan,
+            k.kode_barang,
+            k.nama_barang,
+            k.status AS status_klaim,
+            k.catatan_admin,
+            p.gambar_barang,
+            p.lokasi
+        FROM klaim_barang k
+        LEFT JOIN penemuan p ON k.kode_barang = p.kode_barang
+        WHERE k.email = %s
+        ORDER BY k.id DESC
+    """
+
+    cursor.execute(query, (email,))
+    data = cursor.fetchall()
+
+    cursor.close()
+    db.close()
 
     return jsonify(data)
+
 
 
 @main.route("/detail-klaim/<kode_laporan>")
@@ -248,12 +258,60 @@ def detail_klaim(kode_laporan):
     if not data:
         return render_template("user/not_found.html"), 404
 
+    # Format foto
     if data.get("foto_barang"):
         data["foto_barang"] = f"/static/uploads/{data['foto_barang']}"
     if data.get("gambar_penemuan"):
         data["gambar_penemuan"] = f"/static/uploads/{data['gambar_penemuan']}"
 
+    # 👉 FORMAT UPDATE TERAKHIR (dd/mm/yyyy hh:mm)
+    if data.get("update_terakhir"):
+        try:
+            data["update_terakhir"] = data["update_terakhir"].strftime("%d/%m/%Y %H:%M")
+        except:
+            pass
+
     return render_template("user/detail_riwayat_klaim.html", data=data)
+
+@main.route("/admin/update-status", methods=["POST"])
+def admin_update_status():
+    kode_laporan = request.form.get("kode_laporan")
+    status = request.form.get("status")
+    catatan = request.form.get("catatan") or ""
+
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    # update tabel klaim_barang
+    cursor.execute("""
+        UPDATE klaim_barang
+        SET status=%s, catatan_admin=%s, update_terakhir=NOW()
+        WHERE kode_laporan=%s
+    """, (status, catatan, kode_laporan))
+    db.commit()
+
+    # simpan riwayat baru (insert)
+    tambah_riwayat_status(kode_laporan, status, catatan)
+
+    cursor.close()
+    db.close()
+
+    # arahkan kembali (sesuaikan url admin)
+    return redirect("/admin/detail/" + kode_laporan)
+
+@main.route("/api/riwayat-status/<kode_laporan>")
+def api_riwayat_status(kode_laporan):
+    data = get_riwayat_status(kode_laporan)
+    # data sudah memiliki fields: id, kode_laporan, status, catatan_admin, waktu_update (string), catatan (alias)
+    # Kita kembalikan dalam bentuk yg frontend harapkan: {waktu_update, status, catatan}
+    out = []
+    for r in data:
+        out.append({
+            "waktu_update": r.get("waktu_update"),
+            "status": r.get("status"),
+            "catatan": r.get("catatan")
+        })
+    return jsonify(out)
 
 @main.route('/detail-barang/<kode>')
 def detail_barang(kode):
@@ -298,7 +356,7 @@ def submit_klaim():
         db = get_db_connection()
         cursor = db.cursor()
 
-        # === Ambil data dari form ===
+        # ambil data dari form (sama seperti sebelumnya)
         nama = request.form.get("nama")
         telp = request.form.get("telp")
         email = request.form.get("email")
@@ -306,9 +364,9 @@ def submit_klaim():
         kode_barang = request.form.get("kodeBarang")
         kode_laporan_kehilangan = request.form.get("kodeKehilangan")
 
-        # === File upload ===
+        # file handling seperti sebelumnya ...
         identitas = request.files.get("fileIdentitas")
-        bukti = request.files.get("fileLaporan")   # opsional
+        bukti = request.files.get("fileLaporan")
         foto_barang = request.files.get("fotoBarang")
 
         upload_dir = os.path.join("static", "uploads")
@@ -326,10 +384,9 @@ def submit_klaim():
         nama_bukti = simpan_file(bukti)
         nama_foto = simpan_file(foto_barang)
 
-        # === Generate kode klaim baru ===
+        # generate kode_laporan
         cursor.execute("SELECT kode_laporan FROM klaim_barang ORDER BY id DESC LIMIT 1")
         last = cursor.fetchone()
-
         if last and last[0]:
             last_num = int(last[0].split("LF-C")[-1])
         else:
@@ -340,7 +397,11 @@ def submit_klaim():
         tanggal = now.strftime("%d/%m/%Y")
         waktu = now.strftime("%H:%M")
 
-        # === Simpan ke database ===
+        # ambil nama_barang dari penemuan jika ada
+        cursor.execute("SELECT nama_barang FROM penemuan WHERE kode_barang=%s", (kode_barang,))
+        nama_barang_row = cursor.fetchone()
+        nama_barang = nama_barang_row[0] if nama_barang_row else "Tidak diketahui"
+
         query = """
             INSERT INTO klaim_barang (
                 kode_laporan, kode_barang, kode_laporan_kehilangan, nama_barang,
@@ -349,12 +410,6 @@ def submit_klaim():
                 tanggal_lapor, waktu_lapor, status, catatan_admin
             ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
         """
-        cursor.execute("""
-            SELECT nama_barang FROM penemuan WHERE kode_barang=%s
-        """, (kode_barang,))
-        nama_barang_row = cursor.fetchone()
-        nama_barang = nama_barang_row[0] if nama_barang_row else "Tidak diketahui"
-
         values = (
             kode_laporan, kode_barang, kode_laporan_kehilangan, nama_barang,
             nama, telp, email, deskripsi_khusus,
@@ -366,6 +421,9 @@ def submit_klaim():
         db.commit()
         cursor.close()
         db.close()
+
+        # --- PENTING: tulis riwayat awal ke tabel riwayat_klaim ---
+        tambah_riwayat_status(kode_laporan, "Pending", "Menunggu verifikasi oleh admin.")
 
         return jsonify({"success": True, "kode_laporan": kode_laporan})
 
@@ -430,11 +488,11 @@ def hasil_cek():
         # Gabungkan tanggal + waktu menjadi datetime
         if tgl_str and waktu_str:
             try:
-                gabung = datetime.strptime(f"{tgl_str} {waktu_str}", "%Y-%m-%d %H:%M:%S")
+                gabung = datetime.strptime(f"{tgl_str} {waktu_str}", "%Y-%m-%d %H:%M")
                 laporan["tanggal_waktu_submit"] = gabung.strftime("%d/%m/%Y, %H:%M")
             except ValueError:
                 try:
-                    gabung = datetime.strptime(f"{tgl_str} {waktu_str}", "%d/%m/%Y %H:%M:%S")
+                    gabung = datetime.strptime(f"{tgl_str} {waktu_str}", "%d/%m/%Y %H:%M")
                     laporan["tanggal_waktu_submit"] = gabung.strftime("%d/%m/%Y, %H:%M")
                 except:
                     laporan["tanggal_waktu_submit"] = f"{tgl_str}, {waktu_str}"
@@ -482,7 +540,7 @@ def detail_cek(kode_kehilangan):
     # ====== FORMAT UPDATE TERAKHIR ======
     try:
         laporan["update_terakhir_fmt"] = datetime.strptime(
-            laporan["update_terakhir"], "%Y-%m-%d %H:%M:%S"
+            laporan["update_terakhir"], "%Y-%m-%d %H:%M"
         ).strftime("%d/%m/%Y %H:%M")
     except:
         laporan["update_terakhir_fmt"] = laporan["update_terakhir"]
@@ -500,7 +558,7 @@ def detail_cek(kode_kehilangan):
     for r in riwayat:
         try:
             r["waktu_update_fmt"] = datetime.strptime(
-                r["waktu_update"], "%Y-%m-%d %H:%M:%S"
+                r["waktu_update"], "%Y-%m-%d %H:%M"
             ).strftime("%d/%m/%Y %H:%M")
         except:
             r["waktu_update_fmt"] = r["waktu_update"]

@@ -2,6 +2,55 @@
 from config import get_db_connection
 from datetime import datetime
 
+def tambah_riwayat_status(kode_laporan, status, catatan):
+    """
+    Tambah 1 baris riwayat ke tabel riwayat_klaim.
+    Digunakan saat submit klaim (status awal) dan saat admin mengubah status.
+    """
+    db = get_db_connection()
+    cursor = db.cursor()
+    try:
+        cursor.execute("""
+            INSERT INTO riwayat_klaim (kode_laporan, status, catatan_admin)
+            VALUES (%s, %s, %s)
+        """, (kode_laporan, status, catatan))
+        db.commit()
+    finally:
+        cursor.close()
+        db.close()
+
+def get_riwayat_status(kode_laporan):
+    """
+    Mengembalikan list dict riwayat untuk kode_laporan, 
+    dengan waktu_update diformat jadi string 'dd/mm/YYYY HH:MM'
+    """
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+    try:
+        cursor.execute("""
+            SELECT id, kode_laporan, status, catatan_admin, waktu_update
+            FROM riwayat_klaim
+            WHERE kode_laporan = %s
+            ORDER BY waktu_update ASC
+        """, (kode_laporan,))
+        rows = cursor.fetchall()
+
+        # format waktu_update ke string supaya JS tidak bingung
+        for r in rows:
+            if r.get("waktu_update") is not None:
+                # waktu_update biasanya datetime, ubah jadi string dd/mm/YYYY HH:MM
+                r["waktu_update"] = r["waktu_update"].strftime("%d/%m/%Y %H:%M")
+            else:
+                r["waktu_update"] = None
+            # sesuaikan nama field catatan jika kolom bernama catatan_admin di DB
+            # keep catatan sebagai alias agar frontend tetap kompatibel
+            r["catatan"] = r.get("catatan_admin") or ""
+        return rows
+    finally:
+        cursor.close()
+        db.close()
+
+
 def fetch_public_penemuan(q=None, kategori=None, dari=None, hingga=None, page=1, per_page=12):
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
@@ -161,3 +210,32 @@ def get_riwayat_klaim_by_email(email):
     cursor.close()
     db.close()
     return result
+
+def tambah_riwayat_status(kode_laporan, status, catatan):
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    cursor.execute("""
+        INSERT INTO riwayat_klaim_barang (kode_laporan, status, catatan)
+        VALUES (%s, %s, %s)
+    """, (kode_laporan, status, catatan))
+
+    db.commit()
+    cursor.close()
+    db.close()
+
+def get_riwayat_status(kode_laporan):
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT status, catatan, waktu_update
+        FROM riwayat_klaim_barang
+        WHERE kode_laporan = %s
+        ORDER BY waktu_update ASC
+    """, (kode_laporan,))
+
+    data = cursor.fetchall()
+    cursor.close()
+    db.close()
+    return data

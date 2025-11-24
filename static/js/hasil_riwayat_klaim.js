@@ -1,10 +1,8 @@
 document.addEventListener("DOMContentLoaded", async () => {
     const listKlaim = document.getElementById("listKlaim");
 
-    // email disimpan dari halaman cek riwayat sebelumnya
     const urlParams = new URLSearchParams(window.location.search);
     const email = urlParams.get("email");
-
 
     if (!email) {
         listKlaim.innerHTML = `
@@ -27,13 +25,17 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         data.forEach(k => {
-            const statusClass = k.status.toLowerCase();
+            const statusClass = (k.status_klaim || "")
+                .toLowerCase()
+                .replace(/ /g, "_");  // ubah spasi jadi underscore
+
 
             const card = document.createElement("div");
             card.className = "col-md-4";
+
             card.innerHTML = `
                 <div class="card h-100">
-                    <img src="${k.gambar_penemuan || '/static/image/no-image.png'}"
+                    <img src="/static/uploads/${k.gambar_barang || 'no-image.png'}"
                          class="card-img-top">
 
                     <div class="card-body">
@@ -42,9 +44,16 @@ document.addEventListener("DOMContentLoaded", async () => {
                         <p class="card-text"><strong>Kode Barang:</strong> ${k.kode_barang}</p>
                         <p class="card-text"><strong>Kode Laporan:</strong> ${k.kode_laporan}</p>
                         <p class="card-text"><strong>Lokasi:</strong> ${k.lokasi || '-'}</p>
-                        <p class="card-text"><strong>Status:</strong> 
-                           <span class="status ${statusClass}">${k.status}</span>
+
+                        <!-- STATUS hanya isi -->
+                        <p class="card-text">
+                            <span class="status ${statusClass}">
+                                ${k.status_klaim || ""}
+                            </span>
                         </p>
+
+                        <!-- CATATAN hanya isi -->
+                        ${k.catatan_admin ? `<p class="card-text">${k.catatan_admin}</p>` : ""}
                     </div>
 
                     <div class="text-end p-3">
@@ -53,10 +62,12 @@ document.addEventListener("DOMContentLoaded", async () => {
                     </div>
                 </div>
             `;
+
             listKlaim.appendChild(card);
         });
 
     } catch (err) {
+        console.error(err);
         listKlaim.innerHTML = `
             <p class="text-center mt-5 text-danger">Terjadi kesalahan memuat data.</p>`;
     }

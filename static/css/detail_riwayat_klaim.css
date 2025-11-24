@@ -2,11 +2,6 @@ body {
   font-family: Arial, sans-serif;
   padding-top: 70px; 
 }
-
-#listKlaim {
-    margin-bottom: 80px;
-}
-
 /* ===== NAVBAR STYLE ===== */
 .navbar {
   background: #0056a6;
@@ -132,125 +127,132 @@ body {
   }
 }
 
-.card {
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-.card img {
-  height: 200px;
-  object-fit: cover;
-}
-
-/* ---- STATUS BADGE ---- */
-.status {
-    display: inline-block;
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 600;
-    text-transform: capitalize;
-}
-
-/* Pending */
-.status.pending {
-    background-color: #fff3cd;
-    color: #856404;
-}
-
-/* Verifikasi */
-.status.verifikasi {
-    background-color: #cce5ff;
-    color: #004085;
-}
-
-/* Ditolak */
-.status.ditolak {
-    background-color: #f8d7da;
-    color: #721c24;
-}
-
-/* Siap Diambil */
-.status.siap_diambil,
-.status.siap-diambil {
-    background-color: #ffe5b4;
-    color:  #8a4b00;
-}
-
-/* Selesai */
-.status.selesai {
-    background-color: #d4edda;
-    color: #155724;
-}
-
-/* Panah kiri & logo kanan atas */
-.top-header-icons {
-  position: absolute;
-  top: 90px; /* sedikit di bawah navbar */
-  left: 0;
-  right: 0;
+/* ===== HEADER ===== */
+.header-riwayat {
+  margin-top: 20px;           /* dari 85 ke 60, lebih dekat dengan navbar */
+  padding: 0 25px;            /* diperkecil dari 40px */
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 30px;
-  z-index: 1000;
 }
 
-/* Panah kiri */
-.arrow-left {
+/* Panah kiri - ukuran seperti .arrow-left */
+.back-arrow-header {
   color: #004b8d;
-  font-size: 28px;
+  font-size: 28px;          /* ukuran sesuai permintaan */
   text-decoration: none;
   transition: color 0.3s ease, transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  line-height: 1;
+  margin-right: 8px;
 }
 
-.arrow-left:hover {
+.back-arrow-header:hover {
   color: #007bff;
   transform: translateX(-3px);
 }
 
-/* Logo Juanda 2 kanan */
+.back-arrow-header i {
+  font-size: 28px;          /* ikon mengikuti ukuran parent */
+}
+
+/* Judul halaman */
+.title-riwayat {
+  font-weight: 700;
+  color: #212529;
+  font-size: 1.9rem;
+}
+
+/* Logo kanan atas */
 .logo-juanda2 {
   height: 55px;
   width: auto;
-  transition: transform 0.3s ease;
+  object-fit: contain;
+  opacity: 0.95;
+  margin-top: -5px;
 }
 
-.logo-juanda2:hover {
-  transform: scale(1.05);
-}
-
-/* Responsif */
-@media (max-width: 768px) {
-  .top-header-icons {
-    top: 80px;
-    padding: 0 15px;
-  }
-
-  .arrow-left {
-    font-size: 24px;
-  }
-
-  .logo-juanda2 {
-    height: 45px;
-  }
-}
-
-/* Tombol Lihat Detail */
-.lihat-detail {
-  background-color: #004b8d;
-  border: none;
+/* ===== DETAIL LAPORAN ===== */
+.bg-light-blue {
+  background-color: #e7f1fb;
+  border-left: 4px solid #004b8d;
+  padding: 15px;
   border-radius: 8px;
-  padding: 6px 12px;
-  font-size: 14px;
-  transition: 0.3s;
 }
 
-.lihat-detail:hover {
-  background-color: #007bff;
-  transform: translateY(-2px);
+/* Info barang */
+#infoBarang {
+  font-size: 16px;
+  line-height: 1.7;
+  text-align: justify;
+  margin-top: 15px;
 }
+
+#infoBarang img {
+  display: block;
+  margin: 0 auto 15px auto;
+  width: 200px;
+  border-radius: 8px;
+}
+
+#infoBarang .row-detail {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 4px;
+}
+
+#infoBarang .label {
+  width: 130px;
+  font-weight: 600;
+}
+
+#infoBarang .value {
+  flex: 1;
+  text-align: justify;
+}
+
+/* ===== STATUS ===== */
+.status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 6px;
+}
+.status-pending { background: #ffc107; }
+.status-verifikasi { background: #28a745; }
+.status-ditolak { background: #dc3545; }
+
+/* ===== TABEL ===== */
+.table-header-blue {
+  background-color: #004b8d;
+  color: #fff;
+}
+
+/* === Beri jarak bawah agar tidak nempel ke footer === */
+#kontenDetail {
+  margin-bottom: 80px; /* jarak tambahan sebelum footer */
+}
+/* Tambahan margin bawah lebih besar di layar besar */
+@media (min-width: 992px) {
+  #kontenDetail {
+    margin-bottom: 120px;
+  }
+}
+
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 6px;
+  color: white;
+  font-weight: 600;
+}
+
+.status-pending { background: #f0ad4e; }
+.status-verifikasi { background: #0275d8; }
+.status-ditolak { background: #d9534f; }
+.status- siap-diambil { background: #5bc0de; }
+.status-selesai { background: #5cb85c; }
 
 footer {
   background: #0056a6;
