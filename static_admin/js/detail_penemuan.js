@@ -1,21 +1,26 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const kode_barang = urlParams.get("kode");
-  const from = urlParams.get("from") || "daftar_penemuan";
-
+  
+  // ============================
+  // BUTTON UPDATE STATUS
+  // ============================
   const btnUpdate = document.getElementById("btnUpdate");
+
   if (btnUpdate) {
     btnUpdate.addEventListener("click", async () => {
+
+      const kode_barang = btnUpdate.dataset.kode;
       const newStatus = document.getElementById("status").value;
-      if (!newStatus)
+
+      if (!newStatus) {
         return Swal.fire("Peringatan!", "Pilih status dulu.", "warning");
+      }
 
       try {
         const response = await fetch(`/admin/api/penemuan/update_status`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            kode: kode_barang,  
+            kode: kode_barang,
             status: newStatus
           })
         });
@@ -38,12 +43,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
       } catch (error) {
         console.error("JS Error:", error);
-        Swal.fire("Error!", "Terjadi kesalahan pada server.", "error");
+        Swal.fire("Error!", "Terjadi kesalahan server.", "error");
       }
+
     });
   }
-  
+
+  // ============================
+  // BUTTON KLAIM BARANG
+  // ============================
+  const btnKlaim = document.getElementById("btnKlaim");
+
+  if (btnKlaim) {
+    btnKlaim.addEventListener("click", () => {
+      const kode = btnKlaim.dataset.kode;
+
+      // ROUTE BARU YANG BENAR
+      window.location.href = `/admin/klaim/baru?kode_barang=${kode}`;
+    });
+  }
+
+  // ============================
+  // BUTTON KEMBALI
+  // ============================
   const btnKembali = document.getElementById("btnKembali");
+  const urlParams = new URLSearchParams(window.location.search);
+  const from = urlParams.get("from") || "daftar_penemuan";
+
   if (btnKembali) {
     btnKembali.addEventListener("click", () => {
       if (from === "daftar_penemuan") {
@@ -55,4 +81,5 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+
 });

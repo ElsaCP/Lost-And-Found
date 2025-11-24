@@ -58,16 +58,14 @@
   <div class="detail-flex">
 
     <!-- BAGIAN KIRI -->
-    <div class="left">
+    <div class="detail-right">
         <div class="detail-photo-box">
             <img id="imgFotoBarang" src="" alt="Foto Barang">
         </div>
         <div class="kode-barang-label" id="kodeBarang"></div>
-    </div>
+
 
     <!-- BAGIAN KANAN -->
-    <div class="detail-right">
-
         <!-- DATA PENGKLAIM -->
         <div class="data-section">
             <h3>Data Pengklaim</h3>
@@ -98,6 +96,11 @@
             </div>
 
             <div class="data-row">
+              <span>Kode Laporan Kehilangan</span>
+              <strong id="kodeLaporanKehilangan"></strong>
+            </div>
+
+            <div class="data-row">
                 <span>Nama Barang</span>
                 <strong id="namaBarang"></strong>
             </div>
@@ -111,13 +114,13 @@
         <!-- IDENTITAS DIRI -->
         <div class="data-section">
             <h3>Identitas Diri</h3>
-            <img id="imgIdentitas" class="foto-barang" style="width:230px; border:1px solid #000;">
+            <img id="imgIdentitas" class="foto-barang zoomable" style="width:230px; border:1px solid #000;">
         </div>
 
         <!-- BUKTI -->
         <div class="data-section">
             <h3>Bukti Laporan Kehilangan</h3>
-            <img id="imgBukti" class="foto-barang" style="width:230px; border:1px solid #000;">
+            <img id="imgBukti" class="foto-barang zoomable" style="width:230px; border:1px solid #000;">
         </div>
 
         <!-- WAKTU & STATUS -->
@@ -168,7 +171,6 @@
 
   </div> <!-- end detail-flex -->
 </div> <!-- end wrapper -->
-
 
   <!-- LIGHTBOX -->
   <div id="lightbox" class="lightbox">

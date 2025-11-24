@@ -2,6 +2,8 @@ from flask import Blueprint, render_template, request, jsonify, redirect, url_fo
 import mysql.connector
 from datetime import datetime
 import os
+from werkzeug.utils import secure_filename
+from flask import request
 
 admin_bp = Blueprint(
     'admin_bp',
@@ -625,6 +627,99 @@ def update_status_penemuan():
         cursor.close()
         conn.close()
 
+@admin_bp.route('/klaim/baru', methods=['GET', 'POST'])
+def tambah_klaim_penemuan():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    if request.method == "GET":
+        kode_barang = request.args.get("kode_barang")
+        if not kode_barang:
+            return "Kode barang tidak ditemukan", 400
+
+        cursor.execute("SELECT * FROM penemuan WHERE kode_barang = %s", (kode_barang,))
+        laporan = cursor.fetchone()
+        cursor.close()
+        conn.close()
+
+        if not laporan:
+            return "Data barang tidak ditemukan", 404
+
+        return render_template('tambah_klaim_penemuan.html', laporan=laporan)
+
+    # ===== POST METHOD =====
+    nama_pelapor = request.form.get("nama", "").strip()
+    no_telp = request.form.get("telp", "").strip()
+    email = request.form.get("email", "").strip()
+    deskripsi_khusus = request.form.get("deskripsiKhusus", "").strip()
+    kode_barang = request.form.get("kodeBarang", "").strip()
+    kode_laporan_kehilangan = request.form.get("kodeLaporanKehilangan", "").strip() or None
+
+    # ===== Generate tanggal & waktu otomatis =====
+    tanggal_lapor = datetime.now().strftime("%Y-%m-%d")
+    waktu_lapor = datetime.now().strftime("%H:%M")  # tanpa detik
+
+    # Ambil nama_barang dari tabel penemuan berdasarkan kode_barang
+    cursor.execute("SELECT nama_barang FROM penemuan WHERE kode_barang = %s", (kode_barang,))
+    barang = cursor.fetchone()
+    if not barang:
+        flash("Nama barang tidak ditemukan di database.", "danger")
+        return redirect(request.url)
+    nama_barang = barang['nama_barang']
+
+    # Ambil kode klaim terakhir
+    cursor.execute("SELECT kode_laporan FROM klaim_barang ORDER BY id DESC LIMIT 1")
+    last = cursor.fetchone()
+    if last and last['kode_laporan']:
+        nomor = int(last['kode_laporan'].split('-C')[-1]) + 1
+    else:
+        nomor = 1
+
+    kode_baru = f"LF-C{nomor:03d}"
+
+    # ===== Fungsi simpan file =====
+    def allowed_file(filename):
+        return filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif'))
+
+    def simpan_file(file_obj):
+        if file_obj and allowed_file(file_obj.filename):
+            return file_obj.filename
+        return None
+
+    path_identitas = simpan_file(request.files.get("foto_identitas"))
+    path_foto = simpan_file(request.files.get("foto_barang"))
+    path_bukti = simpan_file(request.files.get("bukti_laporan"))
+
+    if not (nama_pelapor and no_telp and email and deskripsi_khusus and kode_barang and path_identitas and path_foto):
+        flash("Data belum lengkap atau file tidak valid.", "warning")
+        return redirect(request.url)
+
+    try:
+        cursor.execute("""
+            INSERT INTO klaim_barang (
+                kode_laporan, kode_barang, kode_laporan_kehilangan,
+                nama_barang, nama_pelapor, no_telp, email,
+                deskripsi_khusus, identitas_diri, bukti_laporan, foto_barang,
+                tanggal_lapor, waktu_lapor
+            ) 
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        """, (
+            kode_baru, kode_barang, kode_laporan_kehilangan,
+            nama_barang, nama_pelapor, no_telp, email,
+            deskripsi_khusus, path_identitas, path_bukti, path_foto,
+            tanggal_lapor, waktu_lapor
+        ))
+        conn.commit()
+        flash("Klaim berhasil dikirim!", "success")
+    except Exception as e:
+        flash(f"Error insert ke database: {e}", "danger")
+        conn.rollback()
+    finally:
+        cursor.close()
+        conn.close()
+
+    return redirect(url_for('admin_bp.daftar_klaim_penemuan'))
+
 # ================== EDIT PENEMUAN ====================
 @admin_bp.route('/penemuan/edit', methods=['GET', 'POST'])
 def edit_penemuan():
@@ -787,6 +882,26 @@ def daftar_klaim_penemuan():
 
     return render_template("admin/klaim_penemuan.html", data_klaim=data_klaim)
 
+# ======================
+# UPDATE STATUS KLAIM
+# ======================
+@admin_bp.route('/penemuan/klaim/update_status', methods=['POST'])
+def update_status_klaim():
+    data = request.get_json()
+    kode_barang = data.get("kode_barang")
+    status_baru = data.get("status_baru")
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    query = "UPDATE klaim_barang SET status = %s WHERE kode_barang = %s"
+    cursor.execute(query, (status_baru, kode_barang))
+    conn.commit()
+
+    cursor.close()
+    conn.close()
+
+    return jsonify({"success": True, "message": "Status berhasil diperbarui!"})
 
 # ======================
 # HALAMAN HTML DETAIL (TANPA JSON)
@@ -796,9 +911,6 @@ def detail_klaim_penemuan(kode_klaim):
     return render_template("admin/detail_klaim_penemuan.html", kode_klaim=kode_klaim)
 
 
-# ======================
-# API AMBIL DETAIL DATA (UNTUK FETCH JS)
-# ======================
 @admin_bp.route('/penemuan/klaim/api')
 def detail_klaim_penemuan_api():
     kode = request.args.get("kode")
@@ -810,24 +922,28 @@ def detail_klaim_penemuan_api():
     cursor.execute("""
         SELECT 
             k.*,
+            k.kode_laporan_kehilangan,
             p.nama_barang,
             p.kategori,
             p.lokasi,
-            p.gambar_barang AS foto_penemuan
+            p.gambar_barang AS foto_barang
         FROM klaim_barang k
         LEFT JOIN penemuan p ON k.kode_barang = p.kode_barang
         WHERE k.kode_laporan = %s
         LIMIT 1
     """, (kode,))
+    
     data = cursor.fetchone()
     cursor.close()
     conn.close()
 
     if not data:
         return jsonify({"success": False, "message": "Data tidak ditemukan"}), 404
+    
+    if data["update_terakhir"]:
+        data["update_terakhir"] = data["update_terakhir"].strftime("%Y-%m-%d %H:%M")
 
     return jsonify({"success": True, "data": data})
-
 
 # ======================
 # UPDATE KLAIM
@@ -855,10 +971,6 @@ def update_klaim_penemuan():
     conn.close()
 
     return jsonify({"success": True})
-
-@admin_bp.route("/penemuan/klaim/tambah", methods=["GET", "POST"])
-def tambah_klaim_penemuan():
-    ...
 
 # ======================
 # 📁 ARSIP & PENGATURAN

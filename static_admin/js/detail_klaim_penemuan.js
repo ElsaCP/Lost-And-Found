@@ -1,11 +1,10 @@
 document.addEventListener("DOMContentLoaded", async function () {
 
     // ============================
-    // AMBIL KODE DARI URL PATH
-    // /admin/penemuan/klaim/detail/LF-C001
+    // AMBIL KODE KLAIM DARI URL
     // ============================
-    const path = window.location.pathname.split("/");
-    const kode = path[path.length - 1];
+    const pathParts = window.location.pathname.split("/");
+    const kode = pathParts[pathParts.length - 1];
 
     if (!kode) {
         console.error("Kode klaim tidak ditemukan di URL.");
@@ -13,42 +12,49 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     // ============================
-    // FETCH DATA DARI API BARU
+    // FETCH DATA DARI API
     // ============================
     try {
         const response = await fetch(`/admin/penemuan/klaim/api?kode=${kode}`);
-        const data = await response.json();
+        const json = await response.json();
 
-        if (!data.success) {
+        if (!json.success) {
             console.error("Data klaim tidak ditemukan.");
             return;
         }
 
-        const klaim = data.data;
+        const klaim = json.data;
 
         // === ISI DATA KE HALAMAN ===
-        document.getElementById("kodeLaporan").textContent = klaim.kode_laporan;
+        document.getElementById("kodeLaporan").textContent = klaim.kode_laporan ?? "-";
         document.getElementById("kodeBarang").textContent = klaim.kode_barang ?? "-";
-        document.getElementById("namaBarang").textContent = klaim.nama_barang;
-        document.getElementById("namaPelapor").textContent = klaim.nama_pelapor;
-        document.getElementById("noTelp").textContent = klaim.no_telp;
-        document.getElementById("emailPelapor").textContent = klaim.email;
-        document.getElementById("deskripsiKhusus").textContent = klaim.deskripsi_khusus;
+        document.getElementById("kodeLaporanKehilangan").textContent = klaim.kode_laporan_kehilangan ?? "-";
 
-        document.getElementById("tanggalLapor").textContent = klaim.tanggal_lapor;
-        document.getElementById("waktuLapor").textContent = klaim.waktu_lapor;
-        document.getElementById("updateTerakhir").textContent = klaim.update_terakhir;
+        document.getElementById("namaBarang").textContent = klaim.nama_barang ?? "-";
+        document.getElementById("namaPelapor").textContent = klaim.nama_pelapor ?? "-";
+        document.getElementById("noTelp").textContent = klaim.no_telp ?? "-";
+        document.getElementById("emailPelapor").textContent = klaim.email ?? "-";
+        document.getElementById("deskripsiKhusus").textContent = klaim.deskripsi_khusus ?? "-";
 
-        // GAMBAR
-        document.getElementById("imgIdentitas").src = `/uploads/${klaim.identitas_diri}`;
-        document.getElementById("imgBukti").src = `/uploads/${klaim.bukti_laporan}`;
-        document.getElementById("imgFotoBarang").src = `/uploads/${klaim.foto_barang}`;
+        document.getElementById("tanggalLapor").textContent = klaim.tanggal_lapor ?? "-";
+        document.getElementById("waktuLapor").textContent = klaim.waktu_lapor ?? "-";
+        document.getElementById("updateTerakhir").textContent = klaim.update_terakhir ?? "-";
+
+        // GAMBAR (aman dari null)
+        document.getElementById("imgIdentitas").src =
+            klaim.identitas_diri ? `/uploads/${klaim.identitas_diri}` : "/static/no-image.png";
+
+        document.getElementById("imgBukti").src =
+            klaim.bukti_laporan ? `/uploads/${klaim.bukti_laporan}` : "/static/no-image.png";
+
+        document.getElementById("imgFotoBarang").src =
+            klaim.foto_barang ? `/uploads/${klaim.foto_barang}` : "/static/no-image.png";
 
         // STATUS
-        document.getElementById("statusSelect").value = klaim.status;
+        document.getElementById("statusSelect").value = klaim.status ?? "Pending";
 
         // CATATAN
-        document.getElementById("catatanAdmin").value = klaim.catatan_admin;
+        document.getElementById("catatanAdmin").value = klaim.catatan_admin ?? "";
 
     } catch (error) {
         console.error("Gagal memuat data klaim:", error);
@@ -62,9 +68,10 @@ document.addEventListener("DOMContentLoaded", async function () {
     });
 
     // ============================
-    // TOMBOL UPDATE STATUS
+    // UPDATE STATUS KLAIM
     // ============================
     document.getElementById("btnUpdate").addEventListener("click", async () => {
+
         const status = document.getElementById("statusSelect").value;
         const catatan = document.getElementById("catatanAdmin").value;
 
@@ -78,6 +85,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             confirmButtonText: "Ya, simpan",
             cancelButtonText: "Batal",
         }).then(async (result) => {
+
             if (!result.isConfirmed) return;
 
             const res = await fetch("/admin/penemuan/klaim/update", {
@@ -93,6 +101,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             const resultUpdate = await res.json();
 
             if (resultUpdate.success) {
+
                 Swal.fire({
                     icon: "success",
                     title: "Berhasil!",
@@ -104,14 +113,13 @@ document.addEventListener("DOMContentLoaded", async function () {
                 setTimeout(() => {
                     window.location.href = "/admin/penemuan/klaim";
                 }, 1500);
+
             } else {
                 Swal.fire({
                     icon: "error",
                     title: "Gagal!",
                     text: "Terjadi kesalahan saat menyimpan perubahan."
                 });
-                const pathParts = window.location.pathname.split("/");
-                const kode = pathParts[pathParts.length - 1]; // "LF-C001"
             }
         });
     });
