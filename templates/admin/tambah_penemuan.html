@@ -8,158 +8,140 @@
   <link rel="stylesheet" href="{{ url_for('admin_bp.static', filename='css/beranda.css') }}">
   <link rel="stylesheet" href="{{ url_for('admin_bp.static', filename='css/daftar_penemuan.css') }}">
   <link rel="stylesheet" href="{{ url_for('admin_bp.static', filename='css/tambah_kehilangan.css') }}">
-
   <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
   <script src="bootstrap/js/bootstrap.bundle.min.js"></script>
-
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 </head>
-
 <body>
 
-  <!-- SIDEBAR -->
-  <div class="sidebar">
-    <div>
-      <div class="logo-wrapper">
-        <img src="{{ url_for('admin_bp.static', filename='image/rectangle.png')}}" class="rectangle-bg">
-        <img src="{{ url_for('admin_bp.static', filename='image/logo.png')}}" class="logo-front">
-      </div>
-
-      <nav>
-        <a href="{{ url_for('admin_bp.beranda_admin') }}"><i class="bi bi-speedometer2"></i> Beranda</a>
-
-        <a href="{{ url_for('admin_bp.daftar_kehilangan') }}"><i class="bi bi-question-circle"></i> Kehilangan</a>
-
-        <a href="{{ url_for('admin_bp.daftar_penemuan') }}" class="active">
-          <i class="bi bi-archive"></i> Penemuan
-        </a>
-
-        <div class="submenu">
-          <a href="{{ url_for('admin_bp.daftar_penemuan') }}"><i class="bi bi-list-ul"></i> Daftar Barang</a>
-          <a href="{{ url_for('admin_bp.tambah_penemuan') }}" class="active">
-            <i class="bi bi-plus-circle"></i> Tambah</a>
-          <a href="{{ url_for('admin_bp.daftar_klaim_penemuan') }}"><i class="bi bi-hand-thumbs-up"></i> Klaim Barang</a>
-        </div>
-
-        <a href="{{ url_for('admin_bp.arsip') }}"><i class="bi bi-folder"></i> Arsip</a>
-        <a href="{{ url_for('admin_bp.pengaturan') }}"><i class="bi bi-gear"></i> Pengaturan</a>
-      </nav>
-    </div>
-
-    <a href="{{ url_for('admin_bp.logout_admin') }}" class="logout">
-      <i class="bi bi-box-arrow-right"></i> Logout
-    </a>
-  </div>
-
-  <!-- HEADER -->
-  <div class="header">
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div>
     <div class="logo-wrapper">
-      <img src="{{ url_for('admin_bp.static', filename='image/rectangle2.png')}}" class="rectangle-bg">
-      <img src="{{ url_for('admin_bp.static', filename='image/image5.png')}}" class="logo-front">
+      <img src="{{ url_for('admin_bp.static', filename='image/rectangle.png')}}" class="rectangle-bg">
+      <img src="{{ url_for('admin_bp.static', filename='image/logo.png')}}" class="logo-front">
     </div>
-    <h2>Penemuan - Tambah Laporan</h2>
-    <div class="profile-icon"><i class="bi bi-person-circle"></i></div>
+    <nav>
+      <a href="{{ url_for('admin_bp.beranda_admin') }}"><i class="bi bi-speedometer2"></i> Beranda</a>
+      <a href="{{ url_for('admin_bp.daftar_kehilangan') }}"><i class="bi bi-question-circle"></i> Kehilangan</a>
+      <a href="{{ url_for('admin_bp.daftar_penemuan') }}" class="active"><i class="bi bi-archive"></i> Penemuan</a>
+      <div class="submenu">
+        <a href="{{ url_for('admin_bp.daftar_penemuan') }}"><i class="bi bi-list-ul"></i> Daftar Barang</a>
+        <a href="{{ url_for('admin_bp.tambah_penemuan') }}" class="active"><i class="bi bi-plus-circle"></i> Tambah</a>
+        <a href="{{ url_for('admin_bp.daftar_klaim_penemuan') }}"><i class="bi bi-hand-thumbs-up"></i> Klaim Barang</a>
+      </div>
+      <a href="{{ url_for('admin_bp.arsip') }}"><i class="bi bi-folder"></i> Arsip</a>
+      <a href="{{ url_for('admin_bp.pengaturan') }}"><i class="bi bi-gear"></i> Pengaturan</a>
+    </nav>
   </div>
+  <a href="{{ url_for('admin_bp.logout_admin') }}" class="logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
+</div>
 
-  <!-- CONTENT -->
-  <div class="content">
+<!-- HEADER -->
+<div class="header">
+  <div class="logo-wrapper">
+    <img src="{{ url_for('admin_bp.static', filename='image/rectangle2.png')}}" class="rectangle-bg">
+    <img src="{{ url_for('admin_bp.static', filename='image/image5.png')}}" class="logo-front">
+  </div>
+  <h2>Penemuan - Tambah Laporan</h2>
+  <div class="profile-icon"><i class="bi bi-person-circle"></i></div>
+</div>
 
-    <div class="container tambah-kehilangan">
-      <h3>Data Barang Ditemukan</h3>
+<!-- CONTENT -->
+<div class="content">
+  <div class="container tambah-kehilangan">
+    <h3>Data Barang Ditemukan</h3>
 
-  <form id="formPenemuan" 
-        action="{{ url_for('admin_bp.tambah_penemuan') }}"
-        method="POST" enctype="multipart/form-data">
+    <form id="formPenemuan" 
+          action="{{ url_for('admin_bp.tambah_penemuan') }}"
+          method="POST" enctype="multipart/form-data">
 
-    <!-- DATA PELAPOR -->
-    <label>Nama Pelapor</label>
-    <input type="text" name="nama_pelapor" class="form-control required">
+      <!-- DATA PELAPOR -->
+      <label>Nama Pelapor</label>
+      <input type="text" name="nama_pelapor" class="form-control required" required>
 
-    <label>No. Telp</label>
-    <input type="text" name="no_telp" class="form-control required">
+      <label>No. Telp</label>
+      <input type="text" name="no_telp" class="form-control required" required>
 
-    <label>Email</label>
-    <input type="email" name="email" class="form-control required">
+      <label>Email</label>
+      <input type="email" name="email" class="form-control required">
 
-    <!-- DATA BARANG -->
-    <label>Nama Barang</label>
-    <input type="text" name="nama_barang" class="form-control required">
+      <!-- DATA BARANG -->
+      <label>Nama Barang</label>
+      <input type="text" name="nama_barang" class="form-control required" required>
 
-    <label>Kategori</label>
-    <select name="kategori" class="form-select required">
-      <option value="">Pilih kategori</option>
-      <option value="Tas">Tas</option>
-      <option value="Dompet">Dompet</option>
-      <option value="Elektronik">Elektronik</option>
-      <option value="Pakaian & Aksesori">Pakaian & Aksesori</option>
-      <option value="Kendaraan & Aksesori Kendaraan">Kendaraan & Aksesori Kendaraan</option>
-      <option value="Barang Lainnya">Barang Lainnya</option>
-    </select>
+      <label>Kategori</label>
+      <select name="kategori" class="form-select required" required>
+        <option value="">Pilih kategori</option>
+        <option value="Tas">Tas</option>
+        <option value="Dompet">Dompet</option>
+        <option value="Elektronik">Elektronik</option>
+        <option value="Pakaian & Aksesori">Pakaian & Aksesori</option>
+        <option value="Kendaraan & Aksesori Kendaraan">Kendaraan & Aksesori Kendaraan</option>
+        <option value="Barang Lainnya">Barang Lainnya</option>
+      </select>
 
-    <label>Jenis Barang</label>
-    <select name="jenis_barang" class="form-control required">
-      <option value="">Pilih Jenis Barang</option>
-      <option value="Publik">Publik</option>
-      <option value="Privat">Privat</option>
-    </select>
+      <label>Jenis Barang</label>
+      <select name="jenis_barang" class="form-select required" required>
+        <option value="">Pilih Jenis Barang</option>
+        <option value="Publik">Publik</option>
+        <option value="Privat">Privat</option>
+      </select>
 
-    <!-- JENIS LAPORAN FIX -->
-    <input type="hidden" name="jenis_laporan" value="Penemuan">
+      <!-- JENIS LAPORAN FIX -->
+      <input type="hidden" name="jenis_laporan" value="Penemuan">
 
-    <!-- LOKASI -->
-    <label class="fw-bold" style="margin-top: 10px;">Lokasi Penemuan</label>
-
-    <div class="lokasi-row d-flex gap-3">
-      <div class="lokasi-col flex-grow-1">
-        <label>Terminal</label>
-        <select id="terminal_penemuan" name="terminal" class="form-select required">
-          <option value="">Pilih Terminal</option>
-          <option value="Terminal 1">Terminal 1</option>
-          <option value="Terminal 2">Terminal 2</option>
-        </select>
+      <!-- LOKASI -->
+      <label class="fw-bold mt-3">Lokasi Penemuan</label>
+      <div class="lokasi-row d-flex gap-3">
+        <div class="lokasi-col flex-grow-1">
+          <label>Terminal</label>
+          <select id="terminal_penemuan" name="terminal" class="form-select required" required>
+            <option value="">Pilih Terminal</option>
+            <option value="Terminal 1">Terminal 1</option>
+            <option value="Terminal 2">Terminal 2</option>
+          </select>
+        </div>
+        <div class="lokasi-col flex-grow-1">
+          <label>Tempat</label>
+          <select id="tempat_penemuan" name="tempat" class="form-select required" required>
+            <option value="">Pilih Lokasi</option>
+          </select>
+        </div>
       </div>
 
-      <div class="lokasi-col flex-grow-1">
-        <label>Tempat</label>
-        <select id="tempat_penemuan" name="tempat" class="form-select required">
-          <option value="">Pilih Lokasi</option>
-        </select>
+      <div id="lokasiLainContainerPenemuan" style="display:none; margin-top: 10px;">
+        <label>Tulis Lokasi Lainnya :</label>
+        <input type="text" id="lokasi_lain_penemuan" class="form-control">
       </div>
-    </div>
 
-    <div id="lokasiLainContainerPenemuan" style="display:none; margin-top: 10px;">
-      <label>Tulis Lokasi Lainnya :</label>
-      <input type="text" id="lokasi_lain_penemuan" class="form-control">
-    </div>
+      <input type="hidden" id="lokasi_penemuan" name="lokasi">
 
-    <input type="hidden" id="lokasi_penemuan" name="lokasi">
+      <!-- WAKTU -->
+      <label>Tanggal Penemuan</label>
+      <input type="date" name="tanggal_lapor" class="form-control required" required>
 
-    <!-- WAKTU -->
-    <label>Tanggal Penemuan</label>
-    <input type="date" name="tanggal_lapor" class="form-control required">
+      <!-- DESKRIPSI -->
+      <label>Deskripsi Barang</label>
+      <textarea name="deskripsi" class="form-control required" rows="3"></textarea>
 
-    <!-- DESKRIPSI -->
-    <label>Deskripsi Barang</label>
-    <textarea name="deskripsi" class="form-control required" rows="3"></textarea>
+      <label>Foto Barang</label>
+      <input type="file" id="gambarInput" name="foto" class="form-control">
 
-    <label>Foto Barang</label>
-    <input type="file" id="gambarInput" name="gambar_barang" class="form-control required">
+      <input type="hidden" name="status" value="Pending">
+      <input type="hidden" name="kode_barang" value="{{ kode_baru }}">
 
-    <input type="hidden" name="jenis_laporan" value="Penemuan">
-    <input type="hidden" name="status" value="Pending">
-    <input type="hidden" name="kode_barang" value="{{ kode_baru }}">
-
-    <div class="button-group">
-      <button type="button" class="btn-cancel btn btn-secondary">Batal</button>
-      <button type="submit" class="btn-save btn btn-primary">Simpan</button>
-    </div>
-
-  </form>
-
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="{{ url_for('admin_bp.static', filename='js/tambah_penemuan.js') }}"></script>
-    <script src="{{ url_for('admin_bp.static', filename='js/logout.js') }}"></script>
+      <div class="button-group mt-3">
+        <button type="button" class="btn btn-secondary btn-cancel">Batal</button>
+        <button type="submit" class="btn btn-primary btn-save">Simpan</button>
+      </div>
+    </form>
 
   </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="{{ url_for('admin_bp.static', filename='js/tambah_penemuan.js') }}"></script>
+  <script src="{{ url_for('admin_bp.static', filename='js/logout.js') }}"></script>
+</div>
 </body>
 </html>

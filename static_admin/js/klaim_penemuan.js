@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
     select.addEventListener("change", function () {
       const newStatus = this.value;
       const prevStatus = this.dataset.prev;
-      const kodeBarang = this.dataset.kode;
+      const kodeLaporan = this.dataset.kode;  // FIX: ini KODE LAPORAN
 
       Swal.fire({
         title: "Yakin ubah status?",
@@ -31,12 +31,27 @@ document.addEventListener("DOMContentLoaded", function () {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              kode_barang: kodeBarang,
-              status_baru: newStatus
+              kode_laporan: kodeLaporan,   // FIX
+              status: newStatus            // FIX
             })
           })
           .then(res => res.json())
           .then(data => {
+
+            if (newStatus === "Selesai") {
+              Swal.fire({
+                icon: "success",
+                title: "Dipindahkan ke Arsip",
+                text: "Klaim telah selesai dan kini ada di arsip.",
+                timer: 1200,
+                showConfirmButton: false
+              }).then(() => {
+                window.location.href = "/admin/arsip";   // ⬅️ redirect langsung
+              });
+
+              return; // hentikan proses agar tidak lanjut
+            }
+
             Swal.fire({
               icon: "success",
               title: "Berhasil!",
@@ -45,11 +60,10 @@ document.addEventListener("DOMContentLoaded", function () {
               showConfirmButton: false
             });
 
-            select.dataset.prev = newStatus; // perbarui status sebelumnya
+            select.dataset.prev = newStatus;
           });
 
         } else {
-          // Jika batal → kembali ke status lama
           select.value = prevStatus;
         }
 
@@ -57,8 +71,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     });
   });
-
-
 
   // ============================
   // ==== FITUR SEARCH ==========

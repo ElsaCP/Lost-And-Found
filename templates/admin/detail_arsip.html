@@ -4,21 +4,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Arsip - Detail Laporan Barang</title>
+
   <link rel="stylesheet" href="{{ url_for('admin_bp.static', filename='css/beranda.css') }}">
   <link rel="stylesheet" href="{{ url_for('admin_bp.static', filename='css/daftar_kehilangan.css') }}">
   <link rel="stylesheet" href="{{ url_for('admin_bp.static', filename='css/detail_arsip.css') }}">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
+
 <body>
+
 <aside class="sidebar">
   <div class="sidebar-header">
     <div class="logo-wrapper">
-      <img src="{{ url_for('admin_bp.static', filename='image/rectangle.png')}}" alt="Background Sidebar" class="rectangle-bg">
-      <img src="{{ url_for('admin_bp.static', filename='image/logo.png')}}" alt="Logo Bandara" class="logo-front">
+      <img src="{{ url_for('admin_bp.static', filename='image/rectangle.png')}}" class="rectangle-bg">
+      <img src="{{ url_for('admin_bp.static', filename='image/logo.png')}}" class="logo-front">
     </div>
   </div>
 
-      <nav>
+  <nav>
     <a href="{{ url_for('admin_bp.beranda_admin') }}"><i class="bi bi-speedometer2"></i> Beranda</a>
     <a href="{{ url_for('admin_bp.daftar_kehilangan') }}"><i class="bi bi-question-circle"></i> Kehilangan</a>
     <a href="{{ url_for('admin_bp.daftar_penemuan') }}"><i class="bi bi-archive"></i> Penemuan</a>
@@ -29,59 +34,99 @@
   <a href="{{ url_for('admin_bp.logout_admin') }}" class="logout">
     <i class="bi bi-box-arrow-right"></i> Logout
   </a>
-  </aside>
+</aside>
 
-  <div class="content">
-    <div class="header">
-      <div class="logo-wrapper">
-        <img src="{{ url_for('admin_bp.static', filename='image/rectangle2.png')}}" alt="Rectangle Background" class="rectangle-bg">
-        <img src="{{ url_for('admin_bp.static', filename='image/image5.png')}}" alt="Logo Header" class="logo-front">
-      </div>
-      <h2>Arsip - Detail Laporan Barang</h2>
-      <div class="profile-icon">
-        <i class="bi bi-person-circle"></i>
-      </div>
+<div class="content">
+
+  <div class="header">
+    <div class="logo-wrapper">
+      <img src="{{ url_for('admin_bp.static', filename='image/rectangle2.png')}}" class="rectangle-bg">
+      <img src="{{ url_for('admin_bp.static', filename='image/image5.png')}}" class="logo-front">
     </div>
-
-    <div class="detail-container">
-      <div class="left-panel">
-        <img id="fotoBarang" class="foto-barang" src="https://placehold.co/230x260" alt="Foto Barang">
-        <div id="kodeLaporan" class="kode-laporan">{{ kode or '-' }}</div>
-      </div>
-
-      <div class="right-panel">
-        <div class="data-section">
-          <h3>Data Pelapor</h3>
-          <div class="data-row"><span>Nama :</span><strong id="namaPelapor">-</strong></div>
-          <div class="data-row"><span>No. Telp :</span><strong id="noTelp">-</strong></div>
-          <div class="data-row"><span>Email :</span><strong id="email">-</strong></div>
-        </div>
-
-        <div class="data-section">
-            <h3>Data Barang</h3>
-            <div class="data-row"><span>Nama Barang :</span><strong id="namaBarang">-</strong></div>
-            <div class="data-row"><span>Kategori Barang :</span><strong id="kategori">-</strong></div>
-            <div class="data-row"><span>Jenis Laporan :</span><strong id="jenisLaporan">-</strong></div>
-            <div class="data-row"><span>Lokasi :</span><strong id="lokasi">-</strong></div>
-            <div class="data-row"><span>Deskripsi :</span><strong id="deskripsi">-</strong></div>
-        </div>
-
-        <div class="data-section">
-          <div class="data-row"><span>Tanggal Lapor :</span><strong id="tanggalLapor">-</strong></div>
-          <div class="data-row"><span>Tanggal Arsip :</span><strong id="tanggalArsip">-</strong></div>
-          <div class="data-row"><span>Status :</span><strong id="status">-</strong></div>
-        </div>
-
-        <div class="button-group">
-          <button id="btnKembali" class="btn btn-secondary">Kembali</button>
-          <button id="btnPulihkan" class="btn btn-primary">Pulihkan Laporan</button>
-        </div>
-      </div>
+    <h2>Arsip - Detail Laporan Barang</h2>
+    <div class="profile-icon">
+      <i class="bi bi-person-circle"></i>
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script src="{{ url_for('admin_bp.static', filename='js/detail_arsip.js') }}"></script>
-  <script src="{{ url_for('admin_bp.static', filename='js/logout.js') }}"></script>
+  <div class="detail-container">
+
+    <!-- LEFT PANEL -->
+    <div class="left-panel">
+      <img class="foto-barang" 
+           src="{{ url_for('admin_bp.static', filename='image/' + (data.foto or 'default.png')) }}"
+           alt="Foto Barang">
+
+      <div class="kode-laporan">{{ data.kode or '-' }}</div>
+      <div class="jenis-laporan-label">{{ jenis_laporan }}</div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="right-panel">
+
+      <!-- DATA PELAPOR -->
+      <div class="data-section">
+        <h3>Data Pelapor</h3>
+
+        <div class="data-row"><span>Nama :</span>
+          <strong>{{ data.nama_pelapor or data.nama or '-' }}</strong>
+        </div>
+
+        <div class="data-row"><span>No. Telp :</span>
+          <strong>{{ data.no_telp or data.telp or '-' }}</strong>
+        </div>
+
+        <div class="data-row"><span>Email :</span>
+          <strong>{{ data.email or '-' }}</strong>
+        </div>
+      </div>
+
+      <!-- DATA BARANG -->
+      <div class="data-section">
+        <h3>Data Barang</h3>
+
+        <div class="data-row"><span>Nama Barang :</span>
+          <strong>{{ data.nama_barang or '-' }}</strong>
+        </div>
+
+        <div class="data-row"><span>Kategori Barang :</span>
+          <strong>{{ data.kategori or '-' }}</strong>
+        </div>
+
+        <div class="data-row"><span>Jenis Laporan :</span>
+          <strong>{{ jenis_laporan }}</strong>
+        </div>
+
+        <div class="data-row"><span>Lokasi :</span>
+          <strong>{{ data.lokasi or data.lokasi_kehilangan or '-' }}</strong>
+        </div>
+
+      <!-- TANGGAL & STATUS -->
+      <div class="data-section">
+        <div class="data-row"><span>Tanggal Lapor :</span>
+          <strong>{{ data.tanggal or '-' }}</strong>
+        </div>
+
+        <div class="data-row"><span>Tanggal Arsip :</span>
+          <strong>{{ data.tanggal_arsip.strftime('%Y-%m-%d %H:%M') if data.tanggal_arsip else '-' }}</strong>
+        </div>
+
+        <div class="data-row"><span>Status :</span>
+          <strong>{{ data.status or '-' }}</strong>
+        </div>
+      </div>
+
+      <!-- BUTTON -->
+      <div class="button-group">
+        <a href="{{ url_for('admin_bp.arsip') }}" class="btn btn-secondary">Kembali</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- JS DIPISAH -->
+<script src="{{ url_for('admin_bp.static', filename='js/detail_arsip.js') }}"></script>
+
 </body>
 </html>

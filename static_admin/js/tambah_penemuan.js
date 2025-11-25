@@ -94,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Foto
-    const foto = form.querySelector('[name="gambar_barang"]');
+    const foto = form.querySelector('[name="foto"]');
     if (!foto || !foto.files.length) {
       errors.push("Foto Barang");
     }

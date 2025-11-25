@@ -102,13 +102,13 @@
           <td>{{ item.nama_barang }}</td>
           <td>{{ item.nama_pelapor }}</td>
           <td>
-            <select class="status-select" data-kode="{{ item.kode_barang }}">
-              <option value="Pending" {% if item.status == 'Pending' %}selected{% endif %}>Pending</option>
-              <option value="Verifikasi" {% if item.status == 'Verifikasi' %}selected{% endif %}>Verifikasi</option>
-              <option value="Ditolak" {% if item.status == 'Ditolak' %}selected{% endif %}>Ditolak</option>
-              <option value="Siap Diambil" {% if item.status == 'Siap Diambil' %}selected{% endif %}>Siap Diambil</option>
-              <option value="Selesai" {% if item.status == 'Selesai' %}selected{% endif %}>Selesai</option>
-            </select>
+          <select class="status-select" data-kode="{{ item.kode_klaim }}">
+            <option value="Pending" {% if item.status == 'Pending' %}selected{% endif %}>Pending</option>
+            <option value="Verifikasi" {% if item.status == 'Verifikasi' %}selected{% endif %}>Verifikasi</option>
+            <option value="Ditolak" {% if item.status == 'Ditolak' %}selected{% endif %}>Ditolak</option>
+            <option value="Siap Diambil" {% if item.status == 'Siap Diambil' %}selected{% endif %}>Siap Diambil</option>
+            <option value="Selesai" {% if item.status == 'Selesai' %}selected{% endif %}>Selesai</option>
+          </select>
           </td>
           <td class="aksi">
             <a href="{{ url_for('admin_bp.detail_klaim_penemuan', kode_klaim=item.kode_klaim) }}" class="btn-detail">

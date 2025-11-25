@@ -4,61 +4,76 @@
 
 document.addEventListener("DOMContentLoaded", function () {
 
-  // === Fitur Ubah Status ===
-  const statusSelects = document.querySelectorAll("#dataTable select");
-  statusSelects.forEach(select => {
-    select.dataset.prevIndex = select.selectedIndex;
+// === Fitur Ubah Status ===
+const statusSelects = document.querySelectorAll("#dataTable select");
+statusSelects.forEach(select => {
+  select.dataset.prevIndex = select.selectedIndex;
 
-    select.addEventListener("change", function (e) {
-      const selectedStatus = this.value;
-      const prevIndex = this.dataset.prevIndex;
-      const row = this.closest("tr");
-      const kode = row.querySelector("td:first-child").textContent.trim();
+  select.addEventListener("change", function (e) {
+    const newStatus = this.value;
+    const prevIndex = this.dataset.prevIndex;
+    const row = this.closest("tr");
+    const kode = row.querySelector("td:first-child").textContent.trim();
 
-      Swal.fire({
-        title: "Ubah Status?",
-        text: `Apakah kamu yakin ingin mengubah status laporan ${kode} menjadi "${selectedStatus}"?`,
-        icon: "question",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#6c757d",
-        confirmButtonText: "Ya, ubah!",
-        cancelButtonText: "Batal",
-      }).then((result) => {
-        if (result.isConfirmed) {
+    Swal.fire({
+      title: "Ubah Status?",
+      text: `Apakah kamu yakin ingin mengubah status laporan ${kode} menjadi "${newStatus}"?`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#6c757d",
+      confirmButtonText: "Ya, ubah!",
+      cancelButtonText: "Batal",
+    }).then((result) => {
+      if (result.isConfirmed) {
 
-          fetch("/admin/api/kehilangan/update_status", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ kode, status: selectedStatus }),
-          })
-          .then(res => res.json())
-          .then(data => {
-            if (data.success) {
+        fetch("/admin/api/kehilangan/update_status", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ kode, status: newStatus }),
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+
+            // 🔥 Jika statusnya Selesai, langsung ke arsip
+            if (newStatus === "Selesai") {
               Swal.fire({
                 icon: "success",
-                title: "Status Diperbarui!",
-                text: `Status berhasil diubah menjadi "${selectedStatus}".`,
-                timer: 1500,
-                showConfirmButton: false,
+                title: "Dipindahkan ke Arsip",
+                text: "Laporan telah selesai dan kini ada di arsip.",
+                timer: 1200,
+                showConfirmButton: false
+              }).then(() => {
+                window.location.href = "/admin/arsip";   // redirect ke halaman arsip
               });
-
-              this.dataset.prevIndex = this.selectedIndex;
-              row.classList.add("status-updated");
-              setTimeout(() => row.classList.remove("status-updated"), 1000);
-
-            } else {
-              Swal.fire("Gagal!", "Tidak dapat memperbarui status.", "error");
-              this.selectedIndex = prevIndex;
+              return; // hentikan proses
             }
-          });
 
-        } else {
-          this.selectedIndex = prevIndex;
-        }
-      });
+            Swal.fire({
+              icon: "success",
+              title: "Status Diperbarui!",
+              text: `Status berhasil diubah menjadi "${newStatus}".`,
+              timer: 1500,
+              showConfirmButton: false,
+            });
+
+            this.dataset.prevIndex = this.selectedIndex;
+            row.classList.add("status-updated");
+            setTimeout(() => row.classList.remove("status-updated"), 1000);
+
+          } else {
+            Swal.fire("Gagal!", "Tidak dapat memperbarui status.", "error");
+            this.selectedIndex = prevIndex;
+          }
+        });
+
+      } else {
+        this.selectedIndex = prevIndex;
+      }
     });
   });
+});
 
   // === Tombol Aksi ===
   document.addEventListener("click", function (e) {

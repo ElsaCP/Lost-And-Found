@@ -32,7 +32,7 @@
     <a href="{{ url_for('admin_bp.logout_admin') }}" class="logout">
       <i class="bi bi-box-arrow-right"></i> Logout
     </a>
-  </div> <!-- ✅ ini penutup sidebar yang hilang di versimu -->
+  </div>
 
   <!-- ========== HEADER ========== -->
   <div class="header">
@@ -63,62 +63,32 @@
             <th>Aksi</th>
           </tr>
         </thead>
+
         <tbody>
-          <tr>
-            <td>LF-L001</td>
-            <td>Dompet</td>
-            <td>Hilang</td>
-            <td>Arsip</td>
-            <td class="aksi">
-            <a href="{{ url_for('admin_bp.detail_arsip') }}?kode=LF-L001" class="btn-view">
-              <i class="bi bi-eye"></i>
-            </a>
-              <button class="btn-restore"><i class="bi bi-arrow-clockwise"></i></button>
-            </td>
-          </tr>
-          <tr>
-            <td>LF-F002</td>
-            <td>Pouch</td>
-            <td>Temuan</td>
-            <td>Arsip</td>
-            <td class="aksi">
-            <a href="{{ url_for('admin_bp.detail_arsip') }}?kode=LF-L002" class="btn-view">
-              <i class="bi bi-eye"></i>
-            </a>
-              <button class="btn-restore"><i class="bi bi-arrow-clockwise"></i></button>
-            </td>
-          </tr>
-          <tr>
-            <td>LF-L003</td>
-            <td>Jam Tangan</td>
-            <td>Hilang</td>
-            <td>Arsip</td>
-            <td class="aksi">
-            <a href="{{ url_for('admin_bp.detail_arsip') }}?kode=LF-L003" class="btn-view">
-              <i class="bi bi-eye"></i>
-            </a>
-              <button class="btn-restore"><i class="bi bi-arrow-clockwise"></i></button>
-            </td>
-          </tr>
-          <tr>
-            <td>LF-L004</td>
-            <td>Topi</td>
-            <td>Temuan</td>
-            <td>Arsip</td>
-            <td class="aksi">
-            <a href="{{ url_for('admin_bp.detail_arsip') }}?kode=LF-L004" class="btn-view">
-              <i class="bi bi-eye"></i>
-            </a>
-              <button class="btn-restore"><i class="bi bi-arrow-clockwise"></i></button>
-            </td>
-          </tr>
+          {% if data_arsip %}
+            {% for row in data_arsip %}
+            <tr>
+              <td>{{ row.kode }}</td>
+              <td>{{ row.nama_barang }}</td>
+              <td>{{ row.jenis }}</td>
+              <td>{{ row.status }}</td>
+              <td class="aksi">
+                <a href="{{ url_for('admin_bp.detail_arsip') }}?kode={{ row.kode }}" class="btn-view" title="Lihat Detail">
+                  <i class="bi bi-eye"></i>
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="5" style="text-align:center; padding:20px;">Belum ada data arsip.</td>
+            </tr>
+          {% endif %}
         </tbody>
+
       </table>
     </div>
   </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script src="{{ url_for('admin_bp.static', filename='js/arsip.js') }}"></script>
-  <script src="{{ url_for('admin_bp.static', filename='js/logout.js') }}"></script>
 </body>
 </html>

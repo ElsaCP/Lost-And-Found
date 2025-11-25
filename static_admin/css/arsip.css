@@ -1,11 +1,13 @@
-/* ====== LAYOUT UTAMA ====== */
 .sidebar {
   width: 197px;
   height: 90vh;
+  position: fixed;  /* tetap di tempat saat scroll */
+  top: 0;
+  left: 0;
 }
 
 .main-content {
-  margin-left: 230px; /* sejajar sidebar */
+  margin-left: 440px; /* geser supaya tidak tertutup sidebar */
   margin-top: 90px;   /* sejajar header */
   padding: 30px 50px 60px 50px;
   background-color: #f8f8f8;

@@ -1,38 +1,14 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // ==== DUMMY DATA ARSIP ====
-  const dataArsip = [
-    { kode: "LF-A001", namaBarang: "Dompet Kulit Coklat", jenis: "Kehilangan", status: "Arsip" },
-    { kode: "LF-A002", namaBarang: "Jam Tangan Hitam", jenis: "Penemuan", status: "Arsip" },
-    { kode: "LF-A003", namaBarang: "Topi Hitam", jenis: "Penemuan", status: "Arsip" }
-  ];
 
-  // ==== RENDER TABEL DINAMIS ====
-  const tbody = document.querySelector(".arsip-table tbody");
-  if (tbody) {
-    tbody.innerHTML = dataArsip.map(item => `
-      <tr>
-        <td>${item.kode}</td>
-        <td>${item.namaBarang}</td>
-        <td>${item.jenis}</td>
-        <td>${item.status}</td>
-        <td class="aksi">
-          <button class="btn-view" data-kode="${item.kode}" title="Lihat Detail">
-            <i class="bi bi-eye"></i>
-          </button>
-          <button class="btn-restore" data-kode="${item.kode}" title="Pulihkan Laporan">
-            <i class="bi bi-arrow-clockwise"></i>
-          </button>
-        </td>
-      </tr>
-    `).join("");
-  }
-
-  // ==== EVENT: TOMBOL LIHAT DETAIL ====
+  // ======================================
+  //  FITUR: TOMBOL LIHAT DETAIL
+  //  (sekarang tabel sudah dipenerate Flask)
+  // ======================================
   document.querySelectorAll(".btn-view").forEach(btn => {
     btn.addEventListener("click", () => {
       const kode = btn.dataset.kode;
       if (kode) {
-      window.location.href = `/admin/arsip/detail?kode=${encodeURIComponent(kode)}`;
+        window.location.href = `/admin/arsip/detail?kode=${encodeURIComponent(kode)}`;
       } else {
         Swal.fire({
           icon: "error",
@@ -44,12 +20,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // ==== EVENT: TOMBOL PULIHKAN ====
+  // ===========================================================
+  //  FITUR: RESTORE (Tidak pakai dummy)
+  //  Kamu nanti tinggal aktifkan setelah route restore selesai
+  // ===========================================================
   document.querySelectorAll(".btn-restore").forEach(btn => {
     btn.addEventListener("click", () => {
       const kode = btn.dataset.kode;
-      const item = dataArsip.find(i => i.kode === kode);
-      if (!item) return;
+      const jenis = btn.dataset.jenis; // dikirim dari HTML (Kehilangan/Penemuan)
 
       Swal.fire({
         icon: "question",
@@ -62,29 +40,47 @@ document.addEventListener("DOMContentLoaded", () => {
         cancelButtonColor: "#d33",
       }).then((result) => {
         if (result.isConfirmed) {
-          Swal.fire({
-            icon: "success",
-            title: "Berhasil!",
-            text: `Laporan ${kode} berhasil dipulihkan ke daftar ${item.jenis.toLowerCase()}.`,
-            timer: 2200,
-            showConfirmButton: false,
-            timerProgressBar: true,
-          });
 
-          setTimeout(() => {
-            if (item.jenis.toLowerCase() === "penemuan") {
-              window.location.href = "{{ url_for('admin_bp.daftar_penemuan') }}";
+          // === AJAX ke Flask untuk mengganti status jadi "Diproses" ===
+          fetch(`/admin/arsip/restore?kode=${kode}`, {
+            method: "POST"
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              Swal.fire({
+                icon: "success",
+                title: "Berhasil!",
+                text: `Laporan ${kode} telah dipulihkan.`,
+                timer: 1800,
+                showConfirmButton: false
+              });
+
+              setTimeout(() => {
+                if (jenis.toLowerCase() === "penemuan") {
+                  window.location.href = "/admin/penemuan";
+                } else {
+                  window.location.href = "/admin/kehilangan";
+                }
+              }, 1800);
+
             } else {
-              window.location.href = "{{ url_for('admin_bp.daftar_kehilangan') }}";
+              Swal.fire({
+                icon: "error",
+                title: "Gagal!",
+                text: data.message || "Terjadi kesalahan."
+              });
             }
-          }, 2200);
+          });
         }
       });
     });
   });
 
-  // ==== FITUR PENCARIAN ====
-  const searchInput = document.querySelector(".search-bar input"); // ambil input di dalam search-bar
+  // ======================
+  //  FITUR PENCARIAN
+  // ======================
+  const searchInput = document.querySelector(".search-bar input");
   if (searchInput) {
     searchInput.addEventListener("keyup", function () {
       const keyword = this.value.toLowerCase();
@@ -94,4 +90,5 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
   }
+
 });

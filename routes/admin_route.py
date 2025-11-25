@@ -2,8 +2,10 @@ from flask import Blueprint, render_template, request, jsonify, redirect, url_fo
 import mysql.connector
 from datetime import datetime
 import os
+import time
 from werkzeug.utils import secure_filename
 from flask import request
+import re
 
 admin_bp = Blueprint(
     'admin_bp',
@@ -288,21 +290,25 @@ def update_status_kehilangan():
     kode = data.get('kode')
     status = data.get('status')
 
-    # Cegah input kosong
     if not kode or not status:
         return jsonify({'success': False, 'message': 'Data tidak lengkap!'}), 400
 
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    # Update hanya kolom status dan update_terakhir
     waktu_update = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    # Update status di tabel kehilangan
     cursor.execute("""
         UPDATE kehilangan 
         SET status = %s, update_terakhir = %s
         WHERE kode_kehilangan = %s
     """, (status, waktu_update, kode))
     conn.commit()
+
+    # Jika status = Selesai → pindahkan ke arsip
+    if status == "Selesai":
+        pindahkan_ke_arsip(kode, "kehilangan")
 
     cursor.close()
     conn.close()
@@ -500,67 +506,63 @@ def tambah_penemuan():
     if not session.get('admin_logged_in'):
         return redirect(url_for('admin_bp.login_admin'))
 
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True, buffered=True)
+
     if request.method == 'GET':
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT kode_barang FROM penemuan ORDER BY kode_barang DESC LIMIT 1")
-        last = cursor.fetchone()
-        conn.close()
-
-        if last:
-            last_num = int(last[0][-3:])
-            kode_baru = f"LF-L{last_num + 1:03d}"
-        else:
-            kode_baru = "LF-F001"
-
+        kode_baru = generate_kode_penemuan(cursor)
         return render_template('tambah_penemuan.html', kode_baru=kode_baru)
 
     # ===== POST METHOD =====
-    # Ambil data form
-    nama_pelapor = request.form['nama_pelapor']
-    no_telp = request.form['no_telp']
-    email = request.form['email']
-    nama_barang = request.form['nama_barang']
-    kategori = request.form['kategori']
-    lokasi = request.form['lokasi']
-    deskripsi = request.form['deskripsi']
-    tanggal_lapor = request.form['tanggal_lapor']
+    nama_pelapor = request.form.get('nama_pelapor', '').strip()
+    no_telp = request.form.get('no_telp', '').strip()
+    email = request.form.get('email', '').strip()
+    nama_barang = request.form.get('nama_barang', '').strip()
+    kategori = request.form.get('kategori', '').strip()
+    lokasi = request.form.get('lokasi', '').strip()
+    deskripsi = request.form.get('deskripsi', '').strip()
+    tanggal_lapor = request.form.get('tanggal_lapor', '').strip()
 
-    kode_barang = request.form['kode_barang']
-    jenis_laporan = request.form['jenis_laporan']   # Penemuan
-    status = request.form['status']                 # Pending
+    kode_barang = request.form.get('kode_barang')
+    jenis_laporan = request.form.get('jenis_laporan', 'Penemuan')
+    status = request.form.get('status', 'Pending')
+    jenis_barang = request.form.get('jenis_barang', 'Publik')
 
-    # Ambil jenis_barang (Publik/Privat)
-    jenis_barang = request.form.get('jenis_barang', "Publik")
+    if not all([kode_barang, nama_pelapor, nama_barang, kategori, lokasi, tanggal_lapor]):
+        conn.close()
+        return "Data wajib tidak boleh kosong!", 400
 
-    # Upload foto
+    # ===== Upload foto =====
     foto = request.files.get('foto')
     foto_filename = None
     if foto and foto.filename:
         upload_folder = os.path.join('static_admin', 'upload')
         os.makedirs(upload_folder, exist_ok=True)
-        foto_filename = foto.filename
+        foto_filename = f"{int(time.time())}_{foto.filename}"
         foto.save(os.path.join(upload_folder, foto_filename))
 
-    # Simpan ke DB
-    conn = get_db_connection()
-    cursor = conn.cursor()
-
-    cursor.execute("""
-        INSERT INTO penemuan (
+    try:
+        cursor.execute("""
+            INSERT INTO penemuan (
+                kode_barang, nama_pelapor, no_telp, email, nama_barang,
+                kategori, jenis_laporan, lokasi, deskripsi, tanggal_lapor,
+                update_terakhir, status, gambar_barang, jenis_barang
+            )
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,NOW(),%s,%s,%s)
+        """, (
             kode_barang, nama_pelapor, no_telp, email, nama_barang,
             kategori, jenis_laporan, lokasi, deskripsi, tanggal_lapor,
-            update_terakhir, status, gambar_barang, jenis_barang
-        )
-        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,NOW(),%s,%s,%s)
-    """, (
-        kode_barang, nama_pelapor, no_telp, email, nama_barang,
-        kategori, jenis_laporan, lokasi, deskripsi, tanggal_lapor,
-        status, foto_filename, jenis_barang
-    ))
-
-    conn.commit()
-    conn.close()
+            status, foto_filename, jenis_barang
+        ))
+        conn.commit()
+        flash("Penemuan berhasil ditambahkan!", "success")
+    except Exception as e:
+        conn.rollback()
+        flash(f"Terjadi kesalahan: {e}", "danger")
+        return redirect(request.url)
+    finally:
+        cursor.close()
+        conn.close()
 
     return redirect(url_for('admin_bp.daftar_penemuan'))
 
@@ -589,35 +591,49 @@ def update_status_penemuan():
         return jsonify({"success": False, "message": "Unauthorized"}), 401
 
     data = request.get_json()
-    kode = data.get('kode')   # FIX DI SINI
+    kode = data.get('kode')              # kode_barang
     status_baru = data.get('status')
 
+    # Validasi input
     if not kode or not status_baru:
-        return jsonify({"success": False, "message": "Kode atau status tidak ada"}), 400
+        return jsonify({
+            "success": False,
+            "message": "Kode atau status tidak ada"
+        }), 400
 
     try:
-        print("📌 Debug Input → Kode:", kode, "| Status baru:", status_baru)
-
         conn = get_db_connection()
         cursor = conn.cursor(buffered=True)
 
         update_terakhir = datetime.now().strftime("%Y-%m-%d %H:%M")
 
-        query = """
+        # ================================
+        # UPDATE STATUS PENEMUAN
+        # ================================
+        cursor.execute("""
             UPDATE penemuan
             SET status = %s,
                 update_terakhir = %s
             WHERE kode_barang = %s
-        """
-        cursor.execute(query, (status_baru, update_terakhir, kode))
+        """, (status_baru, update_terakhir, kode))
         conn.commit()
-
-        print("🔍 Rows affected:", cursor.rowcount)
 
         if cursor.rowcount == 0:
             return jsonify({"success": False, "message": "Kode tidak ditemukan"}), 404
 
-        return jsonify({"success": True})
+        # ================================
+        # PINDAHKAN KE ARSIP OTOMATIS
+        # ================================
+        if status_baru == "Selesai":
+            try:
+                pindahkan_ke_arsip(kode, "penemuan")
+            except Exception as e:
+                print("❌ GAGAL MEMINDAHKAN KE ARSIP:", e)
+
+        return jsonify({
+            "success": True,
+            "update_terakhir": update_terakhir
+        })
 
     except Exception as e:
         print("❌ Error update_status_penemuan:", str(e))
@@ -630,7 +646,7 @@ def update_status_penemuan():
 @admin_bp.route('/klaim/baru', methods=['GET', 'POST'])
 def tambah_klaim_penemuan():
     conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(dictionary=True, buffered=True)
 
     if request.method == "GET":
         kode_barang = request.args.get("kode_barang")
@@ -639,12 +655,14 @@ def tambah_klaim_penemuan():
 
         cursor.execute("SELECT * FROM penemuan WHERE kode_barang = %s", (kode_barang,))
         laporan = cursor.fetchone()
-        cursor.close()
-        conn.close()
 
         if not laporan:
+            cursor.close()
+            conn.close()
             return "Data barang tidak ditemukan", 404
 
+        cursor.close()
+        conn.close()
         return render_template('tambah_klaim_penemuan.html', laporan=laporan)
 
     # ===== POST METHOD =====
@@ -655,35 +673,32 @@ def tambah_klaim_penemuan():
     kode_barang = request.form.get("kodeBarang", "").strip()
     kode_laporan_kehilangan = request.form.get("kodeLaporanKehilangan", "").strip() or None
 
-    # ===== Generate tanggal & waktu otomatis =====
     tanggal_lapor = datetime.now().strftime("%Y-%m-%d")
-    waktu_lapor = datetime.now().strftime("%H:%M")  # tanpa detik
+    waktu_lapor = datetime.now().strftime("%H:%M")
 
-    # Ambil nama_barang dari tabel penemuan berdasarkan kode_barang
+    # Ambil nama_barang dari tabel penemuan
     cursor.execute("SELECT nama_barang FROM penemuan WHERE kode_barang = %s", (kode_barang,))
     barang = cursor.fetchone()
     if not barang:
         flash("Nama barang tidak ditemukan di database.", "danger")
+        cursor.close()
+        conn.close()
         return redirect(request.url)
     nama_barang = barang['nama_barang']
 
-    # Ambil kode klaim terakhir
-    cursor.execute("SELECT kode_laporan FROM klaim_barang ORDER BY id DESC LIMIT 1")
-    last = cursor.fetchone()
-    if last and last['kode_laporan']:
-        nomor = int(last['kode_laporan'].split('-C')[-1]) + 1
-    else:
-        nomor = 1
-
-    kode_baru = f"LF-C{nomor:03d}"
+    # Generate kode klaim otomatis
+    kode_baru = generate_kode_klaim(cursor)
 
     # ===== Fungsi simpan file =====
     def allowed_file(filename):
         return filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif'))
 
-    def simpan_file(file_obj):
+    def simpan_file(file_obj, folder='static_admin/upload'):
         if file_obj and allowed_file(file_obj.filename):
-            return file_obj.filename
+            os.makedirs(folder, exist_ok=True)
+            filename = f"{int(time.time())}_{file_obj.filename}"
+            file_obj.save(os.path.join(folder, filename))
+            return filename
         return None
 
     path_identitas = simpan_file(request.files.get("foto_identitas"))
@@ -692,6 +707,8 @@ def tambah_klaim_penemuan():
 
     if not (nama_pelapor and no_telp and email and deskripsi_khusus and kode_barang and path_identitas and path_foto):
         flash("Data belum lengkap atau file tidak valid.", "warning")
+        cursor.close()
+        conn.close()
         return redirect(request.url)
 
     try:
@@ -712,8 +729,8 @@ def tambah_klaim_penemuan():
         conn.commit()
         flash("Klaim berhasil dikirim!", "success")
     except Exception as e:
-        flash(f"Error insert ke database: {e}", "danger")
         conn.rollback()
+        flash(f"Error insert ke database: {e}", "danger")
     finally:
         cursor.close()
         conn.close()
@@ -887,21 +904,39 @@ def daftar_klaim_penemuan():
 # ======================
 @admin_bp.route('/penemuan/klaim/update_status', methods=['POST'])
 def update_status_klaim():
+    if not session.get('admin_logged_in'):
+        return jsonify({"success": False, "message": "Unauthorized"}), 401
+
     data = request.get_json()
-    kode_barang = data.get("kode_barang")
-    status_baru = data.get("status_baru")
+    kode = data.get("kode_laporan")       # FIX → kode laporan klaim
+    status_baru = data.get("status")      # FIX → status baru
+
+    if not kode or not status_baru:
+        return jsonify({"success": False, "message": "Data tidak lengkap"}), 400
 
     conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor()
 
-    query = "UPDATE klaim_barang SET status = %s WHERE kode_barang = %s"
-    cursor.execute(query, (status_baru, kode_barang))
+    # Update status klaim
+    cursor.execute("""
+        UPDATE klaim_barang
+        SET status = %s,
+            update_terakhir = NOW()
+        WHERE kode_laporan = %s
+    """, (status_baru, kode))
     conn.commit()
+
+    # 🔥 Jika status berubah jadi SELESAI → pindahkan ke arsip
+    if status_baru == "Selesai":
+        try:
+            pindahkan_ke_arsip(kode, "klaim_barang")
+        except Exception as e:
+            print("❌ Error memindahkan klaim ke arsip:", str(e))
 
     cursor.close()
     conn.close()
 
-    return jsonify({"success": True, "message": "Status berhasil diperbarui!"})
+    return jsonify({"success": True})
 
 # ======================
 # HALAMAN HTML DETAIL (TANPA JSON)
@@ -973,20 +1008,202 @@ def update_klaim_penemuan():
     return jsonify({"success": True})
 
 # ======================
-# 📁 ARSIP & PENGATURAN
+# 📁 ARSIP 
 # ======================
 @admin_bp.route('/arsip')
 def arsip():
     if not session.get('admin_logged_in'):
         return redirect(url_for('admin_bp.login_admin'))
-    return render_template('arsip.html', role=session.get('role'))
+
+    db = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="",
+        database="lostfound"
+    )
+    cur = db.cursor(dictionary=True)
+
+    cur.execute("SELECT * FROM arsip ORDER BY tanggal_arsip DESC")
+    data_arsip = cur.fetchall()
+
+    cur.close()
+    db.close()
+
+    return render_template('arsip.html', role=session.get('role'), data_arsip=data_arsip)
+
+def pindahkan_ke_arsip(kode, jenis_tabel):
+    db = get_db_connection()
+    cur = db.cursor(dictionary=True)
+
+    # ============================
+    # Ambil data sesuai tabel asal
+    # ============================
+    if jenis_tabel.lower() == "kehilangan":
+        cur.execute("SELECT * FROM kehilangan WHERE kode_kehilangan=%s", (kode,))
+    elif jenis_tabel.lower() == "penemuan":
+        cur.execute("SELECT * FROM penemuan WHERE kode_barang=%s", (kode,))
+    else:  # klaim barang
+        cur.execute("SELECT * FROM klaim_barang WHERE kode_laporan=%s", (kode,))
+
+    data = cur.fetchone()
+    if not data:
+        cur.close()
+        db.close()
+        return False
+
+    # ============================
+    # Tentukan tanggal utama
+    # ============================
+    if jenis_tabel.lower() == "kehilangan":
+        tanggal = data.get("tanggal_kehilangan")
+    else:  # penemuan atau klaim barang
+        tanggal = data.get("tanggal_lapor")
+ 
+    # Ambil waktu sekarang tanpa detik
+    tanggal_arsip = datetime.now().replace(second=0, microsecond=0)
+
+    cur.execute("""
+        INSERT INTO arsip 
+        (kode, nama_barang, jenis, kategori, lokasi, tanggal, foto, 
+        nama_pelapor, no_telp, email, status, tanggal_arsip)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    """, (
+        kode,
+        data.get("nama_barang"),
+        jenis_tabel,
+        data.get("kategori"),
+        data.get("lokasi") or data.get("lokasi_kehilangan"),
+        tanggal,
+        data.get("foto"),
+        data.get("nama_pelapor") or data.get("nama") or '-',
+        data.get("no_telp") or data.get("telp") or '-',
+        data.get("email") or '-',
+        data.get("status") or 'Selesai',
+        tanggal_arsip  # simpan tanpa detik
+    ))
+
+    # ============================
+    # Hapus dari tabel asal
+    # ============================
+    if jenis_tabel.lower() == "kehilangan":
+        cur.execute("DELETE FROM kehilangan WHERE kode_kehilangan=%s", (kode,))
+    elif jenis_tabel.lower() == "penemuan":
+        cur.execute("DELETE FROM penemuan WHERE kode_barang=%s", (kode,))
+    else:
+        cur.execute("DELETE FROM klaim_barang WHERE kode_laporan=%s", (kode,))
+
+    db.commit()
+    cur.close()
+    db.close()
+
+    return True
 
 @admin_bp.route('/arsip/detail')
 def detail_arsip():
     if not session.get('admin_logged_in'):
         return redirect(url_for('admin_bp.login_admin'))
+
     kode = request.args.get('kode')
-    return render_template('detail_arsip.html', kode=kode, role=session.get('role'))
+    if not kode:
+        return redirect(url_for('admin_bp.arsip'))
+
+    db = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="",
+        database="lostfound"
+    )
+    cur = db.cursor(dictionary=True)
+
+    # Ambil data arsip dulu
+    cur.execute("SELECT * FROM arsip WHERE kode=%s", (kode,))
+    arsip_data = cur.fetchone()
+
+    if not arsip_data:
+        flash("Data arsip tidak ditemukan.", "danger")
+        cur.close()
+        db.close()
+        return redirect(url_for('admin_bp.arsip'))
+
+    jenis_laporan = arsip_data.get("jenis")
+    data = None
+
+    # Ambil detail lengkap dari tabel asal
+    if jenis_laporan.lower() == "kehilangan":
+        cur.execute("SELECT * FROM kehilangan WHERE kode_kehilangan=%s", (kode,))
+        data = cur.fetchone()
+    elif jenis_laporan.lower() == "penemuan":
+        cur.execute("SELECT * FROM penemuan WHERE kode_barang=%s", (kode,))
+        data = cur.fetchone()
+    elif jenis_laporan.lower() == "klaim barang":
+        cur.execute("SELECT * FROM klaim_barang WHERE kode_laporan=%s", (kode,))
+        data = cur.fetchone()
+
+    # Jika data asli sudah tidak ada (misal dihapus), fallback ke arsip
+    if not data:
+        data = arsip_data
+
+    cur.close()
+    db.close()
+
+    return render_template(
+        'detail_arsip.html',
+        data=data,
+        jenis_laporan=jenis_laporan
+    )
+    
+
+def generate_kode_kehilangan(cursor):
+    cursor.execute("SELECT kode_kehilangan FROM kehilangan")
+    main_codes = [row[0] for row in cursor.fetchall() if row[0]]
+    cursor.execute("SELECT kode FROM arsip WHERE jenis='kehilangan'")
+    archive_codes = [row[0] for row in cursor.fetchall() if row[0]]
+    all_codes = main_codes + archive_codes
+    if not all_codes:
+        return "LF-L001"
+    max_num = max(int(re.search(r"LF-L(\d+)", code).group(1)) for code in all_codes if re.search(r"LF-L(\d+)", code))
+    return f"LF-L{max_num+1:03d}"
+
+
+def generate_kode_penemuan(cursor):
+    # Ambil dari tabel penemuan
+    cursor.execute("SELECT kode_barang FROM penemuan")
+    main_codes = [row['kode_barang'] for row in cursor.fetchall() if row['kode_barang']]
+
+    # Ambil dari tabel arsip (jenis penemuan)
+    cursor.execute("SELECT kode FROM arsip WHERE jenis='penemuan'")
+    archive_codes = [row['kode'] for row in cursor.fetchall() if row['kode']]
+
+    all_codes = main_codes + archive_codes
+    if not all_codes:
+        return "LF-F001"
+
+    max_num = max(int(re.search(r"LF-F(\d+)", code).group(1)) 
+                  for code in all_codes if re.search(r"LF-F(\d+)", code))
+    return f"LF-F{max_num+1:03d}"
+
+def generate_kode_klaim(cursor):
+    import re
+
+    # Ambil kode dari tabel klaim_barang
+    cursor.execute("SELECT kode_laporan FROM klaim_barang")
+    main_codes = [row['kode_laporan'] for row in cursor.fetchall() if row['kode_laporan']]
+
+    # Ambil kode dari arsip untuk klaim
+    cursor.execute("SELECT kode FROM arsip WHERE jenis IN ('klaim', 'klaim barang')")
+    archive_codes = [row['kode'] for row in cursor.fetchall() if row['kode']]
+
+    all_codes = main_codes + archive_codes
+
+    # Ambil semua nomor valid
+    numbers = [int(re.search(r"LF-C(\d+)", code).group(1))
+               for code in all_codes if re.search(r"LF-C(\d+)", code)]
+
+    if not numbers:
+        return "LF-C001"  # default kalau belum ada kode sama sekali
+
+    max_num = max(numbers)
+    return f"LF-C{max_num + 1:03d}"
 
 @admin_bp.route('/pengaturan')
 def pengaturan():
