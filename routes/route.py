@@ -116,13 +116,13 @@ def submit_kehilangan():
         last_record = cursor.fetchone()
 
         if last_record:
-            last_code = last_record[0]  # contoh: LF-L00025
+            last_code = last_record[0] 
             last_number = int(last_code.split("LF-L")[-1])
             new_number = last_number + 1
         else:
             new_number = 1
 
-        kode_kehilangan = f"LF-L{new_number:05d}"
+        kode_kehilangan = f"LF-L{new_number:03d}"
 
         # === Simpan ke database ===
         query = """
@@ -147,7 +147,7 @@ def submit_kehilangan():
         cursor = db.cursor()
         cursor.execute("""
             INSERT INTO riwayat_status (kode_kehilangan, status, catatan, waktu_update)
-            VALUES (%s, %s, %s, NOW())
+            VALUES (%s, %s, %s, DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i'))
         """, (
             kode_kehilangan,
             "Pending",
@@ -218,7 +218,8 @@ def api_riwayat_klaim(email):
             k.status AS status_klaim,
             k.catatan_admin,
             p.gambar_barang,
-            p.lokasi
+            p.lokasi,
+            DATE_FORMAT(k.update_terakhir, '%d/%m/%Y %H:%i') AS update_terakhir
         FROM klaim_barang k
         LEFT JOIN penemuan p ON k.kode_barang = p.kode_barang
         WHERE k.email = %s
@@ -227,13 +228,17 @@ def api_riwayat_klaim(email):
 
     cursor.execute(query, (email,))
     data = cursor.fetchall()
-
     cursor.close()
     db.close()
 
+    # Format gambar
+    for item in data:
+        if item.get("gambar_barang"):
+            item["gambar_barang_url"] = f"/static/uploads/{item['gambar_barang']}"
+        else:
+            item["gambar_barang_url"] = "/static/image/no-image.png"
+
     return jsonify(data)
-
-
 
 @main.route("/detail-klaim/<kode_laporan>")
 def detail_klaim(kode_laporan):
@@ -242,7 +247,24 @@ def detail_klaim(kode_laporan):
 
     cursor.execute("""
         SELECT 
-            k.*, 
+            k.kode_laporan,
+            k.kode_barang,
+            k.nama_barang,
+            k.nama_pelapor,
+            k.no_telp,
+            k.email,
+            k.deskripsi_khusus,
+            k.foto_barang,
+            k.tanggal_lapor,
+            k.waktu_lapor,
+
+            -- Status & catatan admin untuk detail laporan terkini
+            k.status,
+            k.catatan_admin,
+
+            -- FORMAT TANGGAL TANPA GMT
+            DATE_FORMAT(k.update_terakhir, '%d/%m/%Y %H:%i') AS update_terakhir,
+
             p.gambar_barang AS gambar_penemuan,
             p.lokasi,
             p.deskripsi
@@ -264,13 +286,6 @@ def detail_klaim(kode_laporan):
     if data.get("gambar_penemuan"):
         data["gambar_penemuan"] = f"/static/uploads/{data['gambar_penemuan']}"
 
-    # 👉 FORMAT UPDATE TERAKHIR (dd/mm/yyyy hh:mm)
-    if data.get("update_terakhir"):
-        try:
-            data["update_terakhir"] = data["update_terakhir"].strftime("%d/%m/%Y %H:%M")
-        except:
-            pass
-
     return render_template("user/detail_riwayat_klaim.html", data=data)
 
 @main.route("/admin/update-status", methods=["POST"])
@@ -284,9 +299,11 @@ def admin_update_status():
 
     # update tabel klaim_barang
     cursor.execute("""
-        UPDATE klaim_barang
-        SET status=%s, catatan_admin=%s, update_terakhir=NOW()
-        WHERE kode_laporan=%s
+    UPDATE kehilangan 
+    SET status=%s,
+        catatan=%s,
+        update_terakhir=DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i')
+    WHERE kode_kehilangan=%s
     """, (status, catatan, kode_laporan))
     db.commit()
 
@@ -301,17 +318,23 @@ def admin_update_status():
 
 @main.route("/api/riwayat-status/<kode_laporan>")
 def api_riwayat_status(kode_laporan):
-    data = get_riwayat_status(kode_laporan)
-    # data sudah memiliki fields: id, kode_laporan, status, catatan_admin, waktu_update (string), catatan (alias)
-    # Kita kembalikan dalam bentuk yg frontend harapkan: {waktu_update, status, catatan}
-    out = []
-    for r in data:
-        out.append({
-            "waktu_update": r.get("waktu_update"),
-            "status": r.get("status"),
-            "catatan": r.get("catatan")
-        })
-    return jsonify(out)
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT 
+            status,
+            catatan,
+            DATE_FORMAT(waktu_update, '%d/%m/%Y %H:%i') AS waktu_update
+        FROM riwayat_klaim_barang
+        WHERE kode_laporan = %s
+        ORDER BY id ASC
+    """, (kode_laporan,))
+
+    data = cursor.fetchall()
+    cursor.close()
+    db.close()
+    return jsonify(data)
 
 @main.route('/detail-barang/<kode>')
 def detail_barang(kode):
@@ -391,7 +414,7 @@ def submit_klaim():
             last_num = int(last[0].split("LF-C")[-1])
         else:
             last_num = 0
-        kode_laporan = f"LF-C{last_num + 1:05d}"
+        kode_laporan = f"LF-C{last_num + 1:03d}"
 
         now = datetime.now()
         tanggal = now.strftime("%d/%m/%Y")
@@ -597,14 +620,14 @@ def update_status(kode_kehilangan):
         # Update status di tabel kehilangan
         cursor.execute("""
             UPDATE kehilangan 
-            SET status=%s, update_terakhir=NOW(), catatan=%s 
+            SET status=%s, update_terakhir=DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i', catatan=%s 
             WHERE kode_kehilangan=%s
         """, (status_baru, catatan, kode_kehilangan))
 
         # Tambahkan ke riwayat_status
         cursor.execute("""
             INSERT INTO riwayat_status (kode_kehilangan, status, catatan, waktu_update)
-            VALUES (%s, %s, %s, NOW())
+            VALUES (%s, %s, %s, DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i'))
         """, (kode_kehilangan, status_baru, catatan))
 
         db.commit()
@@ -621,45 +644,83 @@ def rekomendasi(kode_kehilangan):
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
-    # Ambil data kehilangan
+    # --- Ambil data kehilangan ---
     cursor.execute("SELECT * FROM kehilangan WHERE kode_kehilangan = %s", (kode_kehilangan,))
     lost = cursor.fetchone()
+
     if not lost:
         return jsonify([])
 
+    # --- Normalisasi data kehilangan ---
+    nama_lost = lost["nama_barang"].lower()
+    kategori = lost["kategori"]
+    tanggal_hilang = lost["tanggal_kehilangan"]
+    lokasi_lost = lost["lokasi"].lower()
+
     # Tentukan terminal
-    lokasi = lost["lokasi"].lower()
     terminal = ""
-    if "terminal 1" in lokasi:
+    if "terminal 1" in lokasi_lost:
         terminal = "terminal 1"
-    elif "terminal 2" in lokasi:
+    elif "terminal 2" in lokasi_lost:
         terminal = "terminal 2"
-    elif "terminal 3" in lokasi:
+    elif "terminal 3" in lokasi_lost:
         terminal = "terminal 3"
 
-    # Query rekomendasi
+    # --- Query rekomendasi barang mirip ---
     sql = """
-        SELECT kode_barang, nama_barang, kategori, lokasi, tanggal_lapor, gambar_barang
+        SELECT 
+            kode_barang, 
+            nama_barang, 
+            kategori, 
+            lokasi, 
+            tanggal_lapor, 
+            gambar_barang
         FROM penemuan
         WHERE kategori = %s
-        AND LOWER(lokasi) LIKE %s
-        AND DATEDIFF(%s, tanggal_lapor) BETWEEN -30 AND 30
+          AND LOWER(lokasi) LIKE %s
+          AND (
+                LOWER(nama_barang) LIKE %s OR
+                LOWER(nama_barang) LIKE %s OR
+                LOWER(nama_barang) LIKE %s
+              )
+          AND DATEDIFF(%s, tanggal_lapor) BETWEEN -30 AND 30
+        ORDER BY tanggal_lapor DESC
         LIMIT 6
     """
-    params = [lost["kategori"], f"%{terminal}%", lost["tanggal_kehilangan"]]
+
+    # Buat pola LIKE supaya match barang yang mirip
+    keyword1 = f"%{nama_lost}%"
+    keyword2 = f"%{nama_lost.split()[0]}%" if len(nama_lost.split()) > 0 else f"%{nama_lost}%"
+    keyword3 = f"%{nama_lost.replace(' ', '')}%"
+
+    params = [
+        kategori,
+        f"%{terminal}%",
+        keyword1, keyword2, keyword3,
+        tanggal_hilang
+    ]
+
     cursor.execute(sql, params)
     hasil = cursor.fetchall()
 
-    # Format tanggal menjadi hanya "dd/mm/yyyy" + URL gambar
+    # --- Format output ---
     for h in hasil:
+        # Format tanggal -> dd/mm/yyyy
         if h.get("tanggal_lapor"):
-            h["tanggal_lapor"] = h["tanggal_lapor"].strftime("%d/%m/%Y")
-        h["gambar_barang_url"] = (
-            f"/static/uploads/{h['gambar_barang']}" if h["gambar_barang"] else "/static/image/no-image.png"
-        )
+            try:
+                h["tanggal_lapor"] = h["tanggal_lapor"].strftime("%d/%m/%Y")
+            except:
+                pass
+        
+        # Format gambar
+        if h.get("gambar_barang"):
+            h["gambar_barang_url"] = f"/static/uploads/{h['gambar_barang']}"
+        else:
+            h["gambar_barang_url"] = "/static/image/no-image.png"
 
     cursor.close()
     db.close()
+
     return jsonify(hasil)
 
 
@@ -668,28 +729,63 @@ def rekomendasi_baru(kode_kehilangan):
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
-    cursor.execute("SELECT kategori FROM kehilangan WHERE kode_kehilangan = %s", (kode_kehilangan,))
+    # Ambil data kehilangan
+    cursor.execute("SELECT nama_barang, kategori, tanggal_kehilangan FROM kehilangan WHERE kode_kehilangan = %s", 
+                   (kode_kehilangan,))
     lost = cursor.fetchone()
+
     if not lost:
         return jsonify([])
 
+    nama_lost = lost["nama_barang"].lower()
     kategori = lost["kategori"]
-    cursor.execute("""
-        SELECT kode_barang, nama_barang, kategori, lokasi, tanggal_lapor, gambar_barang
+    tanggal_hilang = lost["tanggal_kehilangan"]
+
+    # --- Pecah nama barang menjadi kata-kata ---
+    keywords = [k for k in nama_lost.split() if len(k) >= 3]
+
+    # Jika nama hanya 1 kata, tetap pakai
+    if len(keywords) == 0:
+        keywords = [nama_lost]
+
+    # Buat query LIKE dinamis
+    like_conditions = " OR ".join(["LOWER(nama_barang) LIKE %s" for _ in keywords])
+    like_params = [f"%{k}%" for k in keywords]
+
+    # --- Query rekomendasi ---
+    sql = f"""
+        SELECT 
+            kode_barang, 
+            nama_barang, 
+            kategori, 
+            lokasi, 
+            tanggal_lapor, 
+            gambar_barang
         FROM penemuan
         WHERE kategori = %s
-        ORDER BY RAND()
+          AND ({like_conditions})
+          AND DATEDIFF(%s, tanggal_lapor) BETWEEN -30 AND 30
+        ORDER BY tanggal_lapor DESC
         LIMIT 6
-    """, (kategori,))
+    """
+
+    params = [kategori] + like_params + [tanggal_hilang]
+    cursor.execute(sql, params)
     hasil = cursor.fetchall()
 
+    # --- Format output ---
     for h in hasil:
+        # Format tanggal
         if h.get("tanggal_lapor"):
             h["tanggal_lapor"] = h["tanggal_lapor"].strftime("%d/%m/%Y")
+
+        # Tambahkan URL gambar
         h["gambar_barang_url"] = (
-            f"/static/uploads/{h['gambar_barang']}" if h["gambar_barang"] else "/static/image/no-image.png"
+            f"/static/uploads/{h['gambar_barang']}"
+            if h["gambar_barang"] else "/static/image/no-image.png"
         )
 
     cursor.close()
     db.close()
+
     return jsonify(hasil)

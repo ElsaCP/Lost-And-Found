@@ -181,78 +181,110 @@ body {
   border-radius: 8px;
 }
 
-/* Info barang */
+/* ===============================
+   CARD FOTO & INFORMASI BARANG
+   =============================== */
 #infoBarang {
-  font-size: 16px;
-  line-height: 1.7;
-  text-align: justify;
-  margin-top: 15px;
+  background: #ffffff;
+  border: 1px solid #d8e3f5;
+  border-radius: 10px;
+  padding: 18px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
 #infoBarang img {
-  display: block;
-  margin: 0 auto 15px auto;
-  width: 200px;
-  border-radius: 8px;
+  width: 100%;
+  max-height: 260px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 15px;
 }
 
-#infoBarang .row-detail {
-  display: flex;
-  align-items: flex-start;
-  margin-bottom: 4px;
+/* ===============================
+   DETAIL LAPORAN TERKINI BOX
+   =============================== */
+#detailBox {
+  background: #e9f3ff;
+  border: 1px solid #c5ddf7;
+  border-radius: 10px;
+  padding: 18px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
-#infoBarang .label {
-  width: 130px;
-  font-weight: 600;
+#detailBox h5 {
+  color: #004b8d;
+  font-weight: 700;
 }
 
-#infoBarang .value {
-  flex: 1;
-  text-align: justify;
+#detailBox p {
+  font-size: 15px;
+  margin-bottom: 6px;
 }
 
-/* ===== STATUS ===== */
-.status-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  display: inline-block;
-  margin-right: 6px;
+/* ===============================
+   TABEL RIWAYAT STATUS
+   =============================== */
+.table {
+  border-radius: 10px;
+  overflow: hidden;
 }
-.status-pending { background: #ffc107; }
-.status-verifikasi { background: #28a745; }
-.status-ditolak { background: #dc3545; }
 
-/* ===== TABEL ===== */
 .table-header-blue {
-  background-color: #004b8d;
+  background: #0056a6 !important;
   color: #fff;
-}
-
-/* === Beri jarak bawah agar tidak nempel ke footer === */
-#kontenDetail {
-  margin-bottom: 80px; /* jarak tambahan sebelum footer */
-}
-/* Tambahan margin bawah lebih besar di layar besar */
-@media (min-width: 992px) {
-  #kontenDetail {
-    margin-bottom: 120px;
-  }
-}
-
-.status-badge {
-  padding: 6px 12px;
-  border-radius: 6px;
-  color: white;
   font-weight: 600;
+}
+
+.table td, .table th {
+  padding: 12px;
+  font-size: 14px;
+}
+
+.table tbody tr:nth-child(even) {
+  background: #f4f6fb;
+}
+
+.table tbody tr:hover {
+  background: #e6efff;
+  transition: 0.2s;
+}
+
+/* ===============================
+   STATUS BADGE
+   =============================== */
+.status-badge {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-weight: 600;
+  color: white;
+  font-size: 13px;
 }
 
 .status-pending { background: #f0ad4e; }
 .status-verifikasi { background: #0275d8; }
 .status-ditolak { background: #d9534f; }
-.status- siap-diambil { background: #5bc0de; }
+.status-siap-diambil { background: #5bc0de; }
 .status-selesai { background: #5cb85c; }
+
+/* ===============================
+   RESPONSIVE IMPROVEMENTS
+   =============================== */
+@media (max-width: 768px) {
+  #infoBarang img {
+    max-height: 220px;
+  }
+
+  .title-riwayat {
+    font-size: 1.5rem !important;
+  }
+
+  #detailBox p,
+  #infoBarang p,
+  table td {
+    font-size: 13px;
+  }
+}
 
 footer {
   background: #0056a6;
