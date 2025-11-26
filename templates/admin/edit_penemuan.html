@@ -59,7 +59,7 @@
     <!-- LEFT -->
     <div class="left-panel">
       <img id="fotoBarang" class="foto-barang"
-           src="{{ laporan.gambar_barang or '/static/img/no-image.png' }}"
+           src="{{url_for('static', filename='uploads/' ~ (laporan.gambar_barang if laporan.gambar_barang else 'no-image.png')) }}"
            alt="Foto Barang">
       <div id="kodeLaporan" class="kode-laporan">{{ laporan.kode_barang }}</div>
     </div>

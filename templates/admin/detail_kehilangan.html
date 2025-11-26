@@ -54,7 +54,7 @@
     <!-- LEFT PANEL -->
     <div class="left-panel">
       <img id="fotoBarang" class="foto-barang" 
-        src="{{ url_for('admin_bp.static', filename='upload/' + (laporan.foto if laporan.foto else 'placeholder.png')) }}" 
+        src="{{ url_for('static', filename='uploads/' ~ (laporan.foto if laporan.foto else 'placeholder.png')) }}" 
         alt="Foto Barang">
     <div id="kodeLaporan" class="kode-laporan">{{ laporan.kode }}</div>
     </div>

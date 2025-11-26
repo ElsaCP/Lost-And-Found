@@ -42,13 +42,13 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         // GAMBAR (aman dari null)
         document.getElementById("imgIdentitas").src =
-            klaim.identitas_diri ? `/uploads/${klaim.identitas_diri}` : "/static/no-image.png";
+            klaim.identitas_diri ? `/static/uploads/${klaim.identitas_diri}` : "/static/no-image.png";
 
         document.getElementById("imgBukti").src =
-            klaim.bukti_laporan ? `/uploads/${klaim.bukti_laporan}` : "/static/no-image.png";
+            klaim.bukti_laporan ? `/static/uploads/${klaim.bukti_laporan}` : "/static/no-image.png";
 
         document.getElementById("imgFotoBarang").src =
-            klaim.foto_barang ? `/uploads/${klaim.foto_barang}` : "/static/no-image.png";
+            klaim.foto_barang ? `/static/uploads/${klaim.foto_barang}` : "/static/no-image.png";
 
         // STATUS
         document.getElementById("statusSelect").value = klaim.status ?? "Pending";

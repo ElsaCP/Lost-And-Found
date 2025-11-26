@@ -186,7 +186,7 @@ def tambah_kehilangan():
     foto_filename = None
 
     if foto and foto.filename:
-        upload_folder = os.path.join('static_admin', 'upload')
+        upload_folder = os.path.join('static', 'uploads')
         os.makedirs(upload_folder, exist_ok=True)
         foto_filename = foto.filename
         foto.save(os.path.join(upload_folder, foto_filename))
@@ -194,7 +194,7 @@ def tambah_kehilangan():
     # Waktu submit
     now = datetime.now()
     tanggal_submit = now.strftime("%Y-%m-%d")
-    waktu_submit = now.strftime("%H:%M:%S")
+    waktu_submit = now.strftime("%H:%M")
     update_terakhir = now.strftime("%Y-%m-%d %H:%M")
 
     # ======================
@@ -536,7 +536,7 @@ def tambah_penemuan():
     foto = request.files.get('foto')
     foto_filename = None
     if foto and foto.filename:
-        upload_folder = os.path.join('static_admin', 'upload')
+        upload_folder = os.path.join('static', 'uploads')
         os.makedirs(upload_folder, exist_ok=True)
         foto_filename = f"{int(time.time())}_{foto.filename}"
         foto.save(os.path.join(upload_folder, foto_filename))
@@ -693,7 +693,7 @@ def tambah_klaim_penemuan():
     def allowed_file(filename):
         return filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif'))
 
-    def simpan_file(file_obj, folder='static_admin/upload'):
+    def simpan_file(file_obj, folder='static/uploads'):
         if file_obj and allowed_file(file_obj.filename):
             os.makedirs(folder, exist_ok=True)
             filename = f"{int(time.time())}_{file_obj.filename}"
