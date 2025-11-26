@@ -3,10 +3,11 @@ document.addEventListener("DOMContentLoaded", async function () {
   if (!container) return;
 
   try {
-    const res = await fetch("/api/barang-terbaru"); // API kamu yang ambil 4 data publik terbaru
+    const res = await fetch("/api/barang-terbaru");
     const data = await res.json();
 
-    container.innerHTML = "";
+    // FIX PALING PENTING → hapus whitespace tanpa menyisakan enter
+    container.textContent = "";
 
     if (!data || data.length === 0) {
       container.innerHTML = `<p class="text-muted text-center">Belum ada barang publik terbaru.</p>`;
@@ -25,8 +26,11 @@ document.addEventListener("DOMContentLoaded", async function () {
           </div>
         </div>
       `;
+
+      // Tambahkan card TANPA membuat spasi
       container.insertAdjacentHTML("beforeend", card);
     });
+
   } catch (error) {
     console.error("Gagal memuat data barang:", error);
     container.innerHTML = `<p class="text-danger text-center">Gagal memuat data barang.</p>`;
