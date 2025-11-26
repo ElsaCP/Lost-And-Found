@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pengaturan - Profil Admin</title>
+
+  <link rel="stylesheet" href="{{ url_for('admin_bp.static', filename='css/beranda.css') }}">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="{{ url_for('admin_bp.static', filename='css/ganti_password.css') }}">
+  <link rel="stylesheet" href="{{ url_for('admin_bp.static', filename='css/pengaturan_admin_profile.css') }}">
+</head>
+
+<body class="page-pengaturan">
+
+<!-- ================= SIDEBAR ================= -->
+<aside class="sidebar short-sidebar">
+
+  <div class="logo-wrapper">
+    <img src="{{ url_for('admin_bp.static', filename='image/rectangle.png')}}" class="rectangle-bg">
+    <img src="{{ url_for('admin_bp.static', filename='image/logo.png')}}" class="logo-front">
+  </div>
+
+  <nav>
+    <a href="{{ url_for('admin_bp.beranda_admin') }}"><i class="bi bi-speedometer2"></i> Beranda</a>
+    <a href="{{ url_for('admin_bp.daftar_kehilangan') }}"><i class="bi bi-question-circle"></i> Kehilangan</a>
+    <a href="{{ url_for('admin_bp.daftar_penemuan') }}"><i class="bi bi-archive"></i> Penemuan</a>
+    <a href="{{ url_for('admin_bp.arsip') }}"><i class="bi bi-folder"></i> Arsip</a>
+    <a href="{{ url_for('admin_bp.pengaturan') }}" class="active"><i class="bi bi-gear"></i> Pengaturan</a>
+
+    <!-- SUBMENU -->
+    <div class="submenu">
+      <a href="{{ url_for('admin_bp.pengaturan') }}"><i class="bi bi-person"></i> Profil Admin</a>
+      <a href="{{ url_for('admin_bp.ganti_password') }}"><i class="bi bi-key"></i> Ganti Password</a>
+    {% if session.role == 'super_admin' %}
+      <a href="{{ url_for('admin_bp.kelola_admin') }}" class="active"><i class="bi bi-people"></i> Kelola Admin</a>
+    {% endif %}
+    </div>
+  </nav>
+
+  <a href="{{ url_for('admin_bp.logout_admin') }}" class="logout">
+    <i class="bi bi-box-arrow-right"></i> Logout
+  </a>
+</aside>
+
+<main class="content">
+
+  <div class="header">
+    <div class="logo-wrapper">
+      <img src="{{ url_for('admin_bp.static', filename='image/rectangle2.png')}}" class="rectangle-bg">
+      <img src="{{ url_for('admin_bp.static', filename='image/image5.png')}}" class="logo-front">
+    </div>
+    <h2>Tambah Admin</h2>
+
+    <div class="profile-icon">
+      <i class="bi bi-person-circle"></i>
+    </div>
+  </div>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+
+    <style>
+        
+        .container-box {
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0px 6px 15px rgba(0,0,0,0.1);
+            max-width: 650px;
+            margin: auto;
+            margin-top: 40px;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .btn-save {
+            background-color: #1E88E5;
+            color: white;
+            padding: 10px 26px;
+            border-radius: 6px;
+            border: none;
+        }
+
+        .btn-back {
+            background-color: #9e9e9e;
+            color: white;
+            padding: 10px 26px;
+            border-radius: 6px;
+            border: none;
+        }
+
+        .btn-save:hover { background-color: #1565C0; }
+        .btn-back:hover { background-color: #757575; }
+    </style>
+</head>
+
+<body>
+
+    <div class="container-box">
+        <div class="title">Tambah Admin Baru</div>
+
+        <form action="{{ url_for('admin_bp.tambah_admin') }}" method="POST">
+
+            <!-- Nama Lengkap -->
+            <div class="mb-3">
+                <label for="full_name">Nama Lengkap</label>
+                <input type="text" class="form-control" id="full_name" name="full_name" required>
+            </div>
+
+            <!-- Email -->
+            <div class="mb-3">
+                <label for="email">Email Admin</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+
+            <!-- No HP -->
+            <div class="mb-3">
+                <label for="phone">Nomor HP</label>
+                <input type="text" class="form-control" id="phone" name="phone" required>
+            </div>
+
+            <!-- Username -->
+            <div class="mb-3">
+                <label for="username">Username Login</label>
+                <input type="text" class="form-control" id="username" name="username" required>
+            </div>
+
+            <!-- Password -->
+            <div class="mb-3">
+                <label for="password">Password Login</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+
+            <!-- Role -->
+            <div class="mb-3">
+                <label for="role">Role Admin</label>
+                <select class="form-select" id="role" name="role" required>
+                    <option value="admin">Admin</option>
+                    <option value="superadmin">Super Admin</option>
+                </select>
+            </div>
+
+            <!-- Foto -->
+            <div class="mb-3">
+                <label for="photo">Foto Profil (opsional)</label>
+                <input type="file" class="form-control" id="photo" name="photo" accept="image/*">
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                <a href="{{ url_for('admin_bp.kelola_admin') }}" class="btn-back">Kembali</a>
+                <button type="submit" class="btn-save">Simpan</button>
+            </div>
+
+        </form>
+    </div>
+
+</body>
+</html>

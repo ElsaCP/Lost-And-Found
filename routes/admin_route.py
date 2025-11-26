@@ -25,10 +25,7 @@ def get_db_connection():
         password='',         
         database='lostfound'  # pastikan sesuai dengan database kamu
     )
-
-# ======================
-# 🔐 LOGIN ADMIN & SUPER ADMIN
-# ======================
+    
 @admin_bp.route('/login', methods=['GET', 'POST'])
 def login_admin():
     if request.method == 'GET':
@@ -40,14 +37,23 @@ def login_admin():
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM admin WHERE email=%s AND password=%s", (email, password))
+    
+    cursor.execute("""
+        SELECT id, full_name, email, phone, role 
+        FROM admin 
+        WHERE email=%s AND password=%s
+    """, (email, password))
+
     admin = cursor.fetchone()
+    cursor.close()
     conn.close()
 
     if admin:
         session['admin_logged_in'] = True
-        session['admin_email'] = email
-        session['role'] = admin['role']
+        session['admin_email'] = admin['email']
+        session['admin_id'] = admin['id']
+        session['role'] = admin['role']   # 🔥 WAJIB!
+
         return jsonify({'success': True, 'role': admin['role']})
     else:
         return jsonify({'success': False, 'message': 'Email atau password salah!'})
@@ -1205,17 +1211,236 @@ def generate_kode_klaim(cursor):
     max_num = max(numbers)
     return f"LF-C{max_num + 1:03d}"
 
+# ============================
+# 🔐 PENGATURAN PROFILE ADMIN
+# ============================
 @admin_bp.route('/pengaturan')
 def pengaturan():
     if not session.get('admin_logged_in'):
         return redirect(url_for('admin_bp.login_admin'))
-    return render_template('pengaturan.html', role=session.get('role'))
 
-@admin_bp.route('/pengaturan/ganti-password')
+    admin_id = session.get('admin_id')
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM admin WHERE id = %s", (admin_id,))
+    admin_data = cursor.fetchone()
+    cursor.close()
+    conn.close()
+
+    return render_template(
+        'pengaturan.html',
+        admin=admin_data,
+        role=session.get('role')   # 🔥 penting
+    )
+
+
+@admin_bp.route('/pengaturan/update', methods=['POST'])
+def update_profile():
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_bp.login_admin'))
+
+    admin_id = session.get('admin_id')
+    full_name = request.form['full_name']
+    email = request.form['email']
+    phone = request.form['phone']
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        UPDATE admin 
+        SET full_name=%s, email=%s, phone=%s 
+        WHERE id=%s
+    """, (full_name, email, phone, admin_id))
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return redirect(url_for('admin_bp.pengaturan', updated=1))
+
+@admin_bp.route('/pengaturan/upload-photo', methods=['POST'])
+def upload_photo():
+    if not session.get('admin_logged_in'):
+        return jsonify({"status": "error", "message": "Silahkan login terlebih dahulu"}), 401
+
+    file = request.files.get('photo')
+    if not file:
+        return jsonify({"status": "error", "message": "File tidak ditemukan"}), 400
+
+    filename = secure_filename(file.filename)
+    # pastikan folder static_admin/upload ada
+    upload_folder = os.path.join(current_app.root_path, 'static_admin', 'upload')
+    os.makedirs(upload_folder, exist_ok=True)
+    file.save(os.path.join(upload_folder, filename))
+
+    # simpan nama file di DB
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE admin SET photo=%s WHERE id=%s", (filename, session['admin_id']))
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    # kembalikan response JSON agar JS bisa menampilkan notif
+    return jsonify({"status": "success", "message": "Foto profil diperbarui!", "filename": filename})
+
+# ============================
+# 🔐 SUPER ADMIN CHECK
+# ============================
+def is_super_admin():
+    return session.get('role') == 'super_admin'
+
+
+# ============================
+# 📌 KELOLA ADMIN (Super Admin Only)
+# ============================
+@admin_bp.route('/kelola_admin')
+def kelola_admin():
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_bp.login_admin'))
+
+    if not is_super_admin():
+        return "Anda tidak memiliki akses!", 403
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM admin ORDER BY id DESC")
+    admins = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    return render_template(
+        'kelola_admin.html',
+        admins=admins,
+        role=session.get('role')   # 🔥 penting untuk sidebar
+    )
+
+
+# ============================
+# ➕ TAMBAH ADMIN
+# ============================
+@admin_bp.route('/kelola_admin/tambah', methods=['GET', 'POST'])
+def tambah_admin():
+    if not is_super_admin():
+        return "Anda tidak memiliki akses!", 403
+
+    if request.method == 'GET':
+        return render_template('tambah_admin.html', role=session.get('role'))
+
+    full_name = request.form['full_name']
+    email = request.form['email']
+    phone = request.form.get('phone')
+    password = request.form['password']
+    role_ = request.form['role']
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO admin (full_name, email, phone, password, role)
+        VALUES (%s, %s, %s, %s, %s)
+    """, (full_name, email, phone, password, role_))
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return redirect(url_for('admin_bp.kelola_admin'))
+
+
+# ============================
+# ✏ EDIT ADMIN
+# ============================
+@admin_bp.route('/kelola_admin/edit/<int:id>', methods=['GET', 'POST'])
+def edit_admin(id):
+    if not is_super_admin():
+        return "Anda tidak memiliki akses!", 403
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    if request.method == 'GET':
+        cursor.execute("SELECT * FROM admin WHERE id=%s", (id,))
+        admin_data = cursor.fetchone()
+        cursor.close()
+        conn.close()
+
+        return render_template(
+            'edit_admin.html',
+            admin=admin_data,
+            role=session.get('role')
+        )
+
+    full_name = request.form['full_name']
+    email = request.form['email']
+    phone = request.form.get('phone')
+    role_ = request.form['role']
+
+    cursor.execute("""
+        UPDATE admin SET full_name=%s, email=%s, phone=%s, role=%s
+        WHERE id=%s
+    """, (full_name, email, phone, role_, id))
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return redirect(url_for('admin_bp.kelola_admin'))
+
+
+# ============================
+# 🗑 DELETE ADMIN
+# ============================
+@admin_bp.route('/kelola_admin/delete/<int:id>')
+def delete_admin(id):
+    if not is_super_admin():
+        return "Anda tidak memiliki akses!", 403
+
+    if id == session.get('admin_id'):
+        return "Tidak bisa menghapus diri sendiri!", 400
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM admin WHERE id=%s", (id,))
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return redirect(url_for('admin_bp.kelola_admin'))
+
+@admin_bp.route('/pengaturan/ganti-password', methods=['GET', 'POST'])
 def ganti_password():
     if not session.get('admin_logged_in'):
         return redirect(url_for('admin_bp.login_admin'))
-    return render_template('ganti_password.html', role=session.get('role'))
+
+    if request.method == 'POST':
+        admin_id = session.get('admin_id')
+        old_pw = request.form.get('old_password')
+        new_pw = request.form.get('new_password')
+        confirm_pw = request.form.get('confirm_password')
+
+        if new_pw != confirm_pw:
+            return jsonify({"status": "error", "message": "Konfirmasi password tidak cocok!"}), 400
+
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute("SELECT password FROM admin WHERE id=%s", (admin_id,))
+        data = cursor.fetchone()
+
+        if not data or data['password'] != old_pw:
+            cursor.close()
+            conn.close()
+            return jsonify({"status": "error", "message": "Password lama salah!"}), 400
+
+        cursor.execute("UPDATE admin SET password=%s WHERE id=%s", (new_pw, admin_id))
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        return jsonify({"status": "success", "message": "Password berhasil diperbarui!"})
+
+    # Jika GET, render halaman form
+    return render_template('admin/ganti_password.html')
 
 # ======================
 # 🚪 LOGOUT

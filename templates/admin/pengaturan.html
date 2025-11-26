@@ -12,10 +12,13 @@
 </head>
 
 <body class="page-pengaturan">
+
+<!-- ================= SIDEBAR ================= -->
 <aside class="sidebar short-sidebar">
+
   <div class="logo-wrapper">
-    <img src="{{ url_for('admin_bp.static', filename='image/rectangle.png')}}" alt="Background Sidebar" class="rectangle-bg">
-    <img src="{{ url_for('admin_bp.static', filename='image/logo.png')}}" alt="Logo Bandara" class="logo-front">
+    <img src="{{ url_for('admin_bp.static', filename='image/rectangle.png')}}" class="rectangle-bg">
+    <img src="{{ url_for('admin_bp.static', filename='image/logo.png')}}" class="logo-front">
   </div>
 
   <nav>
@@ -24,10 +27,15 @@
     <a href="{{ url_for('admin_bp.daftar_penemuan') }}"><i class="bi bi-archive"></i> Penemuan</a>
     <a href="{{ url_for('admin_bp.arsip') }}"><i class="bi bi-folder"></i> Arsip</a>
     <a href="{{ url_for('admin_bp.pengaturan') }}" class="active"><i class="bi bi-gear"></i> Pengaturan</a>
+
+    <!-- SUBMENU -->
     <div class="submenu">
-      <a href="{{ url_for('admin_bp.pengaturan') }}" class="active"><i class="bi bi-list-ul"></i> Profil Admin</a>
-      <a href="{{ url_for('admin_bp.ganti_password') }}"><i class="bi bi-plus-circle"></i> Ganti Password</a>
-    </div> 
+      <a href="{{ url_for('admin_bp.pengaturan') }}" class="active"><i class="bi bi-person"></i> Profil Admin</a>
+      <a href="{{ url_for('admin_bp.ganti_password') }}"><i class="bi bi-key"></i> Ganti Password</a>
+    {% if session.role == 'super_admin' %}
+      <a href="{{ url_for('admin_bp.kelola_admin') }}"><i class="bi bi-people"></i> Kelola Admin</a>
+    {% endif %}
+    </div>
   </nav>
 
   <a href="{{ url_for('admin_bp.logout_admin') }}" class="logout">
@@ -35,111 +43,142 @@
   </a>
 </aside>
 
+<!-- ================= MAIN CONTENT ================= -->
+<main class="content">
 
-  <!-- ===== MAIN ===== -->
-  <main class="content">
-    <div class="header">
-      <div class="logo-wrapper">
-        <img src="{{ url_for('admin_bp.static', filename='image/rectangle2.png')}}" alt="Rectangle Background" class="rectangle-bg">
-        <img src="{{ url_for('admin_bp.static', filename='image/image5.png')}}" alt="Logo Header" class="logo-front">
-      </div>
-      <h2>Pengaturan – Profil Admin</h2>
-      <div class="profile-icon"><i class="bi bi-person-circle"></i></div>
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo-wrapper">
+      <img src="{{ url_for('admin_bp.static', filename='image/rectangle2.png')}}" class="rectangle-bg">
+      <img src="{{ url_for('admin_bp.static', filename='image/image5.png')}}" class="logo-front">
     </div>
 
-    <section class="settings-container">
-      <div class="settings-head">
-        <div>
-          <h1 class="settings-title">👤 Profil Admin</h1>
-          <p class="settings-desc">Kelola informasi akun. Role tidak dapat diubah.</p>
-        </div>
-      </div>
+    <h2>Pengaturan – Profil Admin</h2>
 
-      <div class="card profile-view">
-        <div class="profile-view-left">
-          <div class="avatar-wrapper">
-            <img id="pvAvatar" src="image/default-avatar.png" alt="Foto Admin" class="avatar" />
-            <div class="avatar-overlay" id="btnChangePhoto">
-              <i class="bi bi-camera"></i>
-              <span>Ganti Foto</span>
-            </div>
-          </div>
-          <input id="avatarFile" type="file" accept="image/*" hidden />
-        </div>
+    <div class="profile-icon">
+      {% if admin.photo %}
+        <img src="{{ url_for('admin_bp.static', filename='upload/' + admin.photo) }}" class="profile-header-img">
+      {% else %}
+        <i class="bi bi-person-circle"></i>
+      {% endif %}
+    </div>
+  </div>
 
-        <div class="profile-view-right">
-          <div class="row">
-            <div>
-              <div class="label">Nama Lengkap</div>
-              <div id="pvName" class="value">—</div>
-            </div>
-            <div>
-              <div class="label">Email</div>
-              <div id="pvEmail" class="value">—</div>
-            </div>
-          </div>
+  <!-- ================= PROFILE SECTION ================= -->
+  <section class="settings-container">
 
-          <div class="row">
-            <div>
-              <div class="label">No. Telepon</div>
-              <div id="pvPhone" class="value">—</div>
-            </div>
-            <div>
-              <div class="label">Role</div>
-              <div class="value">
-                <span id="pvRole" class="chip role">—</span>
-                <small class="muted">* Role tidak dapat diubah</small>
-              </div>
-            </div>
-          </div>
-
-          <div class="actions">
-            <button class="btn primary" id="btnEditProfile"><i class="bi bi-pencil-square"></i> Edit Perubahan</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- MODAL -->
-    <div id="modalEdit" class="modal hidden">
-      <div class="modal-content">
-        <span class="close-btn" id="closeModal">&times;</span>
-        <h2>Edit Profil Admin</h2>
-
-        <form id="editForm" class="edit-form">
-          <div class="form-group">
-            <label for="fName">Nama Lengkap</label>
-            <input id="fName" type="text" placeholder="cth: Andi Prasetyo" required />
-          </div>
-
-          <div class="form-group">
-            <label for="fEmail">Email</label>
-            <input id="fEmail" type="email" placeholder="nama@domain.com" required />
-          </div>
-
-          <div class="form-group">
-            <label for="fPhone">No. Telepon</label>
-            <input id="fPhone" type="tel" placeholder="08xxxxxxxxxx" />
-          </div>
-
-          <div class="form-group">
-            <label>Role (tetap)</label>
-            <input id="fRole" type="text" disabled />
-            <small class="muted">Role bisa “Super Admin” atau “Admin”, dan tidak dapat diubah dari sini.</small>
-          </div>
-
-          <div class="form-actions">
-            <button type="button" class="btn ghost" id="btnCancel">Batal</button>
-            <button type="submit" class="btn primary"><i class="bi bi-save"></i> Simpan</button>
-          </div>
-        </form>
+    <div class="settings-head">
+      <div>
+        <h1 class="settings-title">👤 Profil Admin</h1>
+        <p class="settings-desc">Kelola informasi akun. Role tidak dapat diubah.</p>
       </div>
     </div>
 
-    <div id="toast" class="toast hidden"><i class="bi bi-check-circle"></i> Perubahan profil tersimpan.</div>
-  </main>
+    <div class="card profile-view">
 
-  <script src="{{ url_for('admin_bp.static', filename='js/pengaturan_admin_profile.js') }}"></script>
-  <script src="{{ url_for('admin_bp.static', filename='js/logout.js') }}"></script>
+      <!-- FOTO -->
+      <div class="profile-view-left">
+        <div class="avatar-wrapper">
+          <img id="pvAvatar"
+            src="{% if admin.photo %}{{ url_for('admin_bp.static', filename='upload/' + admin.photo) }}{% else %}{{ url_for('admin_bp.static', filename='image/default-avatar.png') }}{% endif %}"
+            class="avatar" alt="Foto Admin">
+
+          <div class="avatar-overlay" id="btnChangePhoto">
+            <i class="bi bi-camera"></i>
+            <span>Ganti Foto</span>
+          </div>
+        </div>
+
+        <input id="avatarFile" type="file" accept="image/*" hidden>
+      </div>
+
+      <!-- DATA -->
+      <div class="profile-view-right">
+
+        <div class="row">
+          <div>
+            <div class="label">Nama Lengkap</div>
+            <div id="pvName" class="value">{{ admin.full_name or '—' }}</div>
+          </div>
+
+          <div>
+            <div class="label">Email</div>
+            <div id="pvEmail" class="value">{{ admin.email }}</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <div class="label">No. Telepon</div>
+            <div id="pvPhone" class="value">{{ admin.phone or '—' }}</div>
+          </div>
+
+          <div>
+            <div class="label">Role</div>
+            <div class="value">
+              <span id="pvRole" class="chip role">{{ admin.role }}</span>
+              <small class="muted">* Role tidak dapat diubah</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn primary" id="btnEditProfile">
+            <i class="bi bi-pencil-square"></i> Edit Profil
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ================= MODAL EDIT PROFIL ================= -->
+  <div id="modalEdit" class="modal hidden">
+    <div class="modal-content">
+      
+      <span class="close-btn" id="closeModal">&times;</span>
+      <h2>Edit Profil Admin</h2>
+
+      <form id="editForm" class="edit-form" method="POST" action="{{ url_for('admin_bp.update_profile') }}">
+
+        <div class="form-group">
+          <label for="fName">Nama Lengkap</label>
+          <input id="fName" name="full_name" type="text" value="{{ admin.full_name }}">
+        </div>
+
+        <div class="form-group">
+          <label for="fEmail">Email</label>
+          <input id="fEmail" name="email" type="email" value="{{ admin.email }}">
+        </div>
+
+        <div class="form-group">
+          <label for="fPhone">No. Telepon</label>
+          <input id="fPhone" name="phone" type="tel" value="{{ admin.phone }}">
+        </div>
+
+        <div class="form-group">
+          <label>Role (tetap)</label>
+          <input type="text" value="{{ admin.role }}" disabled>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn ghost" id="btnCancel">Batal</button>
+          <button type="submit" class="btn primary"><i class="bi bi-save"></i> Simpan</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden">
+    <i class="bi bi-check-circle"></i> Perubahan profil tersimpan.
+  </div>
+
+</main>
+
+<script src="{{ url_for('admin_bp.static', filename='js/pengaturan_admin_profile.js') }}"></script>
+<script src="{{ url_for('admin_bp.static', filename='js/logout.js') }}"></script>
+
 </body>
 </html>

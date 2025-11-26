@@ -15,6 +15,28 @@
   font-size: 16px;
 }
 
+.submenu {
+  margin-left: 40px !important;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;   /* 🔥 supaya turun ke bawah */
+  gap: 10px;
+}
+
+.submenu a {
+  text-decoration: none;
+  font-size: 16px;
+  padding: 6px 14px;
+  border-radius: 6px;
+  color: #003c7a;
+  font-weight: 500;
+}
+
+.submenu a.active {
+  background: #0055B8;
+  color: #fff;
+}
+
 /* ==== KIRI (FOTO) ==== */
 .left {
   width: 250px;
