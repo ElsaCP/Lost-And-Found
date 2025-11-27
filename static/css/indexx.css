@@ -151,27 +151,113 @@ body {
   text-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
 }
 
-/* ===== RESPONSIVE HERO ===== */
+/* =============================
+   HERO — FIX RESPONSIVE (BESAR DI MOBILE)
+============================= */
+
+.hero {
+  padding: 120px 20px 240px;   /* background lebih tinggi */
+  background-size: cover;
+  background-position: center;
+}
+
+.hero-title {
+  font-size: 70px;
+  line-height: 1.1;
+}
+
+.hero-desc {
+  font-size: 22px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+
+/* --- TABLET --- */
 @media (max-width: 992px) {
-  .hero { padding: 80px 20px 180px; }
-  .hero-title { font-size: 56px; }
-  .hero-desc { font-size: 18px; max-width: 90%; }
+  .hero {
+    padding: 110px 20px 230px;
+  }
+  .hero-title {
+    font-size: 60px;
+  }
+  .hero-desc {
+    font-size: 20px;
+  }
 }
 
+
+/* --- MOBILE 6" / 7" --- */
 @media (max-width: 768px) {
-  .hero { padding: 70px 15px 150px; }
-  .hero-title { font-size: 44px; }
-  .hero-desc { font-size: 20px; }
-  .hero img { height: 55px; }
+  .hero {
+    padding: 100px 20px 220px;
+  }
+  .hero-title {
+    font-size: 52px !important;
+  }
+  .hero-desc {
+    font-size: 19px;
+  }
+  .hero img {
+    height: 60px;
+  }
 }
 
+
+/* --- MOBILE KECIL (< 576px) --- */
 @media (max-width: 576px) {
-  .hero { padding: 60px 10px 120px; }
-  .hero-title { font-size: 100px; margin-bottom: 20px; }
-  .hero-desc { font-size: 90px; line-height: 1.4; }
-  .hero img { height: 45px; }
+  .hero {
+    padding: 90px 15px 200px;
+  }
+  .hero-title {
+    font-size: 46px !important; /* BESAR tapi tetap proporsional */
+  }
+  .hero-desc {
+    font-size: 18px !important;
+    line-height: 1.5;
+  }
+  .hero img {
+    height: 55px;
+  }
 }
 
+
+/* =============================
+   HERO TABS — Fix Responsiveness
+============================= */
+
+.hero-nav-link {
+  font-size: 1.1rem;
+  padding: 18px 30px;
+}
+
+/* Tablet */
+@media (max-width: 768px) {
+  .hero-nav-link {
+    font-size: 1.15rem;
+    padding: 18px 35px;      /* lebih besar saat mobile */
+  }
+}
+
+/* Mobile kecil */
+@media (max-width: 576px) {
+  .hero-nav-link {
+    font-size: 1.25rem;      /* lebih besar & mudah dibaca */
+    padding: 20px 40px;
+    font-weight: 800;
+  }
+}
+
+/* Info section tulisan lebih besar di mobile */
+@media (max-width: 576px) {
+  .info-text {
+    font-size: 1.05rem;
+  }
+  .info-button {
+    padding: 14px 45px;
+    font-size: 1.05rem;
+  }
+}
 
 /* Tombol navigasi di hero */
 .hero-tabs-container {
@@ -360,9 +446,15 @@ body {
 }
 
 @media (max-width: 576px) {
-  .hero-title { font-size: 34px; }
-  .hero img { height: 45px; }
-  .hero { padding: 60px 10px 120px; }
+  .hero-title { 
+    font-size: 50px !important; 
+    line-height: 1.2;
+  }
+  .hero-desc {
+    font-size: 25px !important;
+  }
+  .hero img { height: 60px; }
+  .hero { padding: 90px 15px 200px; }
 }
 
 /* ============================
@@ -886,5 +978,134 @@ footer {
 
   #barangTerbaru .item-card:last-child {
     margin-right: 8px !important;
+  }
+}
+
+/* ===============================================================
+   RESPONSIVE – HERO TITLE, DESC, NAV ITEM & INFO SECTION
+=============================================================== */
+
+/* ====== Tablet Landscape (≤ 992px) ====== */
+@media (max-width: 992px) {
+  .hero-title {
+    font-size: 58px !important;
+    line-height: 1.15;
+  }
+
+  .hero-desc {
+    font-size: 21px !important;
+    max-width: 900px;
+  }
+
+  .hero-nav-link {
+    font-size: 1.15rem;
+    padding: 18px 30px;
+  }
+}
+
+/* ====== Tablet Portrait (≤ 768px) ====== */
+@media (max-width: 768px) {
+  .hero {
+    padding: 110px 20px 230px;
+  }
+
+  .hero-title {
+    font-size: 52px !important;
+  }
+
+  .hero-desc {
+    font-size: 20px !important;
+    max-width: 95%;
+  }
+
+  /* Nav item */
+  .hero-nav-link {
+    font-size: 1.25rem;
+    padding: 20px 40px;
+    font-weight: 800;
+  }
+
+  /* Info section */
+  .info-content {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+  }
+
+  .info-text {
+    font-size: 1.15rem !important;
+    padding: 0;
+  }
+
+  .info-button {
+    padding: 15px 50px;
+    font-size: 1.1rem;
+  }
+}
+
+/* ====== Mobile Besar 6–7" (≤ 576px) ====== */
+@media (max-width: 576px) {
+  .hero {
+    padding: 90px 15px 210px;
+  }
+
+  .hero img {
+    height: 60px;
+  }
+
+  .hero-title {
+    font-size: 44px !important;
+    line-height: 1.2;
+    font-weight: 800;
+  }
+
+  .hero-desc {
+    font-size: 18px !important;
+    line-height: 1.55;
+  }
+
+  /* Nav item mobile */
+  .hero-nav-link {
+    font-size: 1.3rem !important;
+    padding: 22px 45px;
+    font-weight: 800;
+  }
+
+  /* Info section written bigger */
+  .info-text {
+    font-size: 1.1rem !important;
+    line-height: 1.5;
+  }
+
+  .info-button {
+    font-size: 1.15rem !important;
+    padding: 16px 55px;
+    font-weight: 800;
+  }
+}
+
+/* ====== Mobile sangat kecil (≤ 425px) ====== */
+@media (max-width: 425px) {
+
+  .hero-title {
+    font-size: 38px !important;
+  }
+
+  .hero-desc {
+    font-size: 17px !important;
+  }
+
+  .hero-nav-link {
+    padding: 20px 35px;
+    font-size: 1.15rem;
+  }
+
+  .info-text {
+    font-size: 1rem !important;
+  }
+
+  .info-button {
+    padding: 14px 45px;
+    font-size: 1rem !important;
   }
 }
