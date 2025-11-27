@@ -14,12 +14,12 @@ body {
 }
 
 /* ============================
-   NAVBAR
+   NAVBAR DESKTOP
 ============================ */
 .navbar {
   background: #0056a6;
   height: 70px;
-  padding: 0 20px;
+  padding: 0 20px;   /* desktop tetap */
   display: flex;
   align-items: center;
 }
@@ -53,7 +53,7 @@ body {
 }
 
 /* ============================
-   RESPONSIVE NAVBAR
+   RESPONSIVE NAVBAR (TABLET)
 ============================ */
 @media (max-width: 992px) {
   .navbar {
@@ -63,41 +63,71 @@ body {
 
   .navbar-collapse {
     background: #0056a6;
-    padding: 10px;
+    padding: 12px 15px;
     border-radius: 10px;
     position: absolute;
     right: 10px;
-    top: 60px;
-    width: 180px;
+    top: 70px;
+    width: 200px;
     z-index: 999;
     opacity: 0;
-    transform: scale(0.9);
-    transition: 0.25s;
+    transform: translateY(-8px);
+    transition: 0.25s ease;
   }
 
   .navbar-collapse.show {
     opacity: 1;
-    transform: scale(1);
+    transform: translateY(0);
+  }
+
+  .nav-link {
+    display: block;
+    font-size: 1.2rem;
+    padding: 8px 0;
+    text-align: right;
   }
 
   .profile-icon {
     display: block;
-    margin: 10px auto 5px auto;
+    margin: 12px auto 5px auto;
+    font-size: 1.8rem;
   }
 }
 
+/* ============================
+   MOBILE HP — PADDING LEBIH BESAR 
+   + LOGO DIPERBESAR
+============================ */
 @media (max-width: 576px) {
-  .navbar-brand img {
-    height: 45px;
+
+  /* 🔥 Navbar jauh lebih tebal */
+  .navbar {
+    padding: 20px 22px;       /* PADDING MOBILE DIPERBESAR */
+    height: auto;
   }
 
+  /* 🔥 Logo lebih besar mengikuti padding */
+  .navbar-brand img {
+    height: 65px;             /* tinggi lebih besar dari sebelumnya */
+    max-height: 80px;         /* batas aman */
+  }
+
+  /* Collapse */
   .navbar-collapse {
-    width: 160px;
-    top: 55px;
+    width: 200px;
+    top: calc(100% + 5px);    /* tetap di bawah navbar */
+    right: 10px;
+    padding: 16px 14px;
+  }
+
+  /* Teks lebih besar */
+  .nav-link {
+    font-size: 1.4rem;
+    padding: 10px 0;
   }
 
   .profile-icon {
-    font-size: 1.4rem;
+    font-size: 2.1rem;
   }
 }
 
@@ -753,6 +783,7 @@ footer {
   font-family: 'Protest Strike', sans-serif;
   font-size: 2.5rem;
   background: linear-gradient(90deg, #16ACA7, #2E66A7);
+  background-clip: text; /* standar */
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -1054,13 +1085,13 @@ footer {
   }
 
   .hero-title {
-    font-size: 44px !important;
+    font-size: 60px !important;
     line-height: 1.2;
     font-weight: 800;
   }
 
   .hero-desc {
-    font-size: 18px !important;
+    font-size: 25px !important;
     line-height: 1.55;
   }
 
@@ -1073,12 +1104,12 @@ footer {
 
   /* Info section written bigger */
   .info-text {
-    font-size: 1.1rem !important;
+    font-size: 1.6rem !important;
     line-height: 1.5;
   }
 
   .info-button {
-    font-size: 1.15rem !important;
+    font-size: 1.35rem !important;
     padding: 16px 55px;
     font-weight: 800;
   }
@@ -1086,26 +1117,28 @@ footer {
 
 /* ====== Mobile sangat kecil (≤ 425px) ====== */
 @media (max-width: 425px) {
-
+  .hero img {
+    height: 70px;
+  }
   .hero-title {
-    font-size: 38px !important;
+    font-size: 50px !important;
   }
 
   .hero-desc {
-    font-size: 17px !important;
+    font-size: 23px !important;
   }
 
   .hero-nav-link {
     padding: 20px 35px;
-    font-size: 1.15rem;
+    font-size: 1.25rem;
   }
 
   .info-text {
-    font-size: 1rem !important;
+    font-size: 1.4rem !important;
   }
 
   .info-button {
     padding: 14px 45px;
-    font-size: 1rem !important;
+    font-size: 1.2rem !important;
   }
 }
