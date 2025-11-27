@@ -40,15 +40,18 @@ document.addEventListener("DOMContentLoaded", async function () {
         document.getElementById("waktuLapor").textContent = klaim.waktu_lapor ?? "-";
         document.getElementById("updateTerakhir").textContent = klaim.update_terakhir ?? "-";
 
-        // GAMBAR (aman dari null)
-        document.getElementById("imgIdentitas").src =
-            klaim.identitas_diri ? `/static/uploads/${klaim.identitas_diri}` : "/static/no-image.png";
+        // GAMBAR
+        document.getElementById("imgFotoBarangPenemuan").src =
+            klaim.foto_barang_penemuan ? `/static/uploads/${klaim.foto_barang_penemuan}` : "/static/no-image.png";
+
+        document.getElementById("imgFotoBarangSebelum").src =
+            klaim.foto_barang_klaim ? `/static/uploads/${klaim.foto_barang_klaim}` : "/static/no-image.png";
 
         document.getElementById("imgBukti").src =
             klaim.bukti_laporan ? `/static/uploads/${klaim.bukti_laporan}` : "/static/no-image.png";
 
-        document.getElementById("imgFotoBarang").src =
-            klaim.foto_barang ? `/static/uploads/${klaim.foto_barang}` : "/static/no-image.png";
+        document.getElementById("imgIdentitas").src =
+            klaim.identitas_diri ? `/static/uploads/${klaim.identitas_diri}` : "/static/no-image.png";
 
         // STATUS
         document.getElementById("statusSelect").value = klaim.status ?? "Pending";
@@ -101,7 +104,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             const resultUpdate = await res.json();
 
             if (resultUpdate.success) {
-
                 Swal.fire({
                     icon: "success",
                     title: "Berhasil!",
@@ -123,4 +125,23 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
         });
     });
+
+    // ============================
+    // LIGHTBOX / ZOOM GAMBAR
+    // ============================
+    const zoomImgs = document.querySelectorAll(".zoomable");
+    const lightbox = document.getElementById("lightbox");
+    const lightboxImg = document.getElementById("lightbox-img");
+    const closeBtn = document.querySelector(".lightbox-close");
+
+    zoomImgs.forEach(img => {
+        img.addEventListener("click", () => {
+            lightbox.style.display = "flex";
+            lightboxImg.src = img.src;
+        });
+    });
+
+    closeBtn.onclick = () => lightbox.style.display = "none";
+    lightbox.onclick = e => { if (e.target === lightbox) lightbox.style.display = "none"; };
+
 });

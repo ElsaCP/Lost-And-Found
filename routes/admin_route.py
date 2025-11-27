@@ -964,10 +964,12 @@ def detail_klaim_penemuan_api():
         SELECT 
             k.*,
             k.kode_laporan_kehilangan,
+            k.foto_barang AS foto_barang_klaim,
+            k.bukti_laporan,
             p.nama_barang,
             p.kategori,
             p.lokasi,
-            p.gambar_barang AS foto_barang
+            p.gambar_barang AS foto_barang_penemuan
         FROM klaim_barang k
         LEFT JOIN penemuan p ON k.kode_barang = p.kode_barang
         WHERE k.kode_laporan = %s
@@ -981,7 +983,7 @@ def detail_klaim_penemuan_api():
     if not data:
         return jsonify({"success": False, "message": "Data tidak ditemukan"}), 404
     
-    if data["update_terakhir"]:
+    if data.get("update_terakhir"):
         data["update_terakhir"] = data["update_terakhir"].strftime("%Y-%m-%d %H:%M")
 
     return jsonify({"success": True, "data": data})
@@ -1348,7 +1350,7 @@ def tambah_admin():
 
 
 # ============================
-# ✏ EDIT ADMIN
+# ✏ EDIT ADMIN TANPA HASH PASSWORD
 # ============================
 @admin_bp.route('/kelola_admin/edit/<int:id>', methods=['GET', 'POST'])
 def edit_admin(id):
@@ -1359,53 +1361,89 @@ def edit_admin(id):
     cursor = conn.cursor(dictionary=True)
 
     if request.method == 'GET':
+        # Ambil data admin
         cursor.execute("SELECT * FROM admin WHERE id=%s", (id,))
         admin_data = cursor.fetchone()
         cursor.close()
         conn.close()
-
         return render_template(
             'edit_admin.html',
             admin=admin_data,
             role=session.get('role')
         )
 
+    # ===== POST =====
     full_name = request.form['full_name']
     email = request.form['email']
     phone = request.form.get('phone')
     role_ = request.form['role']
+    password = request.form.get('password')  # opsional
 
-    cursor.execute("""
-        UPDATE admin SET full_name=%s, email=%s, phone=%s, role=%s
-        WHERE id=%s
-    """, (full_name, email, phone, role_, id))
+    try:
+        if password:  # update password hanya jika diisi
+            cursor.execute("""
+                UPDATE admin
+                SET full_name=%s, email=%s, phone=%s, role=%s, password=%s
+                WHERE id=%s
+            """, (full_name, email, phone, role_, password, id))
+        else:
+            cursor.execute("""
+                UPDATE admin
+                SET full_name=%s, email=%s, phone=%s, role=%s
+                WHERE id=%s
+            """, (full_name, email, phone, role_, id))
 
-    conn.commit()
-    cursor.close()
-    conn.close()
+        conn.commit()
+        message = {"success": True, "msg": "Data admin berhasil diperbarui."}
 
-    return redirect(url_for('admin_bp.kelola_admin'))
+    except Exception as e:
+        conn.rollback()
+        print("Error edit admin:", e)
+        message = {"success": False, "msg": "Terjadi kesalahan saat memperbarui data."}
 
+    finally:
+        cursor.close()
+        conn.close()
+
+    # Redirect jika sukses, render ulang jika gagal
+    if message["success"]:
+        return redirect(url_for('admin_bp.kelola_admin'))
+    else:
+        # ambil ulang data admin untuk render halaman
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM admin WHERE id=%s", (id,))
+        admin_data = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        return render_template(
+            'edit_admin.html',
+            admin=admin_data,
+            role=session.get('role'),
+            error=message["msg"]
+        )
 
 # ============================
-# 🗑 DELETE ADMIN
+# 🗑 DELETE ADMIN (POST)
 # ============================
-@admin_bp.route('/kelola_admin/delete/<int:id>')
+@admin_bp.route('/kelola_admin/delete/<int:id>', methods=['POST'])
 def delete_admin(id):
     if not is_super_admin():
-        return "Anda tidak memiliki akses!", 403
+        return {"success": False, "message": "Anda tidak memiliki akses!"}, 403
 
     if id == session.get('admin_id'):
-        return "Tidak bisa menghapus diri sendiri!", 400
+        return {"success": False, "message": "Tidak bisa menghapus diri sendiri!"}, 400
 
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM admin WHERE id=%s", (id,))
-    conn.commit()
-    cursor.close()
-    conn.close()
-
-    return redirect(url_for('admin_bp.kelola_admin'))
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM admin WHERE id=%s", (id,))
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return {"success": True, "message": "Admin berhasil dihapus!"}
+    except Exception as e:
+        return {"success": False, "message": f"Gagal menghapus admin: {e}"}, 500
 
 @admin_bp.route('/pengaturan/ganti-password', methods=['GET', 'POST'])
 def ganti_password():

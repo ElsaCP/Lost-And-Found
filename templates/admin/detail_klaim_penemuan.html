@@ -59,13 +59,15 @@
 
     <!-- BAGIAN KIRI -->
     <div class="detail-right">
-        <div class="detail-photo-box">
-            <img id="imgFotoBarang" src="" alt="Foto Barang">
+
+        <!-- FOTO BARANG HASIL PENEMUAN -->
+        <div class="data-section">
+            <h3>Foto Barang (Hasil Penemuan)</h3>
+            <img id="imgFotoBarangPenemuan" class="foto-barang zoomable" style="width:230px; border:1px solid #000;">
         </div>
+
         <div class="kode-barang-label" id="kodeBarang"></div>
 
-
-    <!-- BAGIAN KANAN -->
         <!-- DATA PENGKLAIM -->
         <div class="data-section">
             <h3>Data Pengklaim</h3>
@@ -117,10 +119,16 @@
             <img id="imgIdentitas" class="foto-barang zoomable" style="width:230px; border:1px solid #000;">
         </div>
 
-        <!-- BUKTI -->
+        <!-- BUKTI LAPORAN -->
         <div class="data-section">
             <h3>Bukti Laporan Kehilangan</h3>
             <img id="imgBukti" class="foto-barang zoomable" style="width:230px; border:1px solid #000;">
+        </div>
+
+        <!-- FOTO BARANG SEBELUM HILANG -->
+        <div class="data-section">
+            <h3>Foto Barang Sebelum Hilang</h3>
+            <img id="imgFotoBarangSebelum" class="foto-barang zoomable" style="width:230px; border:1px solid #000;">
         </div>
 
         <!-- WAKTU & STATUS -->
@@ -159,9 +167,7 @@
             </div>
         </div>
 
-        <!-- ===================== -->
-        <!--   BUTTON TURUN BAWAH  -->
-        <!-- ===================== -->
+        <!-- BUTTON -->
         <div class="button-group">
             <button id="btnKembali" class="btn-kembali">Kembali</button>
             <button id="btnUpdate" class="btn-update">Update</button>
@@ -172,31 +178,14 @@
   </div> <!-- end detail-flex -->
 </div> <!-- end wrapper -->
 
-  <!-- LIGHTBOX -->
-  <div id="lightbox" class="lightbox">
+<!-- LIGHTBOX -->
+<div id="lightbox" class="lightbox">
     <span class="lightbox-close">&times;</span>
     <img id="lightbox-img" class="lightbox-img">
-  </div>
+</div>
 
   <script src="{{ url_for('admin_bp.static', filename='js/detail_klaim_penemuan.js') }}"></script>
   <script src="{{ url_for('admin_bp.static', filename='js/logout.js') }}"></script>
-
-  <script>
-    const zoomImgs = document.querySelectorAll(".zoomable");
-    const lightbox = document.getElementById("lightbox");
-    const lightboxImg = document.getElementById("lightbox-img");
-    const closeBtn = document.querySelector(".lightbox-close");
-
-    zoomImgs.forEach(img => {
-      img.addEventListener("click", () => {
-        lightbox.style.display = "flex";
-        lightboxImg.src = img.src;
-      });
-    });
-
-    closeBtn.onclick = () => lightbox.style.display = "none";
-    lightbox.onclick = e => { if (e.target === lightbox) lightbox.style.display = "none"; };
-  </script>
 
 </body>
 </html>

@@ -1,40 +1,11 @@
-// ===== Helper DOM =====
-const $ = (sel) => document.querySelector(sel);
-
-const modal      = $('#modalEdit');
-const closeModal = $('#closeModal');
-const btnEdit    = $('#btnEditProfile');
-const btnCancel  = $('#btnCancel');
-const toast      = $('#toast');
-
-// === Buka Modal Edit ===
-btnEdit?.addEventListener('click', () => {
-  modal.classList.remove('hidden');
-});
-
-// === Tutup Modal Edit ===
-closeModal?.addEventListener('click', () => modal.classList.add('hidden'));
-btnCancel?.addEventListener('click', () => modal.classList.add('hidden'));
-
-// === Notifikasi (toast) jika update profil sukses ===
-if (window.location.search.includes("updated=1")) {
-  toast.classList.remove("hidden");
-  toast.innerHTML = `<i class="bi bi-check-circle"></i> Profil berhasil diperbarui.`;
-  setTimeout(() => toast.classList.add("hidden"), 1600);
-}
-
-// =====================================================
-//  GANTI FOTO – KLIK FOTO MEMBUKA INPUT FILE
-// =====================================================
 const avatarWrapper = document.querySelector('.avatar-wrapper');
 const avatarFile = document.getElementById("avatarFile");
 const pvAvatar = document.getElementById("pvAvatar");
+const profileHeaderImg = document.querySelector(".profile-header-img");
+const toast = document.getElementById("toast");
 
 avatarWrapper?.addEventListener('click', () => avatarFile.click());
 
-// =====================================================
-//  PREVIEW FOTO DAN AUTO-KIRIM KE BACKEND
-// =====================================================
 avatarFile?.addEventListener("change", (e) => {
   const file = e.target.files[0];
   if (!file) return;
@@ -43,6 +14,7 @@ avatarFile?.addEventListener("change", (e) => {
   reader.onload = () => {
     // preview langsung
     pvAvatar.src = reader.result;
+    if (profileHeaderImg) profileHeaderImg.src = reader.result;
 
     // Upload ke backend
     const formData = new FormData();
@@ -52,11 +24,15 @@ avatarFile?.addEventListener("change", (e) => {
       method: "POST",
       body: formData,
     })
-    .then(res => {
-      // tampilkan notif
-      toast.classList.remove("hidden");
-      toast.innerHTML = `<i class="bi bi-check-circle"></i> Foto profil diperbarui.`;
-      setTimeout(() => toast.classList.add("hidden"), 1600);
+    .then(res => res.json())
+    .then(data => {
+      if(data.status === "success"){
+        toast.classList.remove("hidden");
+        toast.innerHTML = `<i class="bi bi-check-circle"></i> ${data.message}`;
+        setTimeout(() => toast.classList.add("hidden"), 1600);
+      } else {
+        alert(data.message);
+      }
     })
     .catch(err => console.error(err));
   };

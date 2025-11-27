@@ -3,19 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Pengaturan - Profil Admin</title>
+  <title>Pengaturan - Kelola Admin</title>
 
   <link rel="stylesheet" href="{{ url_for('admin_bp.static', filename='css/beranda.css') }}">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet"/>
   <link rel="stylesheet" href="{{ url_for('admin_bp.static', filename='css/ganti_password.css') }}">
   <link rel="stylesheet" href="{{ url_for('admin_bp.static', filename='css/pengaturan_admin_profile.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body class="page-pengaturan">
 
 <!-- ================= SIDEBAR ================= -->
 <aside class="sidebar short-sidebar">
-
   <div class="logo-wrapper">
     <img src="{{ url_for('admin_bp.static', filename='image/rectangle.png')}}" class="rectangle-bg">
     <img src="{{ url_for('admin_bp.static', filename='image/logo.png')}}" class="logo-front">
@@ -28,13 +28,12 @@
     <a href="{{ url_for('admin_bp.arsip') }}"><i class="bi bi-folder"></i> Arsip</a>
     <a href="{{ url_for('admin_bp.pengaturan') }}" class="active"><i class="bi bi-gear"></i> Pengaturan</a>
 
-    <!-- SUBMENU -->
     <div class="submenu">
       <a href="{{ url_for('admin_bp.pengaturan') }}"><i class="bi bi-person"></i> Profil Admin</a>
       <a href="{{ url_for('admin_bp.ganti_password') }}"><i class="bi bi-key"></i> Ganti Password</a>
-    {% if session.role == 'super_admin' %}
+      {% if session.role == 'super_admin' %}
       <a href="{{ url_for('admin_bp.kelola_admin') }}" class="active"><i class="bi bi-people"></i> Kelola Admin</a>
-    {% endif %}
+      {% endif %}
     </div>
   </nav>
 
@@ -44,14 +43,12 @@
 </aside>
 
 <main class="content">
-
   <div class="header">
     <div class="logo-wrapper">
       <img src="{{ url_for('admin_bp.static', filename='image/rectangle2.png')}}" class="rectangle-bg">
       <img src="{{ url_for('admin_bp.static', filename='image/image5.png')}}" class="logo-front">
     </div>
-    <h2>Kelola Admin</h2>
-
+    <h2>Pengaturan - Kelola Admin</h2>
     <div class="profile-icon">
       <i class="bi bi-person-circle"></i>
     </div>
@@ -60,7 +57,7 @@
   <section>
     <div class="top-action">
       <h1>Daftar Admin</h1>
-      <a href="{{ url_for('admin_bp.tambah_admin') }}" class="btn primary">
+      <a href="{{ url_for('admin_bp.tambah_admin') }}" class="btn-add-admin">
         <i class="bi bi-plus-circle"></i> Tambah Admin
       </a>
     </div>
@@ -69,7 +66,6 @@
       <table class="table-data">
         <thead>
           <tr>
-            <th>ID</th>
             <th>Nama Lengkap</th>
             <th>Email</th>
             <th>No. Telepon</th>
@@ -81,7 +77,6 @@
         <tbody>
           {% for a in admins %}
           <tr>
-            <td>{{ a.id }}</td>
             <td>{{ a.full_name }}</td>
             <td>{{ a.email }}</td>
             <td>{{ a.phone or '-' }}</td>
@@ -91,16 +86,18 @@
               </span>
             </td>
             <td class="aksi">
-              <a href="{{ url_for('admin_bp.edit_admin', id=a.id) }}" class="btn small">
-                <i class="bi bi-pencil-square"></i>
-              </a>
+              <a href="{{ url_for('admin_bp.edit_admin', id=a.id) }}" class="btn-edit" title="Edit">
+                <i class="bi bi-pencil"></i></a>
 
               {% if a.role != 'super_admin' %}
-              <a href="{{ url_for('admin_bp.delete_admin', id=a.id) }}"
-                 onclick="return confirm('Hapus admin ini?')"
-                 class="btn small danger">
-                <i class="bi bi-trash"></i>
-              </a>
+              <!-- FORM DELETE ADMIN -->
+              <form onsubmit="return hapusAdmin(event, this)" 
+                    action="{{ url_for('admin_bp.delete_admin', id=a.id) }}" 
+                    method="post" style="display:inline">
+                <button type="submit" class="btn-delete" title="Hapus">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </form>
               {% endif %}
             </td>
           </tr>
@@ -112,6 +109,44 @@
   </section>
 
 </main>
+
+<script>
+async function hapusAdmin(event, form) {
+    event.preventDefault(); // hentikan submit default
+
+    Swal.fire({
+        title: "Hapus Admin?",
+        text: "Data admin akan dihapus permanen!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Ya, hapus",
+        cancelButtonText: "Batal"
+    }).then(async (result) => {
+        if (!result.isConfirmed) return;
+
+        try {
+            const res = await fetch(form.action, { method: "POST" });
+            const data = await res.json();
+
+            if (data.success) {
+                Swal.fire({
+                    icon: "success",
+                    title: "Berhasil!",
+                    text: data.message,
+                    timer: 1500,
+                    showConfirmButton: false
+                }).then(() => window.location.reload());
+            } else {
+                Swal.fire("Gagal!", data.message, "error");
+            }
+        } catch (err) {
+            Swal.fire("Error!", "Terjadi kesalahan saat menghapus admin.", "error");
+        }
+    });
+
+    return false;
+}
+</script>
 
 </body>
 </html>

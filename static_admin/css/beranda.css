@@ -97,23 +97,31 @@ body {
   background: #003c7a;
 }
 
-/* Main content */
+/* === KONTEN UTAMA === */
 .content {
   flex: 1;
-  padding: 20px;
+  padding: 20px 40px;
+  background: #f8f9fc;
+  min-height: 100vh;
+  position: relative;
 }
 
-/* HEADER sesuai gambar */
+/* === HEADER === */
 .header {
-  background: #0056a6;  /* samakan warna */
-  height: 70px;        /* samakan tinggi */
+  background: #0056a6;
+  height: 70px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0px;
+
+  /* Kembalikan ciri utama layout lain */
+  padding: 0px 20px;
+
+  /* TARIK KE LUAR, TAPI SESUAI PADDING KONTEN */
+  margin: -20px -40px 20px -40px;
+
+  border-radius: 0;
   position: relative;
-  border-radius: 0;        
-  margin: -20px -20px 20px -20px; /* tetap tarik keluar biar full */
 }
 
 .sidebar .logo-front {
