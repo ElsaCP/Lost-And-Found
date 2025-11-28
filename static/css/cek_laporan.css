@@ -3,134 +3,127 @@ body {
   padding-top: 70px; 
 }
 
-/* ===== NAVBAR STYLE ===== */
+/* ============================
+   NAVBAR DESKTOP
+============================ */
 .navbar {
   background: #0056a6;
   height: 70px;
-  transition: all 0.3s ease;
+  padding: 0 20px;   /* desktop tetap */
   display: flex;
   align-items: center;
-  padding: 0 20px;
 }
 
-/* LOGO */
 .navbar-brand img {
-  height: 100%;              /* Logo setinggi navbar */
+  height: 100%;
   max-height: 70px;
-  width: auto;
-  object-fit: contain;       /* Biar tidak terpotong */
-  transition: all 0.3s ease;
+  object-fit: contain;
 }
 
-/* MENU LINKS */
 .nav-link {
   color: #fff !important;
   margin-right: 18px;
   font-weight: 500;
-  transition: color 0.3s ease, transform 0.2s ease;
+  transition: 0.3s;
 }
 
 .nav-link:hover {
   text-decoration: underline;
   color: #cce4ff !important;
-  transform: translateY(-1px);
 }
 
-/* ICON PROFILE */
 .profile-icon {
   color: #fff;
   font-size: 1.6rem;
-  transition: color 0.3s ease, transform 0.2s ease;
+  transition: 0.3s;
 }
 
 .profile-icon:hover {
   color: #cce4ff;
-  transform: scale(1.1);
 }
 
-/* HAMBURGER BUTTON */
-.navbar-toggler {
-  border: none;
-  background: none;
-  outline: none;
-  box-shadow: none !important;
-}
-
-.navbar-toggler-icon {
-  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='white' stroke-width='2' stroke-linecap='round' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
-}
-
-/* ===== RESPONSIVE BREAKPOINTS ===== */
-
-/* Laptop & Tablet Landscape */
+/* ============================
+   RESPONSIVE NAVBAR (TABLET)
+============================ */
 @media (max-width: 992px) {
   .navbar {
     height: auto;
-    padding: 0px 20px;
+    padding: 10px 20px;
   }
 
-  /* COLLAPSE MENU KECIL DI KANAN BAWAH TOGGLER */
   .navbar-collapse {
     background: #0056a6;
+    padding: 12px 15px;
     border-radius: 10px;
-    padding: 10px 15px;
     position: absolute;
-    top: 60px;               /* sedikit di bawah navbar */
     right: 10px;
-    width: 180px;            /* kecil */
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    top: 70px;
+    width: 200px;
     z-index: 999;
     opacity: 0;
-    transform: scale(0.9);
-    transform-origin: top right;
-    transition: all 0.25s ease;
+    transform: translateY(-8px);
+    transition: 0.25s ease;
   }
 
-  /* Saat collapse aktif */
   .navbar-collapse.show {
     opacity: 1;
-    transform: scale(1);
-  }
-
-  .navbar-nav {
-    text-align: center;
+    transform: translateY(0);
   }
 
   .nav-link {
-    margin: 8px 0;
     display: block;
+    font-size: 1.2rem;
+    padding: 8px 0;
+    text-align: right;
   }
 
   .profile-icon {
     display: block;
-    margin: 10px auto 5px auto;
+    margin: 12px auto 5px auto;
+    font-size: 1.8rem;
   }
 }
 
-/* Smartphone */
+/* ============================
+   MOBILE HP — PADDING LEBIH BESAR 
+   + LOGO DIPERBESAR
+============================ */
 @media (max-width: 576px) {
+
+  /* 🔥 Navbar jauh lebih tebal */
+  .navbar {
+    padding: 20px 22px;       /* PADDING MOBILE DIPERBESAR */
+    height: auto;
+  }
+
+  /* 🔥 Logo lebih besar mengikuti padding */
   .navbar-brand img {
-    height: 45px;
+    height: 65px;             /* tinggi lebih besar dari sebelumnya */
+    max-height: 80px;         /* batas aman */
   }
 
+  /* Collapse */
   .navbar-collapse {
-    width: 160px;
-    right: 8px;
-    top: 55px;
+    width: 200px;
+    top: calc(100% + 5px);    /* tetap di bawah navbar */
+    right: 10px;
+    padding: 16px 14px;
   }
 
+  /* Teks lebih besar */
   .nav-link {
-    font-size: 15px;
+    font-size: 1.4rem;
+    padding: 10px 0;
   }
 
   .profile-icon {
-    font-size: 1.4rem;
+    font-size: 2.1rem;
   }
 }
 
 /* --- Hero Section --- */
 .hero-section {
-  margin-top: 0;
+  margin-top: 100;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -147,81 +140,6 @@ body {
   width: 550px;
   position: relative;
   z-index: 2;
-}
-
-/* --- RESPONSIVE --- */
-@media (max-width: 992px) {
-  .hero-section {
-    padding: 80px 0 60px;
-  }
-
-  .hero-box {
-    width: 85%;
-    padding: 45px 35px;
-  }
-}
-
-@media (max-width: 768px) {
-  .hero-section {
-    padding: 70px 0 50px; /* ✅ background tidak terlalu panjang */
-  }
-
-  .hero-box {
-    width: 90%;
-    padding: 40px 30px;
-  }
-
-  .hero-title {
-    font-size: 1.8rem;
-  }
-}
-
-@media (max-width: 576px) {
-  .hero-section {
-    padding: 50px 0 40px; /* ✅ di HP pendek dan proporsional */
-    background: linear-gradient(to bottom right, #f6fbff, #e7f7fe);
-  }
-
-  .hero-box {
-    width: 92%;
-    padding: 35px 25px;
-  }
-
-  .hero-title {
-    font-size: 1.7rem;
-  }
-
-  .hero-subtitle {
-    font-size: 0.95rem;
-    margin-bottom: 20px;
-  }
-}
-
-
-/* Responsif */
-@media (max-width: 768px) {
-  .hero-section {
-    padding: 80px 0 40px;   /* ✅ lebih rapat di tablet/HP */
-  }
-
-  .hero-box {
-    padding: 30px 20px;
-  }
-}
-
-@media (max-width: 576px) {
-  .hero-section {
-    padding: 70px 0 30px;   /* ✅ di HP lebih rapat lagi */
-  }
-
-  .hero-box {
-    width: 92%;
-    padding: 25px 18px;
-  }
-
-  .hero-title {
-    font-size: 1.6rem;
-  }
 }
 
 .hero-logo {
@@ -320,35 +238,19 @@ body {
 }
 
 
-/* --- Responsif --- */
-@media (max-width: 768px) {
-  .hero-box {
-    width: 90%;
-    padding: 40px 25px;
-  }
-
-  .hero-title {
-    font-size: 1.8rem;
-  }
-
-  .lbesar { width: 150px; top: 0; left: 0; }
-  .lsedang { width: 100px; right: 60px; }
-  .lkecil { width: 70px; left: 50px; }
-}
-
 /* ============================
    TOMBOL PANAH KEMBALI (TANPA LINGKARAN)
 ============================ */
 
 .back-arrow {
-  position: absolute;
-  top: 85px;            /* di bawah navbar */
+  position: absolute;        /* FIX: selalu menempel layar, tidak ketiban navbar */
+  top: 85px;              /* posisi default di bawah navbar desktop */
   left: 35px;
-  font-size: 1.8rem;    /* ukuran panah */
-  color: #004b8d;       /* warna biru tua */
+  font-size: 1.8rem;
+  color: #004b8d;
   text-decoration: none;
   font-weight: bold;
-  z-index: 100;
+  z-index: 2000;          /* FIX: lebih tinggi daripada navbar */
   transition: all 0.3s ease;
   opacity: 0;
   animation: fadeIn 0.8s ease forwards;
@@ -357,21 +259,30 @@ body {
 
 /* Efek hover */
 .back-arrow:hover {
-  color: #007bff; /* biru terang saat diarahkan */
+  color: #007bff;
   transform: translateX(-5px);
 }
 
-/* Animasi muncul lembut */
+/* Animasi muncul */
 @keyframes fadeIn {
   to { opacity: 1; }
 }
 
-/* Responsif */
-@media (max-width: 768px) {
+/* ===== RESPONSIVE TABLET ===== */
+@media (max-width: 992px) {
   .back-arrow {
-    top: 75px;
-    left: 20px;
-    font-size: 1.6rem;
+    top: 105px;   /* naikkan sesuai tinggi navbar tablet */
+    left: 35px;
+    font-size: 1.7rem;
+  }
+}
+
+/* ===== RESPONSIVE MOBILE ===== */
+@media (max-width: 576px) {
+  .back-arrow {
+    top: 125px;   /* HP navbar tinggi → panah diturunkan */
+    left: 35px;
+    font-size: 1.9rem;  /* dibuat lebih besar agar enak di HP */
   }
 }
 
@@ -461,3 +372,4 @@ footer {
   color: white;
   font-size: 35px;
 }
+
