@@ -273,3 +273,105 @@ font-size: 30px;
   transform: scale(1.05);
 }
 
+/* ===== Tabel Beranda mirip daftar kehilangan ===== */
+#dataTable {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 12px;
+  overflow: hidden;
+  table-layout: fixed;
+  text-align: center;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+#dataTable thead {
+  background-color: #9fcaed;
+}
+
+#dataTable thead th {
+  font-weight: 600;
+  padding: 12px 10px;
+  border: 1px solid #ccc;
+}
+
+#dataTable tbody td {
+  font-size: 15px;
+  padding: 12px 10px;
+  vertical-align: middle;
+  word-wrap: break-word;
+  border: 1px solid #ccc;
+}
+
+#dataTable tbody tr:nth-child(even) {
+  background-color: #edf7ff;
+}
+
+#dataTable tbody tr:hover {
+  background-color: #f2f2f2;
+}
+
+/* Lebar kolom supaya mirip daftar kehilangan */
+#dataTable thead th:nth-child(1) { width: 18%; }  /* Kode */
+#dataTable thead th:nth-child(2) { width: 24%; }  /* Nama Barang */
+#dataTable thead th:nth-child(3) { width: 20%; }  /* Jenis Laporan */
+#dataTable thead th:nth-child(4) { width: 22%; }  /* Status */
+#dataTable thead th:nth-child(5) { width: 16%; }  /* Aksi */
+
+/* Dropdown status */
+#dataTable select.status-select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 4px 6px;
+  text-align: center;
+  font-size: 15px;
+  background-color: #fff;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+/* Tombol aksi */
+#dataTable tbody td.aksi {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 0;
+  border: none;
+}
+
+#dataTable tbody td.aksi button,
+#dataTable tbody td.aksi a {
+  padding: 0 !important;
+  margin: 0 !important;
+  text-decoration: none !important;
+  line-height: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  cursor: pointer;
+  transition: transform 0.2s;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+#dataTable tbody td.aksi button:hover,
+#dataTable tbody td.aksi a:hover {
+  transform: scale(1.1);
+}
+
+#dataTable tbody td.aksi button i,
+#dataTable tbody td.aksi a i {
+  display: inline-block;
+  transform: translateY(6px);
+}
+
+/* Warna ikon tombol */
+.btn-view i { color: #007bff; }
+.btn-edit i { color: #ffc107; }
+.btn-delete i { color: #dc3545; }
+.btn-verify i { color: #2ecc71; }
+.btn-archive i { color: #0056a6; }

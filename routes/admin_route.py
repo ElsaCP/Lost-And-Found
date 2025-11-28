@@ -173,7 +173,6 @@ def daftar_kehilangan():
 # ======================
 # 🔢 GENERATE KODE KEHILANGAN URUT 
 # ======================
-import re
 
 def generate_kode_kehilangan(cursor):
     cursor.execute("SELECT kode_kehilangan FROM kehilangan ORDER BY id DESC LIMIT 1")
@@ -362,7 +361,7 @@ def update_status_kehilangan():
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    waktu_update = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    waktu_update = datetime.now().strftime("%Y-%m-%d %H:%M")
 
     # Update status di tabel kehilangan
     cursor.execute("""

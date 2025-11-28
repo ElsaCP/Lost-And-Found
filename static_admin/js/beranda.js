@@ -21,62 +21,91 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // ===============================
-  // 🎛 AKSI TOMBOL
+  // 🔄 AUTO UPDATE STATUS ON CHANGE
+  // ===============================
+  document.querySelectorAll("select.status-select").forEach(select => {
+    select.addEventListener("change", async function () {
+      const newStatus = this.value;
+      const jenisLaporan = this.dataset.jenis?.toLowerCase();
+      let apiUrl = '';
+      let payload = {};
+
+      if (jenisLaporan === 'kehilangan') {
+        apiUrl = '/admin/api/kehilangan/update_status';
+        payload = { kode: this.dataset.id, status: newStatus };
+      } else if (jenisLaporan === 'penemuan') {
+        apiUrl = '/admin/api/penemuan/update_status';
+        payload = { kode: this.dataset.id, status: newStatus };
+      } else if (jenisLaporan === 'klaim') {
+        apiUrl = '/admin/penemuan/klaim/update_status';
+        payload = { kode_laporan: this.dataset.id, status: newStatus };
+      } else {
+        return Swal.fire('Tidak bisa update status!', '', 'info');
+      }
+
+      try {
+        const response = await fetch(apiUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          Swal.fire({
+            icon: "success",
+            title: "Status Diperbarui!",
+            timer: 1200,
+            showConfirmButton: false
+          });
+        } else {
+          Swal.fire("Error!", result.message || "Terjadi masalah server.", "error");
+        }
+      } catch (err) {
+        Swal.fire("Error!", "Terjadi masalah server.", "error");
+      }
+    });
+  });
+
+  // ===============================
+  // 🎛 AKSI TOMBOL LAIN (VIEW, EDIT, DELETE)
   // ===============================
   document.addEventListener("click", function (e) {
     const btn = e.target.closest("button");
     if (!btn) return;
 
     const row = btn.closest("tr");
-    const kode = btn.dataset.kode;
     const jenis = btn.dataset.jenis?.toLowerCase();
 
-    if (!kode || !jenis) return;
-
-    // ===============================
-    // 🔍 DETAIL
-    // ===============================
     if (btn.classList.contains("btn-view")) {
+      const kode = btn.dataset.kode;
+      if (!kode) return;
 
       if (jenis === "kehilangan") {
         window.location.href = `/admin/kehilangan/detail?kode=${kode}&from=beranda`;
-      }
-
-      else if (jenis === "penemuan") {
+      } else if (jenis === "penemuan") {
         window.location.href = `/admin/penemuan/detail?kode=${kode}&from=beranda`;
+      } else if (jenis === "klaim") {
+        window.location.href = `/admin/penemuan/klaim/detail/${kode}?from=beranda`;
       }
-
-      else if (jenis === "klaim") {
-        window.location.href = `/admin/penemuan/klaim/detail/${kode}?&from=beranda`;
-      }
-
-      return;
     }
 
-    // ===============================
-    // ✏ EDIT
-    // ===============================
     if (btn.classList.contains("btn-edit")) {
+      const kode = btn.dataset.kode;
+      if (!kode) return;
 
       if (jenis === "kehilangan") {
         window.location.href = `/admin/kehilangan/edit?kode=${kode}&from=beranda`;
-      }
-
-      else if (jenis === "penemuan") {
+      } else if (jenis === "penemuan") {
         window.location.href = `/admin/penemuan/edit?kode=${kode}&from=beranda`;
-      }
-
-      else if (jenis === "klaim") {
+      } else if (jenis === "klaim") {
         Swal.fire("Laporan klaim tidak bisa diedit!", "", "info");
       }
-
-      return;
     }
 
-    // ===============================
-    // ❌ DELETE
-    // ===============================
     if (btn.classList.contains("btn-delete")) {
+      const kode = btn.dataset.kode;
       Swal.fire({
         title: "Hapus?",
         text: `Hapus laporan ${kode}?`,
@@ -90,25 +119,7 @@ document.addEventListener("DOMContentLoaded", function () {
           Swal.fire("Berhasil!", "Data dihapus.", "success");
         }
       });
-      return;
     }
-
-    // ===============================
-    // ✔ VERIFY
-    // ===============================
-    if (btn.classList.contains("btn-verify")) {
-      const select = row.querySelector("select");
-      if (select) select.value = "Verifikasi";
-
-      Swal.fire({
-        icon: "success",
-        title: "Diverifikasi!",
-        timer: 1500,
-        showConfirmButton: false,
-      });
-      return;
-    }
-
   });
 
 });
