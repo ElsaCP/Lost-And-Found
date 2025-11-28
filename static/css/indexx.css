@@ -613,7 +613,14 @@ body {
   color: white;
   text-decoration: none;
   font-weight: 600;
+  transition: 0.3s ease;
 }
+
+.btn-detail:hover {
+  filter: brightness(1.2);
+  box-shadow: 0 0 12px rgba(91, 189, 188, 0.6);
+}
+
 
 /* =============================
    VIEW MORE BUTTON
@@ -687,6 +694,60 @@ body {
   .panduan-img {
     max-width: 95%;
     border-radius: 14px;
+  }
+}
+
+/* =============================
+   PETA AVSEC – Desktop Besar
+============================= */
+.peta-avsec {
+  width: 100%;
+  max-width: 1200px;      /* sama range seperti panduan-img (780–900px) */
+  height: auto;
+  border-radius: 20px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
+  display: block;
+  margin: 25px auto;
+  transition: 0.3s ease;
+}
+
+/* Hover (optional, biar konsisten dengan panduan-img) */
+.peta-avsec:hover {
+  transform: scale(1.02);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22);
+}
+
+/* =============================
+   Tablet (768px)
+============================= */
+@media (max-width: 768px) {
+  .peta-avsec {
+    width: 100%;            /* sama seperti panduan-img mobile */
+    max-width: 100%;
+    border-radius: 16px;
+
+    /* Tinggi diperbesar biar jelas */
+    min-height: 280px;
+
+    margin-top: 18px;
+    margin-bottom: 28px;
+  }
+}
+
+/* =============================
+   HP Kecil (480px)
+============================= */
+@media (max-width: 480px) {
+  .peta-avsec {
+    width: 95%;           /* penuh, sama seperti panduan-img */
+    max-width: 95%;
+    border-radius: 14px;
+
+    /* Tinggi lebih besar khusus HP */
+    min-height: 320px;
+
+    margin-top: 15px;
+    margin-bottom: 25px;
   }
 }
 
@@ -1022,6 +1083,9 @@ footer {
     font-size: 58px !important;
     line-height: 1.15;
   }
+  .hero img {
+    height: 70px;
+  }
 
   .hero-desc {
     font-size: 21px !important;
@@ -1052,7 +1116,7 @@ footer {
   /* Nav item */
   .hero-nav-link {
     font-size: 1.25rem;
-    padding: 20px 40px;
+    padding: 20px 10px;
     font-weight: 800;
   }
 
@@ -1104,7 +1168,7 @@ footer {
 
   /* Info section written bigger */
   .info-text {
-    font-size: 1.6rem !important;
+    font-size: 1.35rem !important;
     line-height: 1.5;
   }
 
@@ -1141,4 +1205,52 @@ footer {
     padding: 14px 45px;
     font-size: 1.2rem !important;
   }
+}
+
+/* ============================
+   FLOATING DECORATION (BG)
+============================= */
+.decorative-elements {
+  z-index: 1 !important;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.decorative-elements img {
+  opacity: 0.08;
+  position: absolute;
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Animasi */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-25px); }
+}
+
+
+/* ============================================
+   ⭐ FIX CARD BARANG (TAMBAHKAN DI BAGIAN BAWAH)
+=============================================== */
+
+/* Biar gambar tidak terpotong */
+.item-card img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    object-fit: contain !important;
+    background: #fff;
+}
+
+/* Perbesar teks item-info + gambar lebih proporsional untuk HP */
+@media (max-width: 576px) {
+    .item-card img {
+        aspect-ratio: 3 / 2;
+        object-fit: contain !important;
+    }
+
+    .item-info {
+        font-size: 1.3rem;  /* Perbesar tulisan */
+    }
 }

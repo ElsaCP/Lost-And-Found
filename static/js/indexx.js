@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         <div class="item-card">
           <img src="${item.gambar_barang}" alt="${item.nama_barang}">
           <div class="item-info">
-            <h5>${item.nama_barang}</h5>
+            <h3>${item.nama_barang}</h5>
             <p><strong>Kategori:</strong> ${item.kategori}</p>
             <p><small>${item.tanggal_lapor}</small></p>
             <a href="/detail-barang/${item.kode_barang}" class="btn-detail">Lihat Detail</a>

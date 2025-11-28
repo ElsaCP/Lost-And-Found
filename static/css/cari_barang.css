@@ -642,12 +642,11 @@ body {
   transition: all 0.3s ease;
 }
 
-/* Hover: full biru */
+/* === Hover Glow Effect === */
 .btn-detail:hover {
-  background-color: #0056a6;
-  background-image: none;
-  color: #fff;
-  transform: translateY(-2px);
+  filter: brightness(1.2);  /* efek glow */
+  box-shadow: 0 0 12px rgba(91, 189, 188, 0.6); /* cahaya biru-hijau */
+  transform: translateY(-2px); /* sedikit naik */
 }
 
 /* === Responsif === */
@@ -937,11 +936,16 @@ footer {
   padding: 6px 18px;
   font-weight: 600;
   margin-top: 10px;
-  transition: 0.3s;
+  transition: all 0.3s ease;
 }
+
+/* Hover Glow Effect */
 .btnKlaim:hover {
-  background: #2c6aac;
+  filter: brightness(1.2); /* efek glow */
+  box-shadow: 0 0 12px rgba(91, 189, 188, 0.6); /* cahaya biru-hijau */
+  transform: translateY(-2px); /* naik sedikit */
 }
+
 
 /* === RESPONSIVE === */
 @media (max-width: 992px) {
