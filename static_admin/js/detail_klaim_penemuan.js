@@ -64,10 +64,16 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     // ============================
-    // TOMBOL KEMBALI
+    // TOMBOL KEMBALI (FINAL)
     // ============================
     document.getElementById("btnKembali").addEventListener("click", () => {
-        window.location.href = "/admin/penemuan/klaim";
+        const from = new URLSearchParams(window.location.search).get("from");
+
+        if (from === "beranda") {
+            window.location.href = "/admin/beranda";
+        } else {
+            window.location.href = "/admin/penemuan/klaim";
+        }
     });
 
     // ============================

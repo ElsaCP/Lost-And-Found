@@ -83,12 +83,72 @@ def forgot_password():
 # ======================
 # 🏠 BERANDA
 # ======================
-@admin_bp.route('/beranda')
+@admin_bp.route('/beranda', endpoint='beranda_admin')
 def beranda_admin():
-    if not session.get('admin_logged_in'):
-        return redirect(url_for('admin_bp.login_admin'))
-    role = session.get('role', 'admin')
-    return render_template('beranda.html', role=role)
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    
+    query = """
+        (
+            SELECT 
+                id AS id,
+                kode_kehilangan AS kode,
+                nama_barang,
+                nama_pelapor,
+                no_telp,
+                email,
+                lokasi,
+                tanggal_kehilangan AS tanggal,
+                status,
+                update_terakhir,
+                'kehilangan' AS jenis_laporan
+            FROM kehilangan
+        )
+
+        UNION ALL
+
+        (
+            SELECT 
+                id AS id,
+                kode_barang AS kode,
+                nama_barang,
+                nama_pelapor,
+                no_telp,
+                email,
+                lokasi,
+                tanggal_lapor AS tanggal,
+                status,
+                update_terakhir,
+                'penemuan' AS jenis_laporan
+            FROM penemuan
+        )
+
+        UNION ALL
+
+        (
+            SELECT 
+                id AS id,
+                kode_laporan AS kode,
+                nama_barang,
+                nama_pelapor,
+                no_telp,
+                email,
+                NULL AS lokasi,
+                tanggal_lapor AS tanggal,
+                status,
+                update_terakhir,
+                'klaim' AS jenis_laporan
+            FROM klaim_barang
+        )
+
+        ORDER BY update_terakhir DESC
+    """
+
+    cursor.execute(query)
+    data = cursor.fetchall()
+    cursor.close()
+
+    return render_template("admin/beranda.html", data=data)
 
 # ======================
 # 📋 DAFTAR KEHILANGAN
