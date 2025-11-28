@@ -169,7 +169,11 @@
 
         <!-- BUTTON -->
         <div class="button-group">
-            <button id="btnKembali" class="btn-kembali">Kembali</button>
+            <button onclick="window.location.href='{{ url_for('admin_bp.beranda_admin') if request.args.get('from') == 'beranda' else url_for('admin_bp.daftar_klaim_penemuan') }}'" 
+                    id="btnKembali" 
+                    class="btn-kembali">
+              Kembali
+            </button>
             <button id="btnUpdate" class="btn-update">Update</button>
         </div>
 

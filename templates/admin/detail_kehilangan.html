@@ -103,7 +103,11 @@
 
       <!-- === BUTTON === -->
       <div class="button-group">
-        <button id="btnKembali" class="btn btn-secondary">Kembali</button>
+        <button onclick="window.location.href='{{ url_for('admin_bp.beranda_admin') if request.args.get('from') == 'beranda' else url_for('admin_bp.daftar_kehilangan') }}'" 
+                id="btnKembali" 
+                class="btn btn-secondary">
+          Kembali
+        </button>
         <button id="btnUpdateStatus" class="btn btn-primary" data-kode="{{ laporan.kode_kehilangan }}">Update Status</button>
       </div>
     </div>
