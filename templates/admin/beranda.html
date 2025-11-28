@@ -71,14 +71,34 @@
         <td>{{ row.nama_barang }}</td>
         <td>{{ row.jenis_laporan }}</td>
 
-        <td>
-          <select class="status-select">
-            <option {% if row.status == 'Pending' %}selected{% endif %}>Pending</option>
-            <option {% if row.status == 'Verifikasi' %}selected{% endif %}>Verifikasi</option>
-            <option {% if row.status == 'Selesai' %}selected{% endif %}>Selesai</option>
-            <option {% if row.status == 'Siap Diambil' %}selected{% endif %}>Siap Diambil</option>
-          </select>
-        </td>
+<td>
+  <select class="status-select" data-jenis="{{ row.jenis_laporan }}"
+    {% if row.jenis_laporan == 'kehilangan' %}
+      data-kode="{{ row.kode }}"
+    {% elif row.jenis_laporan == 'penemuan' %}
+      data-kode="{{ row.kode }}"
+    {% elif row.jenis_laporan == 'klaim' %}
+      data-kode="{{ row.kode }}"
+    {% endif %}>
+    {% if row.jenis_laporan == 'kehilangan' %}
+      <option value="Pending" {% if row.status == 'Pending' %}selected{% endif %}>Pending</option>
+      <option value="Verifikasi" {% if row.status == 'Verifikasi' %}selected{% endif %}>Verifikasi</option>
+      <option value="Dalam Pencarian" {% if row.status == 'Dalam Pencarian' %}selected{% endif %}>Dalam Pencarian</option>
+      <option value="Barang Ditemukan" {% if row.status == 'Barang Ditemukan' %}selected{% endif %}>Barang Ditemukan</option>
+      <option value="Selesai" {% if row.status == 'Selesai' %}selected{% endif %}>Selesai</option>
+    {% elif row.jenis_laporan == 'penemuan' %}
+      <option value="Pending" {% if row.status == 'Pending' %}selected{% endif %}>Pending</option>
+      <option value="Verifikasi" {% if row.status == 'Verifikasi' %}selected{% endif %}>Verifikasi</option>
+      <option value="Selesai" {% if row.status == 'Selesai' %}selected{% endif %}>Selesai</option>
+    {% elif row.jenis_laporan == 'klaim' %}
+      <option value="Pending" {% if row.status == 'Pending' %}selected{% endif %}>Pending</option>
+      <option value="Verifikasi" {% if row.status == 'Verifikasi' %}selected{% endif %}>Verifikasi</option>
+      <option value="Ditolak" {% if row.status == 'Ditolak' %}selected{% endif %}>Ditolak</option>
+      <option value="Siap Diambil" {% if row.status == 'Siap Diambil' %}selected{% endif %}>Siap Diambil</option>
+      <option value="Selesai" {% if row.status == 'Selesai' %}selected{% endif %}>Selesai</option>
+    {% endif %}
+  </select>
+</td>
 
         <td class="aksi">
           <button class="btn-view"
@@ -93,7 +113,7 @@
               <i class="bi bi-pencil"></i>
           </button>
 
-          <button class="btn-delete"><i class="bi bi-trash"></i></button>
+          <button class="btn-delete" data-kode="{{ row.kode }}"><i class="bi bi-trash"></i></button>
           <button class="btn-verify"><i class="bi bi-check-circle-fill"></i></button>
         </td>
       </tr>

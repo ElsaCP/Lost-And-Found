@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }).then(() => {
           const from = new URLSearchParams(window.location.search).get("from");
           if (from === "beranda") {
-            window.location.href = "/admin/beranda_admin";
+            window.location.href = "/admin/beranda";
           } else {
             window.location.href = "/admin/kehilangan/daftar";
           }
