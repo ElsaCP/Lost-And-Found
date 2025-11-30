@@ -1,125 +1,206 @@
 document.addEventListener("DOMContentLoaded", function () {
 
-  // ===============================
-  // 🔎 SEARCH
-  // ===============================
-  const searchInput = document.getElementById("searchInput");
-  searchInput.addEventListener("keyup", function () {
-    const filter = this.value.toUpperCase();
-    const rows = document.querySelector("#dataTable tbody").rows;
+  // =============================
+  // 🔄 FITUR UBAH STATUS (FULL)
+  // =============================
+  const selects = document.querySelectorAll(".status-select");
+  selects.forEach(select => {
+    select.dataset.prevIndex = select.selectedIndex;
 
-    for (let row of rows) {
-      let match = false;
-      for (let j = 0; j < row.cells.length - 1; j++) {
-        if (row.cells[j].textContent.toUpperCase().includes(filter)) {
-          match = true;
-          break;
-        }
-      }
-      row.style.display = match ? "" : "none";
-    }
-  });
-
-  // ===============================
-  // 🔄 AUTO UPDATE STATUS ON CHANGE
-  // ===============================
-  document.querySelectorAll("select.status-select").forEach(select => {
-    select.addEventListener("change", async function () {
+    select.addEventListener("change", function () {
       const newStatus = this.value;
-      const jenisLaporan = this.dataset.jenis?.toLowerCase();
-      let apiUrl = '';
+      const prevIndex = this.dataset.prevIndex;
+
+      const row = this.closest("tr");
+      const kode = this.dataset.kode;
+      const jenis = this.dataset.jenis?.toLowerCase();
+
+      let apiUrl = "";
       let payload = {};
 
-      if (jenisLaporan === 'kehilangan') {
-        apiUrl = '/admin/api/kehilangan/update_status';
-        payload = { kode: this.dataset.id, status: newStatus };
-      } else if (jenisLaporan === 'penemuan') {
-        apiUrl = '/admin/api/penemuan/update_status';
-        payload = { kode: this.dataset.id, status: newStatus };
-      } else if (jenisLaporan === 'klaim') {
-        apiUrl = '/admin/penemuan/klaim/update_status';
-        payload = { kode_laporan: this.dataset.id, status: newStatus };
-      } else {
-        return Swal.fire('Tidak bisa update status!', '', 'info');
+      if (jenis === "kehilangan") {
+        apiUrl = "/admin/api/kehilangan/update_status";
+        payload = { kode, status: newStatus };
+      } else if (jenis === "penemuan") {
+        apiUrl = "/admin/api/penemuan/update_status";
+        payload = { kode, status: newStatus };
+      } else if (jenis === "klaim") {
+        apiUrl = "/admin/penemuan/klaim/update_status";
+        payload = { kode_laporan: kode, status: newStatus };
       }
 
-      try {
-        const response = await fetch(apiUrl, {
+      Swal.fire({
+        title: "Ubah Status?",
+        text: `Apakah kamu yakin ingin mengubah status laporan ${kode} menjadi "${newStatus}"?`,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#6c757d",
+        confirmButtonText: "Ya, ubah!",
+        cancelButtonText: "Batal",
+      }).then((result) => {
+        if (!result.isConfirmed) {
+          this.selectedIndex = prevIndex;
+          return;
+        }
+
+        // KIRIM UPDATE KE SERVER
+        fetch(apiUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
-        });
+        })
+        .then(res => res.json())
+        .then(data => {
 
-        const result = await response.json();
+          if (!data.success) {
+            Swal.fire("Gagal!", "Tidak dapat memperbarui status.", "error");
+            this.selectedIndex = prevIndex;
+            return;
+          }
 
-        if (result.success) {
+          // 🔥 JIKA STATUS SELESAI → PINDAH ARSIP
+          if (newStatus === "Selesai") {
+            Swal.fire({
+              icon: "success",
+              title: "Dipindahkan ke Arsip",
+              text: "Laporan ini telah selesai dan kini berada di arsip.",
+              timer: 1300,
+              showConfirmButton: false
+            }).then(() => {
+              window.location.href = "/admin/arsip";
+            });
+            return;
+          }
+
+          // 🔥 NOTIFIKASI BERHASIL (NON-SELESAI)
           Swal.fire({
             icon: "success",
             title: "Status Diperbarui!",
-            timer: 1200,
+            text: `Status berhasil diubah menjadi "${newStatus}".`,
+            timer: 1500,
             showConfirmButton: false
           });
-        } else {
-          Swal.fire("Error!", result.message || "Terjadi masalah server.", "error");
-        }
-      } catch (err) {
-        Swal.fire("Error!", "Terjadi masalah server.", "error");
-      }
+
+          // Simpan perubahan untuk next revert
+          this.dataset.prevIndex = this.selectedIndex;
+
+          // efek highlight row
+          row.classList.add("status-updated");
+          setTimeout(() => row.classList.remove("status-updated"), 1000);
+
+        })
+        .catch(err => {
+          Swal.fire("Error!", "Terjadi kesalahan server.", "error");
+          this.selectedIndex = prevIndex;
+        });
+
+      });
     });
   });
 
-  // ===============================
-  // 🎛 AKSI TOMBOL LAIN (VIEW, EDIT, DELETE)
-  // ===============================
+
+  // =============================
+  // 🎛 TOMBOL VIEW / EDIT / DELETE
+  // =============================
   document.addEventListener("click", function (e) {
     const btn = e.target.closest("button");
     if (!btn) return;
 
-    const row = btn.closest("tr");
+    const kode = btn.dataset.kode;
     const jenis = btn.dataset.jenis?.toLowerCase();
+    const row = btn.closest("tr");
 
+    // ==== VIEW ====
     if (btn.classList.contains("btn-view")) {
-      const kode = btn.dataset.kode;
-      if (!kode) return;
-
-      if (jenis === "kehilangan") {
+      if (jenis === "kehilangan")
         window.location.href = `/admin/kehilangan/detail?kode=${kode}&from=beranda`;
-      } else if (jenis === "penemuan") {
+      else if (jenis === "penemuan")
         window.location.href = `/admin/penemuan/detail?kode=${kode}&from=beranda`;
-      } else if (jenis === "klaim") {
+      else if (jenis === "klaim")
         window.location.href = `/admin/penemuan/klaim/detail/${kode}?from=beranda`;
-      }
+      return;
     }
 
+    // ==== TOMBOL TAMBAH KLAIM (FINAL) ====
+    if (btn.classList.contains("btn-klaim")) {
+      const kode = btn.dataset.kode;
+      window.location.href = `/admin/klaim/baru?kode_barang=${kode}&from=beranda`;
+      return;
+    }
+
+    // ==== EDIT ====
     if (btn.classList.contains("btn-edit")) {
-      const kode = btn.dataset.kode;
-      if (!kode) return;
-
-      if (jenis === "kehilangan") {
+      if (jenis === "kehilangan")
         window.location.href = `/admin/kehilangan/edit?kode=${kode}&from=beranda`;
-      } else if (jenis === "penemuan") {
+      else if (jenis === "penemuan")
         window.location.href = `/admin/penemuan/edit?kode=${kode}&from=beranda`;
-      } else if (jenis === "klaim") {
-        Swal.fire("Laporan klaim tidak bisa diedit!", "", "info");
-      }
+      else if (jenis === "klaim")
+        Swal.fire("Tidak bisa mengedit laporan klaim.", "", "info");
+      return;
     }
 
+    // ==== DELETE ====
     if (btn.classList.contains("btn-delete")) {
-      const kode = btn.dataset.kode;
+
       Swal.fire({
-        title: "Hapus?",
-        text: `Hapus laporan ${kode}?`,
+        title: "Hapus Laporan?",
+        text: `Apakah kamu yakin ingin menghapus laporan ${kode}?`,
         icon: "warning",
         showCancelButton: true,
-        confirmButtonText: "Ya",
-        cancelButtonText: "Batal",
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#6c757d",
+        confirmButtonText: "Ya, hapus!",
+        cancelButtonText: "Batal"
       }).then(res => {
-        if (res.isConfirmed) {
-          row.remove();
-          Swal.fire("Berhasil!", "Data dihapus.", "success");
-        }
+        if (!res.isConfirmed) return;
+
+        let deleteApi = "";
+
+        if (jenis === "kehilangan") deleteApi = "/admin/api/kehilangan/delete";
+        else if (jenis === "penemuan") deleteApi = "/admin/api/penemuan/delete";
+        else if (jenis === "klaim") deleteApi = "/admin/penemuan/klaim/delete";
+
+        fetch(deleteApi, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ kode })
+        })
+        .then(r => r.json())
+        .then(d => {
+          if (d.success) {
+            Swal.fire({
+              icon: "success",
+              title: "Dihapus!",
+              text: `Laporan ${kode} berhasil dihapus.`,
+              timer: 1500,
+              showConfirmButton: false
+            });
+            row.remove();
+          } else {
+            Swal.fire("Gagal!", "Terjadi kesalahan saat menghapus.", "error");
+          }
+        });
       });
+
     }
+
   });
+
+
+  // =============================
+  // 🔍 FITUR PENCARIAN
+  // =============================
+  const searchInput = document.getElementById("searchInput");
+  const tableRows = document.querySelectorAll("#dataTable tbody tr");
+
+  if (searchInput) {
+    searchInput.addEventListener("keyup", function () {
+      const keyword = this.value.toLowerCase();
+      tableRows.forEach(row => {
+        row.style.display = row.textContent.toLowerCase().includes(keyword) ? "" : "none";
+      });
+    });
+  }
 
 });

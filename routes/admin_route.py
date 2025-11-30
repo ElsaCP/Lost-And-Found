@@ -713,8 +713,13 @@ def tambah_klaim_penemuan():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True, buffered=True)
 
+    # =====================================================
+    # ===============    GET METHOD    ====================
+    # =====================================================
     if request.method == "GET":
         kode_barang = request.args.get("kode_barang")
+        from_page = request.args.get("from")   # <<< TAMBAHAN
+
         if not kode_barang:
             return "Kode barang tidak ditemukan", 400
 
@@ -728,9 +733,12 @@ def tambah_klaim_penemuan():
 
         cursor.close()
         conn.close()
-        return render_template('tambah_klaim_penemuan.html', laporan=laporan)
+        # kirim 'from' agar JS bisa baca
+        return render_template('tambah_klaim_penemuan.html', laporan=laporan, from_page=from_page)
 
-    # ===== POST METHOD =====
+    # =====================================================
+    # ===============    POST METHOD   ====================
+    # =====================================================
     nama_pelapor = request.form.get("nama", "").strip()
     no_telp = request.form.get("telp", "").strip()
     email = request.form.get("email", "").strip()
@@ -741,7 +749,10 @@ def tambah_klaim_penemuan():
     tanggal_lapor = datetime.now().strftime("%Y-%m-%d")
     waktu_lapor = datetime.now().strftime("%H:%M")
 
-    # Ambil nama_barang dari tabel penemuan
+    # Ambil asal halaman
+    from_page = request.args.get("from")   # <<< TAMBAHAN PENTING
+
+    # Ambil nama barang dari tabel penemuan
     cursor.execute("SELECT nama_barang FROM penemuan WHERE kode_barang = %s", (kode_barang,))
     barang = cursor.fetchone()
     if not barang:
@@ -749,12 +760,15 @@ def tambah_klaim_penemuan():
         cursor.close()
         conn.close()
         return redirect(request.url)
+
     nama_barang = barang['nama_barang']
 
     # Generate kode klaim otomatis
     kode_baru = generate_kode_klaim(cursor)
 
-    # ===== Fungsi simpan file =====
+    # =====================================================
+    # ============   Simpan File   ========================
+    # =====================================================
     def allowed_file(filename):
         return filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif'))
 
@@ -776,6 +790,9 @@ def tambah_klaim_penemuan():
         conn.close()
         return redirect(request.url)
 
+    # =====================================================
+    # ============   INSERT KE DATABASE   =================
+    # =====================================================
     try:
         cursor.execute("""
             INSERT INTO klaim_barang (
@@ -793,12 +810,20 @@ def tambah_klaim_penemuan():
         ))
         conn.commit()
         flash("Klaim berhasil dikirim!", "success")
+
     except Exception as e:
         conn.rollback()
         flash(f"Error insert ke database: {e}", "danger")
+
     finally:
         cursor.close()
         conn.close()
+
+    # =====================================================
+    # ============   REDIRECT BERDASARKAN ASAL   ==========
+    # =====================================================
+    if from_page == "beranda":
+        return redirect(url_for('admin_bp.beranda_admin'))
 
     return redirect(url_for('admin_bp.daftar_klaim_penemuan'))
 

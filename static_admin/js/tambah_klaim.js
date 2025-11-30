@@ -1,6 +1,9 @@
+
 document.addEventListener("DOMContentLoaded", () => {
   const params = new URLSearchParams(window.location.search);
   const kode = params.get("kode_barang");
+  const fromPage = params.get("from");   // <<— penting
+
   if (kode) {
     document.getElementById("kodeBarang").value = kode;
   }
@@ -16,12 +19,15 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   generateTimestamp();
 
+  // ==========================
+  // BUTTON BATAL (FINAL)
+  // ==========================
   const btnBatal = document.getElementById("btnKembali");
   if (btnBatal) {
     btnBatal.addEventListener("click", () => {
       Swal.fire({
         title: "Yakin ingin membatalkan?",
-        text: "Perubahan yang belum disimpan akan hilang!",
+        text: "Perubahan akan hilang.",
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "Ya, batal",
@@ -29,31 +35,34 @@ document.addEventListener("DOMContentLoaded", () => {
         reverseButtons: true
       }).then((result) => {
         if (result.isConfirmed) {
-          window.location.href = "/admin/penemuan/daftar";
+          if (fromPage === "beranda") {
+            window.location.href = "/admin/beranda_admin";
+          } else {
+            window.location.href = "/admin/penemuan/daftar";
+          }
         }
       });
     });
   }
 
+  // ==========================
+  // KIRIM KLAIM (FINAL)
+  // ==========================
   const kirimBtn = document.getElementById("kirimBtn");
   const form = document.getElementById("klaimForm");
 
   if (kirimBtn && form) {
     kirimBtn.addEventListener("click", () => {
+
       const nama = document.getElementById("nama")?.value.trim() || "";
       const telp = document.getElementById("telp")?.value.trim() || "";
       const email = document.getElementById("email")?.value.trim() || "";
       const deskripsi = document.getElementById("deskripsiKhusus")?.value.trim() || "";
       const kodeBarang = document.getElementById("kodeBarang")?.value.trim() || "";
 
-      // ambil file wajib
       const fileIdentitas = document.querySelector('input[name="foto_identitas"]')?.files.length || 0;
       const fotoBarang = document.querySelector('input[name="foto_barang"]')?.files.length || 0;
 
-      // cek apakah ini admin
-      const isAdmin = document.body.dataset.role === "admin";
-
-      // validasi field wajib
       if (!nama || !telp || !email || !deskripsi || !kodeBarang || !fileIdentitas || !fotoBarang) {
         Swal.fire({
           icon: "warning",
@@ -63,7 +72,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      // konfirmasi kirim
       Swal.fire({
         title: "Kirim klaim barang?",
         text: "Pastikan semua data sudah benar!",
@@ -73,9 +81,16 @@ document.addEventListener("DOMContentLoaded", () => {
         cancelButtonText: "Batal"
       }).then((result) => {
         if (result.isConfirmed) {
+
+          // tambahkan 'from' ke form action
+          if (fromPage === "beranda") {
+            form.action = "/admin/klaim/baru?from=beranda";
+          }
+
           form.submit();
         }
       });
+
     });
   }
 });

@@ -104,11 +104,10 @@
 
       <!-- BUTTON -->
       <div class="button-group">
-      <button onclick="window.location.href='{{ url_for('admin_bp.beranda_admin') if request.args.get('from') == 'beranda' else url_for('admin_bp.daftar_penemuan') }}'" 
-              id="btnKembali" 
-              class="btn btn-secondary">
-        Kembali
-      </button>
+        <button id="btnKembali" class="btn btn-secondary">
+          Kembali
+        </button>
+
         <!-- TOMBOL KLAIM BARANG -->
         <button id="btnKlaim" 
           class="btn btn-warning"

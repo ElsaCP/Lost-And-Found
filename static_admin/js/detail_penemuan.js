@@ -1,16 +1,30 @@
 document.addEventListener("DOMContentLoaded", () => {
 
   // ======================
-  // UPDATE STATUS
+  // UPDATE STATUS (KHUSUS PENEMUAN)
   // ======================
   const btnUpdate = document.getElementById("btnUpdate");
 
   if (btnUpdate) {
     btnUpdate.addEventListener("click", async () => {
+
       const kode = btnUpdate.dataset.kode;
       const newStatus = document.getElementById("status").value;
+      const jenis = btnUpdate.dataset.jenis || "penemuan"; // penting!
 
-      const response = await fetch(`/admin/api/penemuan/update_status`, {
+      let apiUrl = "";
+
+      // ============================
+      // PILIH ROUTE SESUAI JENIS
+      // ============================
+      if (jenis === "penemuan") {
+        apiUrl = "/admin/api/penemuan/update_status";   // PENEMUAN
+      }
+      else if (jenis === "klaim") {
+        apiUrl = "/admin/penemuan/klaim/update_status"; // KLAIM
+      }
+
+      const response = await fetch(apiUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ kode: kode, status: newStatus })
@@ -25,12 +39,15 @@ document.addEventListener("DOMContentLoaded", () => {
           timer: 1500,
           showConfirmButton: false
         }).then(() => {
+
           const from = new URLSearchParams(window.location.search).get("from");
+
           if (from === "beranda") {
-            window.location.href = "/admin/beranda_admin";
+            window.location.href = "/admin/beranda";
           } else {
             window.location.href = "/admin/penemuan/daftar";
           }
+
         });
       }
     });

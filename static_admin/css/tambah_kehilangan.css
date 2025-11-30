@@ -84,13 +84,18 @@ body {
 /* === AREA KONTEN YANG BISA DIGULIR === */
 /* FIX supaya form bisa sampai kebawah */
 .content {
-  margin-left: 200px;      /* beri ruang untuk sidebar */
-  margin-top: 90px;  
-  height: calc(100vh - 90px); /* tinggi konten dikurangi header */
-  overflow-y: auto;         /* form bisa digeser ke bawah */
+  margin-left: 200px;           
+  margin-top: 90px;             /* tetap memberi jarak dari header */
+  
+  max-height: calc(100vh - 90px);   /* bukan height —> biar tetap punya jarak di atas */
+  overflow-y: auto;
+  overflow-x: hidden;
+
   background: #f8f9fc;
-  padding: 20px 40px;
+  padding: 30px 40px 140px 40px; /* tambah jarak bawah agar tombol muncul */
+  box-sizing: border-box;
 }
+
 
 /* === FORM TAMBAH KEHILANGAN === */
 .container.tambah-kehilangan {

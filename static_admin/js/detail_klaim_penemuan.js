@@ -76,13 +76,11 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     });
 
-    // ============================
-    // UPDATE STATUS KLAIM
-    // ============================
     document.getElementById("btnUpdate").addEventListener("click", async () => {
 
         const status = document.getElementById("statusSelect").value;
         const catatan = document.getElementById("catatanAdmin").value;
+        const from = new URLSearchParams(window.location.search).get("from"); // 🔥 penting
 
         Swal.fire({
             title: "Simpan Perubahan?",
@@ -119,7 +117,14 @@ document.addEventListener("DOMContentLoaded", async function () {
                 });
 
                 setTimeout(() => {
-                    window.location.href = "/admin/penemuan/klaim";
+
+                    // 🔥 FIX REDIRECT — kalau dari beranda, balik ke beranda
+                    if (from === "beranda") {
+                        window.location.href = "/admin/beranda";
+                    } else {
+                        window.location.href = "/admin/penemuan/klaim";
+                    }
+
                 }, 1500);
 
             } else {
