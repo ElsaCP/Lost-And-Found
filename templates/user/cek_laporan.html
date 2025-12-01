@@ -38,49 +38,51 @@
     </div>
   </nav>
 
-  <!-- Tombol Panah Kembali -->
-  <a href="{{ url_for('main.home') }}" class="back-arrow" title="Kembali ke Beranda">
-    <i class="fa-solid fa-arrow-left"></i>
-  </a>
+  <div class="main-content">
+    <!-- Tombol Panah Kembali -->
+    <a href="{{ url_for('main.home') }}" class="back-arrow" title="Kembali ke Beranda">
+      <i class="fa-solid fa-arrow-left"></i>
+    </a>
 
-  <!-- Hero Section -->
-  <section class="hero-section">
-    <img src="{{ url_for('static', filename='image/lbesar.png') }}" class="lbesar" alt="">
-    <img src="{{ url_for('static', filename='image/lsedang.png') }}" class="lsedang" alt="">
-    <img src="{{ url_for('static', filename='image/lkecil.png') }}" class="lkecil" alt="">
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <img src="{{ url_for('static', filename='image/lbesar.png') }}" class="lbesar" alt="">
+      <img src="{{ url_for('static', filename='image/lsedang.png') }}" class="lsedang" alt="">
+      <img src="{{ url_for('static', filename='image/lkecil.png') }}" class="lkecil" alt="">
 
-    <div class="hero-content text-center">
-      <img src="{{ url_for('static', filename='image/logo juanda 2.png') }}" alt="Logo Juanda" class="hero-logo mb-4">
-      
-      <div class="hero-box mx-auto">
-        <h1 class="hero-title">Cek Laporan Kehilangan</h1>
-        <p class="hero-subtitle">Masukkan email untuk melihat perkembangan laporan kehilangan Anda</p>
+      <div class="hero-content text-center">
+        <img src="{{ url_for('static', filename='image/logo juanda 2.png') }}" alt="Logo Juanda" class="hero-logo mb-4">
+        
+        <div class="hero-box mx-auto">
+          <h1 class="hero-title">Cek Laporan Kehilangan</h1>
+          <p class="hero-subtitle">Masukkan email untuk melihat perkembangan laporan kehilangan Anda</p>
 
-        <div class="form-container mx-auto mt-4">
-          <input type="email" id="emailInput" placeholder="Masukkan Email Anda" class="form-control mb-3">
-          <button id="cekLaporanBtn" class="btn-cek">
-            <i class="fas fa-search"></i> Cek Laporan
-          </button>
+          <div class="form-container mx-auto mt-4">
+            <input type="email" id="emailInput" placeholder="Masukkan Email Anda" class="form-control mb-3">
+            <button id="cekLaporanBtn" class="btn-cek">
+              <i class="fas fa-search"></i> Cek Laporan
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Modal Notifikasi -->
-  <div class="modal fade" id="modalEmailTidakTerdaftar" tabindex="-1" aria-labelledby="modalEmailLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content text-center p-4" style="border-radius: 20px;">
-        <div class="mb-3">
-          <i class="fas fa-exclamation-triangle text-warning" style="font-size: 3rem;"></i>
-        </div>
-        <h5 class="fw-bold mb-3">Maaf</h5>
-        <p style="color:#333; font-size:15px;">
-          Email yang Anda masukkan belum memiliki laporan kehilangan.<br><br>
-          Silakan ajukan laporan kehilangan terlebih dahulu atau klik <b>“Beranda”</b> untuk kembali.
-        </p>
-        <div class="d-flex justify-content-center gap-3 mt-3">
-          <a href="{{ url_for('main.home') }}" class="btn btn-secondary px-4">Beranda</a>
-          <a href="{{ url_for('main.form_kehilangan') }}" class="btn btn-primary px-4" style="background-color:#004b8d;">Kehilangan</a>
+    <!-- Modal Notifikasi -->
+    <div class="modal fade" id="modalEmailTidakTerdaftar" tabindex="-1" aria-labelledby="modalEmailLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-center p-4" style="border-radius: 20px;">
+          <div class="mb-3">
+            <i class="fas fa-exclamation-triangle text-warning" style="font-size: 3rem;"></i>
+          </div>
+          <h5 class="fw-bold mb-3">Maaf</h5>
+          <p style="color:#333; font-size:15px;">
+            Email yang Anda masukkan belum memiliki laporan kehilangan.<br><br>
+            Silakan ajukan laporan kehilangan terlebih dahulu atau klik <b>“Beranda”</b> untuk kembali.
+          </p>
+          <div class="d-flex justify-content-center gap-3 mt-3">
+            <a href="{{ url_for('main.home') }}" class="btn btn-secondary px-4">Beranda</a>
+            <a href="{{ url_for('main.form_kehilangan') }}" class="btn btn-primary px-4" style="background-color:#004b8d;">Kehilangan</a>
+          </div>
         </div>
       </div>
     </div>

@@ -127,7 +127,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 100px 0 80px; /* ✅ tidak pakai 100vh agar tidak terlalu tinggi */
+  padding: 200px 0 100px; /* ✅ tidak pakai 100vh agar tidak terlalu tinggi */
   position: relative;
   background: linear-gradient(to bottom right, #f0f9ff, #e0f2fe);
 }
@@ -246,11 +246,11 @@ body {
   position: absolute;        /* FIX: selalu menempel layar, tidak ketiban navbar */
   top: 85px;              /* posisi default di bawah navbar desktop */
   left: 35px;
-  font-size: 1.8rem;
+  font-size: 2.0rem;
   color: #004b8d;
   text-decoration: none;
   font-weight: bold;
-  z-index: 2000;          /* FIX: lebih tinggi daripada navbar */
+  z-index: 10;          /* FIX: lebih tinggi daripada navbar */
   transition: all 0.3s ease;
   opacity: 0;
   animation: fadeIn 0.8s ease forwards;
@@ -280,9 +280,9 @@ body {
 /* ===== RESPONSIVE MOBILE ===== */
 @media (max-width: 576px) {
   .back-arrow {
-    top: 125px;   /* HP navbar tinggi → panah diturunkan */
+    top: 150px;   /* HP navbar tinggi → panah diturunkan */
     left: 35px;
-    font-size: 1.9rem;  /* dibuat lebih besar agar enak di HP */
+    font-size: 2.9rem;  /* dibuat lebih besar agar enak di HP */
   }
 }
 
@@ -373,3 +373,90 @@ footer {
   font-size: 35px;
 }
 
+/* =====================================================
+   ULTRA MAX — TABLET
+===================================================== */
+@media (max-width: 992px) {
+
+  .hero-section {
+    padding: 220px 40px 380px !important;
+    min-height: 180vh !important;  /* 180% tinggi layar */
+  }
+
+  .hero-box {
+    width: 98% !important;
+    max-width: 900px !important;     /* SUPER LEBAR */
+    padding: 120px 70px !important;  /* SUPER BESAR */
+    border-radius: 45px !important;
+  }
+
+  .hero-title {
+    font-size: 3rem !important;       /* sangat besar */
+    font-weight: 900 !important;
+  }
+
+  .hero-subtitle {
+    font-size: 1.5rem !important;
+  }
+
+  .form-container {
+    padding: 35px !important;
+  }
+
+  .form-container input {
+    font-size: 1.3rem !important;
+    padding: 18px 20px !important;
+  }
+
+  .btn-cek {
+    font-size: 1.4rem !important;
+    padding: 18px 22px !important;
+  }
+}
+
+
+/* =====================================================
+   ULTRA MAX — HP / MOBILE
+===================================================== */
+@media (max-width: 576px) {
+
+  .hero-section {
+    padding: 260px 28px 480px !important;  
+    min-height: 220vh !important;  /* 220% tinggi layar HP */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .hero-box {
+    width: 100% !important;
+    max-width: 650px !important;      /* SUPER SUPER LEBAR */
+    padding: 140px 65px !important;   /* SANGAT BESAR */
+    border-radius: 50px !important;   /* sudut besar */
+  }
+
+  .hero-title {
+    font-size: 3.2rem !important;    /* SUPER BESAR */
+    font-weight: 900 !important;
+    text-align: center;
+  }
+
+  .hero-subtitle {
+    font-size: 1.6rem !important;
+    text-align: center;
+  }
+
+  .form-container {
+    padding: 40px !important;
+  }
+
+  .form-container input {
+    font-size: 1.35rem !important;
+    padding: 20px 22px !important;
+  }
+
+  .btn-cek {
+    font-size: 1.5rem !important;
+    padding: 20px 26px !important;
+  }
+}

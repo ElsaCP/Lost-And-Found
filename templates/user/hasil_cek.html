@@ -41,54 +41,56 @@
     </div>
   </nav>
 
-<section class="header-detail container">
-  <a href="javascript:history.back()" class="back-arrow-header">
-    <i class="fa-solid fa-arrow-left"></i>
-  </a>
-  <img src="{{ url_for('static', filename='image/logo juanda 2.png') }}" 
-       alt="Logo Juanda 2" class="logo-juanda2">
-</section>
+  <div class="main-content">
+    <section class="header-detail container">
+      <a href="javascript:history.back()" class="back-arrow-header">
+        <i class="fa-solid fa-arrow-left"></i>
+      </a>
+      <img src="{{ url_for('static', filename='image/logo juanda 2.png') }}" 
+          alt="Logo Juanda 2" class="logo-juanda2">
+    </section>
 
-  <!-- ===== KONTEN LAPORAN ===== -->
-  <div class="container mt-4 mb-5 pb-5">
-    <h2 class="judul-hasil text-center m-0 flex-grow-1">Hasil Cek Laporan Kehilangan</h2>
-    <p class="text-center text-muted mb-4">
-      Email: <span class="fw-semibold text-primary">{{ email }}</span>
-    </p>
+      <!-- ===== KONTEN LAPORAN ===== -->
+      <div class="container konten-setelah-header mb-5 pb-5">
+        <h2 class="judul-hasil text-center m-0 flex-grow-1">Hasil Cek Laporan Kehilangan</h2>
+        <p class="text-center text-muted mb-4">
+          Email: <span class="fw-semibold text-primary">{{ email }}</span>
+        </p>
 
-    {% if laporan %}
-    <div class="card shadow-sm p-4 mx-auto laporan-card" style="max-width: 700px;">
-      <h5 class="text-center mb-3 fw-semibold">Laporan Terakhir Anda</h5>
-      <table class="table table-borderless align-middle">
-        <tr><th>Kode Laporan</th><td>{{ laporan.kode_kehilangan }}</td></tr>
-        <tr><th>Nama Barang</th><td>{{ laporan.nama_barang }}</td></tr>
-        <tr><th>Kategori</th><td>{{ laporan.kategori }}</td></tr>
-        <tr><th>Lokasi Kehilangan</th><td>{{ laporan.lokasi }}</td></tr>
-        <tr><th>Tanggal Submit</th><td>{{ laporan.tanggal_submit }}</td></tr>
-         <tr><th>Waktu Submit</th><td>{{ laporan.waktu_submit }}</td></tr>
-        <tr>
-          <th>Status</th>
-          <td>
-            {% if laporan.status == 'Diproses' %}
-              <span class="badge bg-warning text-dark">{{ laporan.status }}</span>
-            {% elif laporan.status == 'Selesai' %}
-              <span class="badge bg-success">{{ laporan.status }}</span>
-            {% else %}
-              <span class="badge bg-secondary">{{ laporan.status or 'Belum Diproses' }}</span>
-            {% endif %}
-          </td>
-        </tr>
-      </table>
+        {% if laporan %}
+        <div class="card shadow-sm p-4 mx-auto laporan-card" style="max-width: 700px;">
+          <h5 class="text-center mb-3 fw-semibold">Laporan Terakhir Anda</h5>
+          <table class="table table-borderless align-middle">
+            <tr><th>Kode Laporan</th><td>{{ laporan.kode_kehilangan }}</td></tr>
+            <tr><th>Nama Barang</th><td>{{ laporan.nama_barang }}</td></tr>
+            <tr><th>Kategori</th><td>{{ laporan.kategori }}</td></tr>
+            <tr><th>Lokasi Kehilangan</th><td>{{ laporan.lokasi }}</td></tr>
+            <tr><th>Tanggal Submit</th><td>{{ laporan.tanggal_submit }}</td></tr>
+            <tr><th>Waktu Submit</th><td>{{ laporan.waktu_submit }}</td></tr>
+            <tr>
+              <th>Status</th>
+              <td>
+                {% if laporan.status == 'Diproses' %}
+                  <span class="badge bg-warning text-dark">{{ laporan.status }}</span>
+                {% elif laporan.status == 'Selesai' %}
+                  <span class="badge bg-success">{{ laporan.status }}</span>
+                {% else %}
+                  <span class="badge bg-secondary">{{ laporan.status or 'Belum Diproses' }}</span>
+                {% endif %}
+              </td>
+            </tr>
+          </table>
 
-      <div class="text-center mt-4">
-        <a href="{{ url_for('main.detail_cek', kode_kehilangan=laporan.kode_kehilangan) }}" class="btn btn-primary">Lihat Detail</a>
+          <div class="text-center mt-4">
+            <a href="{{ url_for('main.detail_cek', kode_kehilangan=laporan.kode_kehilangan) }}" class="btn btn-primary">Lihat Detail</a>
+          </div>
+        </div>
+        {% else %}
+        <div class="alert alert-warning text-center shadow-sm mt-4">
+          Tidak ditemukan laporan kehilangan untuk email ini.
+        </div>
+        {% endif %}
       </div>
-    </div>
-    {% else %}
-    <div class="alert alert-warning text-center shadow-sm mt-4">
-      Tidak ditemukan laporan kehilangan untuk email ini.
-    </div>
-    {% endif %}
   </div>
   
   <!-- Footer -->
