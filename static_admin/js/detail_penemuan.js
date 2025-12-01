@@ -53,16 +53,18 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ======================
-  // BUTTON KLAIM BARANG
-  // ======================
-  const btnKlaim = document.getElementById("btnKlaim");
-  if (btnKlaim) {
-    btnKlaim.addEventListener("click", () => {
-      const kode = btnKlaim.dataset.kode;
-      window.location.href = `/admin/klaim/baru?kode_barang=${kode}`;
-    });
-  }
+// ======================
+// BUTTON KLAIM BARANG
+// ======================
+const btnKlaim = document.getElementById("btnKlaim");
+if (btnKlaim) {
+  btnKlaim.addEventListener("click", () => {
+    const kode = btnKlaim.dataset.kode;   // <--- FIX PENTING
+    const from = new URLSearchParams(window.location.search).get("from");
+
+    window.location.href = `/admin/klaim/baru?kode_barang=${kode}&from=${from || "penemuan"}`;
+  });
+}
 
   // ======================
   // BUTTON KEMBALI

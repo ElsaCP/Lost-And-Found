@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
         payload = { kode, status: newStatus };
       } else if (jenis === "klaim") {
         apiUrl = "/admin/penemuan/klaim/update_status";
-        payload = { kode_laporan: kode, status: newStatus };
+        payload = { kode_laporan: kode, status: newStatus, catatan_admin: "" };
       }
 
       Swal.fire({
@@ -52,7 +52,6 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .then(res => res.json())
         .then(data => {
-
           if (!data.success) {
             Swal.fire("Gagal!", "Tidak dapat memperbarui status.", "error");
             this.selectedIndex = prevIndex;
@@ -101,9 +100,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
   // =============================
-  // 🎛 TOMBOL VIEW / EDIT / DELETE
+  // 🎛 TOMBOL VIEW / EDIT / DELETE / VERIFY / KLAIM
   // =============================
-  document.addEventListener("click", function (e) {
+  document.addEventListener("click", async function (e) {
     const btn = e.target.closest("button");
     if (!btn) return;
 
@@ -122,13 +121,6 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    // ==== TOMBOL TAMBAH KLAIM (FINAL) ====
-    if (btn.classList.contains("btn-klaim")) {
-      const kode = btn.dataset.kode;
-      window.location.href = `/admin/klaim/baru?kode_barang=${kode}&from=beranda`;
-      return;
-    }
-
     // ==== EDIT ====
     if (btn.classList.contains("btn-edit")) {
       if (jenis === "kehilangan")
@@ -140,53 +132,117 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    // ==== DELETE ====
-    if (btn.classList.contains("btn-delete")) {
+// ==== DELETE ====
+if (btn.classList.contains("btn-delete")) {
+  Swal.fire({
+    title: "Hapus Laporan?",
+    text: `Apakah kamu yakin ingin menghapus laporan ${kode}?`,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#6c757d",
+    confirmButtonText: "Ya, hapus!",
+    cancelButtonText: "Batal"
+  }).then(res => {
+    if (!res.isConfirmed) return;
 
-      Swal.fire({
-        title: "Hapus Laporan?",
-        text: `Apakah kamu yakin ingin menghapus laporan ${kode}?`,
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#d33",
-        cancelButtonColor: "#6c757d",
-        confirmButtonText: "Ya, hapus!",
-        cancelButtonText: "Batal"
-      }).then(res => {
-        if (!res.isConfirmed) return;
-
-        let deleteApi = "";
-
-        if (jenis === "kehilangan") deleteApi = "/admin/api/kehilangan/delete";
-        else if (jenis === "penemuan") deleteApi = "/admin/api/penemuan/delete";
-        else if (jenis === "klaim") deleteApi = "/admin/penemuan/klaim/delete";
-
-        fetch(deleteApi, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ kode })
-        })
-        .then(r => r.json())
-        .then(d => {
-          if (d.success) {
-            Swal.fire({
-              icon: "success",
-              title: "Dihapus!",
-              text: `Laporan ${kode} berhasil dihapus.`,
-              timer: 1500,
-              showConfirmButton: false
-            });
-            row.remove();
-          } else {
-            Swal.fire("Gagal!", "Terjadi kesalahan saat menghapus.", "error");
-          }
+    // 🔹 Kirim semua ke /admin/beranda/hapus
+    fetch("/admin/beranda/hapus", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ kode, jenis })  // pastikan jenis ada
+    })
+    .then(r => r.json())
+    .then(d => {
+      if (d.success) {
+        Swal.fire({
+          icon: "success",
+          title: "Dihapus!",
+          text: `Laporan ${kode} berhasil dihapus.`,
+          timer: 1500,
+          showConfirmButton: false
         });
-      });
+        row.remove();
+      } else {
+        Swal.fire("Gagal!", d.message || "Terjadi kesalahan saat menghapus.", "error");
+      }
+    })
+    .catch(err => {
+      Swal.fire("Error!", "Server tidak merespon.", "error");
+    });
+  });
+  return;
+}
 
+// ==== VERIFY ====
+if (btn.classList.contains("btn-verify")) {
+  Swal.fire({
+    title: "Verifikasi Laporan?",
+    text: `Apakah kamu yakin ingin memverifikasi laporan ${kode}?`,
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonText: "Ya, verifikasi",
+    cancelButtonText: "Batal",
+  }).then(async (result) => {
+    if (!result.isConfirmed) return;
+
+    let apiUrl = "";
+    let payload = {};
+
+    if (jenis === "kehilangan") {
+      apiUrl = "/admin/api/kehilangan/update_status";
+      payload = { kode, status: "Verifikasi" };
+    } else if (jenis === "penemuan") {
+      apiUrl = "/admin/api/penemuan/update_status";
+      payload = { kode, status: "Verifikasi" };
+    } else if (jenis === "klaim") {
+      // 🔹 FIX: selalu kirim catatan_admin walau kosong
+      apiUrl = "/admin/penemuan/klaim/update_status";
+      payload = { kode_laporan: kode, status: "Verifikasi", catatan_admin: "" };
+    }
+
+    try {
+      const res = await fetch(apiUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        Swal.fire({
+          icon: "success",
+          title: "Berhasil!",
+          text: `Laporan ${kode} berhasil diverifikasi.`,
+          timer: 1500,
+          showConfirmButton: false
+        });
+
+        // Update dropdown select agar bisa dipilih lagi
+        const selectElem = row.querySelector(".status-select");
+        if (selectElem) {
+          selectElem.value = "Verifikasi";
+          selectElem.dataset.prevIndex = selectElem.selectedIndex;
+        }
+
+      } else {
+        Swal.fire("Gagal!", "Terjadi kesalahan saat verifikasi.", "error");
+      }
+
+    } catch (err) {
+      Swal.fire("Error!", "Server tidak merespon.", "error");
+    }
+  });
+  return;
+}
+
+    // ==== KLAIM BARANG ====
+    if (btn.classList.contains("btn-klaim")) {
+      window.location.href = `/admin/klaim/baru?kode_barang=${kode}&from=beranda`;
+      return;
     }
 
   });
-
 
   // =============================
   // 🔍 FITUR PENCARIAN

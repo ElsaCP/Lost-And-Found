@@ -76,11 +76,14 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     });
 
+    // ============================
+    // UPDATE DATA
+    // ============================
     document.getElementById("btnUpdate").addEventListener("click", async () => {
 
         const status = document.getElementById("statusSelect").value;
         const catatan = document.getElementById("catatanAdmin").value;
-        const from = new URLSearchParams(window.location.search).get("from"); // 🔥 penting
+        const from = new URLSearchParams(window.location.search).get("from");
 
         Swal.fire({
             title: "Simpan Perubahan?",
@@ -117,14 +120,11 @@ document.addEventListener("DOMContentLoaded", async function () {
                 });
 
                 setTimeout(() => {
-
-                    // 🔥 FIX REDIRECT — kalau dari beranda, balik ke beranda
                     if (from === "beranda") {
                         window.location.href = "/admin/beranda";
                     } else {
                         window.location.href = "/admin/penemuan/klaim";
                     }
-
                 }, 1500);
 
             } else {
@@ -137,22 +137,34 @@ document.addEventListener("DOMContentLoaded", async function () {
         });
     });
 
-    // ============================
-    // LIGHTBOX / ZOOM GAMBAR
-    // ============================
-    const zoomImgs = document.querySelectorAll(".zoomable");
-    const lightbox = document.getElementById("lightbox");
-    const lightboxImg = document.getElementById("lightbox-img");
-    const closeBtn = document.querySelector(".lightbox-close");
+// ============================
+// LIGHTBOX / ZOOM GAMBAR
+// ============================
+const zoomImgs = document.querySelectorAll(".zoomable");
+const lightbox = document.getElementById("lightbox");
+const lightboxImg = document.getElementById("lightbox-img");
+const closeBtn = document.querySelector("#lightbox .lightbox-close");
 
-    zoomImgs.forEach(img => {
-        img.addEventListener("click", () => {
-            lightbox.style.display = "flex";
-            lightboxImg.src = img.src;
-        });
+zoomImgs.forEach(img => {
+    img.addEventListener("click", () => {
+        lightbox.style.display = "flex";
+        lightboxImg.src = img.src;
+        document.body.style.overflow = "hidden"; // disable scroll
     });
+});
 
-    closeBtn.onclick = () => lightbox.style.display = "none";
-    lightbox.onclick = e => { if (e.target === lightbox) lightbox.style.display = "none"; };
+// tombol X
+closeBtn.onclick = () => {
+    lightbox.style.display = "none";
+    document.body.style.overflow = "auto";
+};
+
+// klik area gelap
+lightbox.onclick = (e) => {
+    if (e.target === lightbox) {
+        lightbox.style.display = "none";
+        document.body.style.overflow = "auto";
+    }
+};
 
 });

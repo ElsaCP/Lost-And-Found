@@ -64,6 +64,8 @@
         action="{{ url_for('admin_bp.edit_kehilangan') }}?kode={{ laporan.kode_kehilangan }}"
         method="POST">
 
+    <input type="hidden" name="from" value="{{ from_page }}">
+
     <!-- === DATA PELAPOR === -->
     <div class="data-section">
       <h3>Data Pelapor</h3>
@@ -209,6 +211,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="{{ url_for('admin_bp.static', filename='js/edit_kehilangan.js') }}"></script>
   <script src="{{ url_for('admin_bp.static', filename='js/logout.js') }}"></script>
 </body>

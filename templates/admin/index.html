@@ -71,10 +71,13 @@
                     <h2 class="login-title">LOGIN ADMIN</h2>
                     
                     <form id="loginForm">
-                        <div class="mb-4">
-                            <label for="email" class="form-label">Alamat Email</label>
-                            <input type="email" class="form-control" id="email" required>
-                        </div>
+                    <div class="mb-4">
+                        <label for="email" class="form-label">Alamat Email</label>
+                        <input type="email" class="form-control" id="email" required
+                            oninvalid="this.setCustomValidity('Masukkan email yang valid, contoh: user@example.com')"
+                            oninput="this.setCustomValidity('')"
+                            placeholder="Masukkan email">
+                    </div>
 
                 <div class="mb-3">
                     <label for="password" class="form-label">Password</label>
@@ -87,21 +90,8 @@
                             placeholder="Masukkan password"
                             required
                             >
-                            <button
-                            class="btn btn-outline-secondary toggle-password"
-                            type="button"
-                            aria-label="Tampilkan password"
-                            aria-pressed="false"
-                            title="Tampilkan password"
-                            >
-                        <i class="bi bi-eye" id="eyeIcon"></i>
-                        </button>
                     </div>
                     </div>
-  
-                        <div class="text-end mb-4">
-                            <a href="{{ url_for('admin_bp.forgot_password') }}" class="forgot-password">Lupa Password</a>
-                        </div>
                         
                         <div class="text-center">
                             <button type="submit" class="btn btn-login">LOGIN</button>
