@@ -6,147 +6,145 @@ body {
   padding: 0;
 }
 
-/* ===== NAVBAR STYLE ===== */
+/* ============================
+   NAVBAR DESKTOP
+============================ */
 .navbar {
   background: #0056a6;
   height: 70px;
-  transition: all 0.3s ease;
+  padding: 0 20px;   /* desktop tetap */
   display: flex;
   align-items: center;
-  padding: 0 20px;
 }
 
-/* LOGO */
 .navbar-brand img {
-  height: 100%;              /* Logo setinggi navbar */
+  height: 100%;
   max-height: 70px;
-  width: auto;
-  object-fit: contain;       /* Biar tidak terpotong */
-  transition: all 0.3s ease;
+  object-fit: contain;
 }
 
-/* MENU LINKS */
 .nav-link {
   color: #fff !important;
   margin-right: 18px;
   font-weight: 500;
-  transition: color 0.3s ease, transform 0.2s ease;
+  transition: 0.3s;
 }
 
 .nav-link:hover {
   text-decoration: underline;
   color: #cce4ff !important;
-  transform: translateY(-1px);
 }
 
-/* ICON PROFILE */
 .profile-icon {
   color: #fff;
   font-size: 1.6rem;
-  transition: color 0.3s ease, transform 0.2s ease;
+  transition: 0.3s;
 }
 
 .profile-icon:hover {
   color: #cce4ff;
-  transform: scale(1.1);
 }
 
-/* HAMBURGER BUTTON */
-.navbar-toggler {
-  border: none;
-  background: none;
-  outline: none;
-  box-shadow: none !important;
-}
-
-.navbar-toggler-icon {
-  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='white' stroke-width='2' stroke-linecap='round' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
-}
-
-/* ===== RESPONSIVE BREAKPOINTS ===== */
-
-/* Laptop & Tablet Landscape */
+/* ============================
+   RESPONSIVE NAVBAR (TABLET)
+============================ */
 @media (max-width: 992px) {
   .navbar {
     height: auto;
-    padding: 0px 20px;
+    padding: 10px 20px;
   }
 
-  /* COLLAPSE MENU KECIL DI KANAN BAWAH TOGGLER */
   .navbar-collapse {
     background: #0056a6;
+    padding: 12px 15px;
     border-radius: 10px;
-    padding: 10px 15px;
     position: absolute;
-    top: 60px;               /* sedikit di bawah navbar */
     right: 10px;
-    width: 180px;            /* kecil */
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    top: 70px;
+    width: 200px;
     z-index: 999;
     opacity: 0;
-    transform: scale(0.9);
-    transform-origin: top right;
-    transition: all 0.25s ease;
+    transform: translateY(-8px);
+    transition: 0.25s ease;
   }
 
-  /* Saat collapse aktif */
   .navbar-collapse.show {
     opacity: 1;
-    transform: scale(1);
-  }
-
-  .navbar-nav {
-    text-align: center;
+    transform: translateY(0);
   }
 
   .nav-link {
-    margin: 8px 0;
     display: block;
+    font-size: 1.2rem;
+    padding: 8px 0;
+    text-align: right;
   }
 
   .profile-icon {
     display: block;
-    margin: 10px auto 5px auto;
+    margin: 12px auto 5px auto;
+    font-size: 1.8rem;
   }
 }
 
-/* Smartphone */
+/* ============================
+   MOBILE HP — PADDING LEBIH BESAR 
+   + LOGO DIPERBESAR
+============================ */
 @media (max-width: 576px) {
+
+  /* 🔥 Navbar jauh lebih tebal */
+  .navbar {
+    padding: 20px 22px;       /* PADDING MOBILE DIPERBESAR */
+    height: auto;
+  }
+
+  /* 🔥 Logo lebih besar mengikuti padding */
   .navbar-brand img {
-    height: 45px;
+    height: 65px;             /* tinggi lebih besar dari sebelumnya */
+    max-height: 80px;         /* batas aman */
   }
 
+  /* Collapse */
   .navbar-collapse {
-    width: 160px;
-    right: 8px;
-    top: 55px;
+    width: 200px;
+    top: calc(100% + 5px);    /* tetap di bawah navbar */
+    right: 10px;
+    padding: 16px 14px;
   }
 
+  /* Teks lebih besar */
   .nav-link {
-    font-size: 15px;
+    font-size: 1.4rem;
+    padding: 10px 0;
   }
 
   .profile-icon {
-    font-size: 1.4rem;
+    font-size: 2.1rem;
   }
 }
+
+/* ============================
+   HEADER DETAIL (PANAH + LOGO)
+============================ */
 .header-detail {
     background-color: #ffffff;
-    color: white;
-    padding: 15px 20px;
+    padding: 12px 18px;
     border-radius: 0 0 15px 15px;
-    margin-top: 75px;   /* 👈 TURUNKAN DI BAWAH NAVBAR */
-    position: relative;
-    z-index: 1;
+    margin-top: 85px;
+    display: flex;                     /* FLEX 🔥 */
+    justify-content: space-between;    /* PANAH — LOGO BERADA DI KIRI & KANAN */
+    align-items: center;               /* RATA TENGAH VERTIKAL */
+    z-index: 10;
 }
 
 /* Panah */
 .back-arrow-header {
-    margin-left: -50px;   /* 👉 dorong lebih ke kiri */
+    margin: 0 !important;              /* HAPUS NEGATIVE MARGIN */
 }
 
 .back-arrow-header i {
-    font-size: 2.0rem;   /* 👉 panah lebih besar */
+    font-size: 1.9rem;
     color: #0056a6;
     transition: 0.25s;
 }
@@ -158,8 +156,27 @@ body {
 /* Logo */
 .logo-juanda2 {
     height: 55px;
-    margin-right: -50px;
+    margin: 0 !important;              /* HAPUS NEGATIVE MARGIN */
+    object-fit: contain;
 }
+
+/* ========== MOBILE FIX ========== */
+@media (max-width: 576px) {
+
+    .header-detail {
+        padding: 15px 15px;
+        margin-top: 120px;              /* lebih rapat dengan navbar */
+    }
+
+    .back-arrow-header i {
+        font-size: 2.2rem;
+    }
+
+    .logo-juanda2 {
+        height: 55px;                 /* otomatis mengecil supaya tidak ketutup */
+    }
+}
+
 .detail-card {
     background: white;
     border-radius: 20px;
@@ -321,6 +338,67 @@ body {
 }
 
 
+/* ===============================
+   RESPONSIVE FIX — DATA PELAPOR & DETAIL KEHILANGAN
+   AGAR TETAP SEJAJAR DI HP / MOBILE
+================================ */
+@media (max-width: 576px) {
+
+  /* Paksa row menjadi 2 kolom berdampingan */
+  .detail-card .row.mt-4 {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      gap: 15px !important;
+      align-items: stretch !important;
+  }
+
+  /* Pastikan kedua card ukurannya sama di mobile */
+  .detail-card .info-card {
+      height: 100% !important;
+  }
+
+  /* Hapus stretching margin default bootstrap */
+  .detail-card .col-12,
+  .detail-card .col-sm-6 {
+      width: 100% !important;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+  }
+}
+/* ==========================================================
+   MOBILE — PERBESAR TULISAN DI DATA PELAPOR & DETAIL KEHILANGAN
+========================================================== */
+@media (max-width: 576px) {
+
+    /* Judul card (Data Pelapor, Detail Kehilangan) */
+    .info-card h5 {
+        font-size: 1.4rem !important;
+    }
+
+    /* Label seperti "Nama", "Email", "Lokasi", dll */
+    .info-card .info-item span {
+        font-size: 1.15rem !important;
+        font-weight: 700 !important;
+    }
+
+    /* Isi data seperti nama pelapor, deskripsi, dll */
+    .info-card .info-item p {
+        font-size: 1.25rem !important;
+        line-height: 1.5;
+    }
+
+    /* Teks di bagian detail atas (kode laporan, kategori, dsb.) */
+    .detail-card p,
+    .detail-card b {
+        font-size: 1.2rem !important;
+    }
+
+    /* Nama barang di atas foto */
+    .nama-barang {
+        font-size: 1.5rem !important;
+    }
+}
+
 footer {
   background: #0056a6;
   color: white;
@@ -336,7 +414,6 @@ footer {
   max-width: 1300px;
   width: 100%;
 }
-
 .footer-top {
   display: flex;
   justify-content: space-between;
