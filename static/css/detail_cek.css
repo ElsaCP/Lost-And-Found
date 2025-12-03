@@ -246,6 +246,29 @@ body {
   box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }
 
+/* =========================
+   PERBESAR TULISAN KHUSUS MOBILE
+========================= */
+@media (max-width: 576px) {
+
+  .timeline-content h6 {
+    font-size: 22px;   /* judul status */
+  }
+
+  .timeline-content .text-muted {
+    font-size: 20px;   /* tanggal */
+  }
+
+  .timeline-content p {
+    font-size: 20px;   /* catatan */
+  }
+
+  /* Opsional: jarak lebih lega di mobile */
+  .timeline-content {
+    padding: 20px;
+  }
+}
+
 .info-card {
     background: #ffffff;
     border-radius: 15px;
@@ -265,7 +288,7 @@ body {
 }
 
 .info-item p {
-    font-size: 16px;
+    font-size: 20px;
     margin: 3px 0 0;
     font-weight: 500;
     color: #333;
@@ -295,48 +318,78 @@ body {
     color: #0056a6;
 }
 
-.rekomendasi-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 20px;
-    margin-top: 25px;
-    margin-bottom: 100px; /* 👈 pastikan tidak nempel ke footer */
+/* ---------- Grid & card setup (pastikan ini setelah rule lama) ---------- */
+.rekom-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  /* penting: buat semua baris memiliki track yang fleksibel sehingga setiap item bisa menyesuaikan dan stretch */
+  grid-auto-rows: 1fr;
+  align-items: stretch; /* pastikan item ikut membentang secara vertikal */
 }
 
+/* Card sebagai flex column agar tombol bisa 'jatuh' ke bawah */
 .rekom-card {
-    border-radius: 12px;
-    overflow: hidden;
-    transition: transform 0.2s;
-    background: #fff;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  height: 100%;              /* isi penuh slot grid */
+  border-radius: 12px;
+  overflow: hidden;
+  width: 100%;
+  padding: 10px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: transform .18s ease;
 }
 
-.rekom-card:hover {
-    transform: scale(1.03);
-}
-
+/* Foto: tetap proporsional dan tidak mengubah tinggi total card terlalu banyak */
 .rekom-foto {
-    height: 180px;
-    width: 100%;
-    object-fit: cover;
+  width: 100%;
+  height: 140px;         /* tetap konstan */
+  object-fit: cover;
+  flex-shrink: 0;        /* jangan menyusutkan foto */
+  background: #f6f6f6;
 }
 
-.rekom-nama {
-    padding: 10px 12px;
-    font-weight: 600;
-    font-size: 14px;
-    color: #333;
-    text-align: center;
+/* Body isi card fleksibel */
+.rekom-body {
+  display: grid;
+   grid-template-rows: auto auto auto auto auto; 
+    /* Nama Barang, Kategori, Lokasi, Tanggal, Tombol */
+  row-gap: 4px;
+  flex-direction: column;
+  padding: 12px;
+  gap: 6px;
+  flex: 1 1 auto;         /* isi mengambil sisa ruang */
 }
 
-#barangSerupaContainer {
-    margin-bottom: 50px; /* jarak dari footer */
+/* Judul & teks */
+.rekom-body h6 { margin: 0 0 4px; font-size: 15px; line-height: 1.2; }
+.rekom-body p { margin: 0; font-size: 13px; color: #555; }
+
+/* Tombol selalu di dasar card */
+.btn-detail {
+  margin-top: auto;       /* kunci supaya tombol turun ke bawah */
+  align-self: stretch;
 }
+
+/* Perbaikan spacing tombol kecil (mobile-friendly) */
+.btn-detail.btn-sm {
+  padding-top: .35rem;
+  padding-bottom: .35rem;
+}
+
+/* Optional: kalau ingin jarak sama di mobile */
+@media (max-width: 480px) {
+  .rekom-foto { height: 160px; }
+  .rekom-body h6 { font-size: 18px; }
+  .rekom-body p { font-size: 15px; }
+}
+
 
 .mt-4.d-flex.justify-content-between {
     margin-bottom: 80px; /* lebih aman untuk tombol */
 }
-
 
 /* ===============================
    RESPONSIVE FIX — DATA PELAPOR & DETAIL KEHILANGAN
