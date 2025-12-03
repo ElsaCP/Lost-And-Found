@@ -238,17 +238,6 @@ font-size: 30px;
 .btn-edit i { color: #ff9800; }
 .btn-delete i { color: #e53935; }
 .btn-verify i { color: #2ecc71; }
-/* ===== Tombol Arsip Tambahan ===== */
-.btn-archive i {
-  color: #0056a6; /* biru bandara */
-  margin-left: 8px; /* beri jarak dari tombol sebelumnya */
-  transition: color 0.2s, transform 0.2s;
-}
-
-.btn-archive:hover i {
-  color: #003c7a;
-  transform: scale(1.1);
-}
 
 .profile-icon {
   width: 45px;
@@ -369,9 +358,28 @@ font-size: 30px;
   transform: translateY(6px);
 }
 
-/* Warna ikon tombol */
-.btn-view i { color: #007bff; }
-.btn-edit i { color: #ffc107; }
-.btn-delete i { color: #dc3545; }
-.btn-verify i { color: #2ecc71; }
-.btn-archive i { color: #0056a6; }
+/* ==========================================
+   KHUSUS HALAMAN BERANDA
+========================================== */
+
+.page-beranda .header .logo-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Geser ke kiri */
+  gap: 8px;
+  height: 100px;
+  margin-left: -20px; /* Sesuaikan geser kiri */
+}
+
+.page-beranda .header .rectangle-bg {
+  height: 60px;
+  width: auto;
+}
+
+.page-beranda .header .logo-front {
+  position: absolute;
+  left: 25px;  /* Geser logo depannya */
+  height: 50px;
+  width: auto;
+}

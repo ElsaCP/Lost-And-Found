@@ -1,5 +1,5 @@
 .sidebar {
-  width: 197px;
+  width: 193px;
   height: 90vh;
   position: fixed;  /* tetap di tempat saat scroll */
   top: 0;
@@ -20,7 +20,7 @@
 .header {
   position: fixed;
   top: 0;
-  left: 213px;
+  left: 233px;
   right: 0;
   height: 90px;
   background-color: #0056a6;
@@ -65,7 +65,7 @@
 .header .right-header i {
   font-size: 30px;
   color: #fff;
-  margin-right: 20px;
+  margin-right: 12px;
 }
 
 /* ====== HILANGKAN PADDING PADA KONTEN UTAMA ====== */
@@ -194,4 +194,15 @@
 .back-btn a:hover {
   text-decoration: underline;
   color: #0056a6;
+}
+
+/* Geser ikon profil ke kiri */
+.header .profile-icon {
+  margin-right: 40px !important;   /* geser kiri */
+}
+
+/* Jika masih kurang kiri, kurangi nilai (misal 60px, 80px) */
+.header .profile-icon i {
+  font-size: 32px;
+  color: #fff;
 }
