@@ -1,3 +1,27 @@
+
+/* === FIX HEADER LOGO LEBIH KE KIRI === */
+.header .logo-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-left: -20px;   /* ⬅️ Geser rectangle + foto ke kiri */
+}
+
+.header .logo-wrapper .rectangle-bg {
+  height: 60px;
+}
+
+.header .logo-wrapper .logo-front {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 50px;
+  width: auto;
+  z-index: 2;
+}
+
 /* ==== WRAPPER ==== */
 .detail-wrapper {
   margin: 25px auto;
