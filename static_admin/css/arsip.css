@@ -196,12 +196,13 @@
   color: #0056a6;
 }
 
-/* Geser ikon profil ke kiri */
+/* Geser ikon profil ke kiri & ke bawah */
 .header .profile-icon {
-  margin-right: 40px !important;   /* geser kiri */
+  margin-right: 25px !important;   /* geser kiri */
+  margin-top: 15px !important;     /* geser turun */
 }
 
-/* Jika masih kurang kiri, kurangi nilai (misal 60px, 80px) */
+/* Atur ukuran ikon */
 .header .profile-icon i {
   font-size: 32px;
   color: #fff;
