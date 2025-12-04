@@ -2,122 +2,121 @@ body {
   font-family: Arial, sans-serif;
   padding-top: 70px; 
 }
-/* ===== NAVBAR STYLE ===== */
+/* ============================
+   NAVBAR DESKTOP
+============================ */
 .navbar {
   background: #0056a6;
   height: 70px;
-  transition: all 0.3s ease;
+  padding: 0 20px;   /* desktop tetap */
   display: flex;
   align-items: center;
-  padding: 0 20px;
 }
 
-/* LOGO */
 .navbar-brand img {
-  height: 100%;              /* Logo setinggi navbar */
+  height: 100%;
   max-height: 70px;
-  width: auto;
-  object-fit: contain;       /* Biar tidak terpotong */
-  transition: all 0.3s ease;
+  object-fit: contain;
 }
 
-/* MENU LINKS */
 .nav-link {
   color: #fff !important;
   margin-right: 18px;
   font-weight: 500;
-  transition: color 0.3s ease, transform 0.2s ease;
+  transition: 0.3s;
 }
 
 .nav-link:hover {
   text-decoration: underline;
   color: #cce4ff !important;
-  transform: translateY(-1px);
 }
 
-/* ICON PROFILE */
 .profile-icon {
   color: #fff;
   font-size: 1.6rem;
-  transition: color 0.3s ease, transform 0.2s ease;
+  transition: 0.3s;
 }
 
 .profile-icon:hover {
   color: #cce4ff;
-  transform: scale(1.1);
 }
 
-/* HAMBURGER BUTTON */
-.navbar-toggler {
-  border: none;
-  background: none;
-  outline: none;
-  box-shadow: none !important;
-}
-
-.navbar-toggler-icon {
-  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='white' stroke-width='2' stroke-linecap='round' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
-}
-
-/* ===== RESPONSIVE NAVBAR ===== */
+/* ============================
+   RESPONSIVE NAVBAR (TABLET)
+============================ */
 @media (max-width: 992px) {
   .navbar {
     height: auto;
-    padding: 0px 20px;
+    padding: 10px 20px;
   }
 
-  /* COLLAPSE MENU KECIL DI KANAN BAWAH TOGGLER */
   .navbar-collapse {
     background: #0056a6;
+    padding: 12px 15px;
     border-radius: 10px;
-    padding: 10px 15px;
     position: absolute;
-    top: 60px;               /* sedikit di bawah navbar */
     right: 10px;
-    width: 180px;            /* kecil */
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    top: 70px;
+    width: 200px;
     z-index: 999;
     opacity: 0;
-    transform: scale(0.9);
-    transform-origin: top right;
-    transition: all 0.25s ease;
+    transform: translateY(-8px);
+    transition: 0.25s ease;
   }
 
-  /* Saat collapse aktif */
   .navbar-collapse.show {
     opacity: 1;
-    transform: scale(1);
-  }
-
-  .navbar-nav {
-    text-align: center;
+    transform: translateY(0);
   }
 
   .nav-link {
-    margin: 8px 0;
     display: block;
+    font-size: 1.2rem;
+    padding: 8px 0;
+    text-align: right;
   }
 
   .profile-icon {
     display: block;
-    margin: 10px auto 5px auto;
+    margin: 12px auto 5px auto;
+    font-size: 1.8rem;
   }
 }
-/* Smartphone */
+
+/* ============================
+   MOBILE HP — PADDING LEBIH BESAR 
+   + LOGO DIPERBESAR
+============================ */
 @media (max-width: 576px) {
 
-  .navbar-collapse {
-    width: 160px;
-    right: 8px;
-    top: 55px;
+  /* 🔥 Navbar jauh lebih tebal */
+  .navbar {
+    padding: 20px 22px;       /* PADDING MOBILE DIPERBESAR */
+    height: auto;
   }
 
+  /* 🔥 Logo lebih besar mengikuti padding */
+  .navbar-brand img {
+    height: 65px;             /* tinggi lebih besar dari sebelumnya */
+    max-height: 80px;         /* batas aman */
+  }
+
+  /* Collapse */
+  .navbar-collapse {
+    width: 200px;
+    top: calc(100% + 5px);    /* tetap di bawah navbar */
+    right: 10px;
+    padding: 16px 14px;
+  }
+
+  /* Teks lebih besar */
   .nav-link {
-    font-size: 15px;
+    font-size: 1.4rem;
+    padding: 10px 0;
   }
 
   .profile-icon {
-    font-size: 1.4rem;
+    font-size: 2.1rem;
   }
 }
 
@@ -867,19 +866,6 @@ footer {
   background-clip: text;
 }
 
-/* ===== LIST BARANG TERBARU ===== */
-.list-barang-section {
-  position: relative;
-  padding: 80px 0;
-  background: #f9fbff;
-  overflow: hidden;
-}
-
-.section-title {
-  font-weight: 700;
-  color: #004b8d;
-}
-
 /* === GRID FLEX RESPONSIF === */
 /* === GRID RESPONSIF & RATA === */
 .items-grid {
@@ -913,7 +899,7 @@ footer {
 
 .item-card img {
   width: 100%;
-  height: 180px;
+  height: 280px;
   object-fit: cover;
   border-bottom: 1px solid #eee;
 }
@@ -957,7 +943,7 @@ footer {
 
 @media (max-width: 576px) {
   .items-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 15px;
   }
 
@@ -966,25 +952,12 @@ footer {
   }
 
   .item-card img {
-    height: 160px;
+    height: 390px;
   }
 }
-
-/* Tombol Lihat Lainnya */
-.btn-view-more {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: #1d90f4;
-  color: #fff;
-  padding: 10px 25px;
-  border-radius: 30px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: 0.3s;
+.list-barang-section,
+.container,
+section,
+div {
+  margin-bottom: 0 !important;
 }
-
-.btn-view-more:hover {
-  background: #023f78;
-}
-

@@ -53,11 +53,11 @@
 <!-- Detail Barang -->
 <section class="detail-section container">
   <div class="row align-items-center">
-    <div class="col-md-5 text-center detail-img">
+    <div class="col-12 col-md-5 text-center detail-img">
       <img src="{{ barang.gambar_barang }}" alt="{{ barang.nama_barang }}">
     </div>
 
-    <div class="col-md-7 detail-info">
+    <div class="col-12 col-md-7 detail-info">
       <h2>{{ barang.nama_barang }}</h2>
       <div class="badge-kategori">{{ barang.kategori }}</div>
       <p><strong>Deskripsi:</strong> {{ barang.deskripsi or '-' }}</p>
