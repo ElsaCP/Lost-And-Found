@@ -367,6 +367,35 @@ body {
   }
 }
 
+/* Efek hover */
+.back-arrow:hover {
+  color: #007bff;
+  transform: translateX(-5px);
+}
+
+/* Animasi muncul */
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+/* ===== RESPONSIVE TABLET ===== */
+@media (max-width: 992px) {
+  .back-arrow {
+    top: 105px;   /* naikkan sesuai tinggi navbar tablet */
+    left: 35px;
+    font-size: 1.7rem;
+  }
+}
+
+/* ===== RESPONSIVE MOBILE ===== */
+@media (max-width: 576px) {
+  .back-arrow {
+    top: 150px;   /* HP navbar tinggi → panah diturunkan */
+    left: 35px;
+    font-size: 2.9rem;  /* dibuat lebih besar agar enak di HP */
+  }
+}
+
 footer {
   background: #0056a6;
   color: white;
@@ -459,8 +488,8 @@ footer {
 @media (max-width: 992px) {
 
   .hero-section {
-    padding: 220px 40px 380px !important;
-    min-height: 180vh !important;  /* 180% tinggi layar */
+    padding: 220px 40px 120px !important;
+    min-height: 60vh !important;  /* 180% tinggi layar */
   }
 
   .hero-box {
@@ -502,7 +531,7 @@ footer {
 
   .hero-section {
     padding: 260px 28px 480px !important;  
-    min-height: 220vh !important;  /* 220% tinggi layar HP */
+    min-height: 233vh !important;  /* 220% tinggi layar HP */
     display: flex;
     justify-content: center;
     align-items: flex-start;
