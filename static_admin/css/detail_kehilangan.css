@@ -1,3 +1,28 @@
+.header {
+    position: fixed !important;
+    top: 20px;          /* turun 18px seperti permintaanmu */
+    left: 233.5px;        /* sesuaikan lebar sidebar */
+    right: 0;
+    z-index: 9998;
+    background-color: #0056a6;   /* agar tidak ada garis putih */
+    padding-right: 40px;
+}
+
+/* Sidebar tetap nempel */
+.sidebar {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 9999;
+}
+
+/* Konten ikut turun dari posisi header yang baru */
+.content {
+    margin-left: 250px;
+    margin-top: 100px;   /* 70px tinggi header + 18px turun */
+}
+
 .detail-container {
   margin-top: 25px;
   margin-left: 80px;
