@@ -42,33 +42,35 @@
   </nav>
 
   <!-- Header Detail Barang -->
-  <section class="header-detail container d-flex align-items-center justify-content-between">
-    <div class="d-flex align-items-center gap-3">
-      <a href="javascript:history.back()" class="back-arrow-header"><i class="fa-solid fa-arrow-left"></i></a>
-      <h1 class="fw-bold m-0">Detail Barang</h1>
-    </div>
-    <img src={{ url_for('static', filename='image/logo juanda 2.png')}} alt="Logo Juanda 2" class="logo-juanda2">
-  </section>
+  <main>
+    <section class="header-detail container d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center gap-3">
+        <a href="javascript:history.back()" class="back-arrow-header"><i class="fa-solid fa-arrow-left"></i></a>
+        <h1 class="fw-bold m-0">Detail Barang</h1>
+      </div>
+      <img src={{ url_for('static', filename='image/logo juanda 2.png')}} alt="Logo Juanda 2" class="logo-juanda2">
+    </section>
 
-<!-- Detail Barang -->
-<section class="detail-section container">
-  <div class="row align-items-center">
-    <div class="col-12 col-md-5 text-center detail-img">
-      <img src="{{ barang.gambar_barang }}" alt="{{ barang.nama_barang }}">
-    </div>
+  <!-- Detail Barang -->
+    <section class="detail-section container">
+      <div class="row flex-column flex-md-row align-items-start">
+        <div class="col-12 col-md-5 text-center detail-img">
+          <img src="{{ barang.gambar_barang }}" alt="{{ barang.nama_barang }}">
+        </div>
 
-    <div class="col-12 col-md-7 detail-info">
-      <h2>{{ barang.nama_barang }}</h2>
-      <div class="badge-kategori">{{ barang.kategori }}</div>
-      <p><strong>Deskripsi:</strong> {{ barang.deskripsi or '-' }}</p>
-      <p><strong>Informasi Penemuan:</strong></p>
-      <p><i class="fa-regular fa-clock icon"></i> {{ barang.tanggal_lapor }}</p>
-      <p><i class="fa-solid fa-location-dot icon"></i> {{ barang.lokasi or '-' }}</p>
+        <div class="col-12 col-md-7 detail-info">
+          <h2>{{ barang.nama_barang }}</h2>
+          <div class="badge-kategori">{{ barang.kategori }}</div>
+          <p><strong>Deskripsi:</strong> {{ barang.deskripsi or '-' }}</p>
+          <p><strong>Informasi Penemuan:</strong></p>
+          <p><i class="fa-regular fa-clock icon"></i> {{ barang.tanggal_lapor }}</p>
+          <p><i class="fa-solid fa-location-dot icon"></i> {{ barang.lokasi or '-' }}</p>
 
-      <button class="btn-klaim" onclick="klaimBarang('{{ barang.kode_barang }}')">Klaim Barang</button>
-    </div>
-  </div>
-</section>
+          <button class="btn-klaim" onclick="klaimBarang('{{ barang.kode_barang }}')">Klaim Barang</button>
+        </div>
+      </div>
+    </section>
+  </main>
 
 
 <!-- Footer -->

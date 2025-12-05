@@ -1,3 +1,19 @@
+/* Agar footer tetap di bawah */
+html, body {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Agar konten utama mendorong footer ke bawah */
+main {
+  flex: 1;
+}
+
 body {
   font-family: "Poppins", sans-serif;
   background-color: #ffffff;
@@ -190,13 +206,18 @@ body {
 
   /* Panah lebih dekat ke tepi, tapi tidak keluar layar */
   .back-arrow-header {
-    font-size: 1.8rem;
+    font-size: 2.8rem;
     margin-left: 3px;    /* 🔥 aman di HP */
+  }
+    /* H1 diperbesar */
+  .header-detail h1 {
+    font-size: 3.3rem;      /* 🔥 ukuran besar untuk HP */
+    line-height: 1.2;
   }
 
   /* Logo lebih kecil dan tidak mepet */
   .logo-juanda2 {
-    height: 65px;
+    height: 75px;
     margin-right: 5px;   /* 🔥 aman di HP */
   }
 }
@@ -247,7 +268,7 @@ body {
 }
 
 .detail-info p {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   margin-bottom: 10px;
 }
 
@@ -276,6 +297,84 @@ body {
   color: #fff;
   transform: translateY(-2px);
 }
+
+/* ============================
+   RESPONSIVE TABLET (≤ 992px)
+============================ */
+@media (max-width: 992px) {
+  .detail-container {
+    gap: 30px;
+    padding: 0 30px; /* Biar tidak mepet kiri-kanan */
+  }
+
+  .detail-info h2 {
+    font-size: 1.8rem;
+  }
+
+  .detail-info p {
+    font-size: 1.15rem;
+  }
+
+  .detail-img img {
+    max-width: 350px;
+  }
+}
+
+/* ============================
+   RESPONSIVE HP (≤ 576px)
+============================ */
+@media (max-width: 576px) {
+
+  .detail-container {
+    flex-direction: column;
+    text-align: left;
+    gap: 45px;
+    padding: 0px 35px;
+  }
+
+  /* Tambah jarak keseluruhan di dalam bagian info */
+  .detail-info {
+    margin-top: 15px;
+    padding-left: 30px;
+    padding-right: 5px;
+    padding-top: 10px;         /* Jarak lebih longgar */
+    padding-bottom: 15px;  
+  }
+
+  .detail-info h2 {
+    font-size: 2.9rem;
+    margin-bottom: 20px;       /* Tambah jarak bawah judul */
+  }
+
+  .badge-kategori {
+    font-size: 2.3rem;
+    padding: 10px 30px;
+    margin-bottom: 20px;       /* Jarak lebih besar antar item */
+    display: inline-block;
+  }
+
+  /* Jarak antar paragraf */
+  .detail-info p {
+    font-size: 2.3rem;
+    margin-bottom: 18px;       /* Tambah spasi */
+    line-height: 1.6;
+  }
+
+  /* Jarak elemen list seperti icon + tanggal */
+  .detail-info .info-item {
+    margin-bottom: 15px !important; 
+  }
+
+  .detail-img img {
+    max-width: 550px;
+  }
+
+  .btn-klaim {
+    font-size: 2.3rem;
+    margin-top: 30px;          /* Jarak dari info sebelum tombol */
+  }
+}
+
 
 footer {
   background: #0056a6;
