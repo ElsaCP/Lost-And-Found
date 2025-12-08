@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify, redirect, url_for, session, flash 
+from flask import Blueprint, render_template, request, jsonify, redirect, url_for, session, flash, current_app
 import mysql.connector
 from datetime import datetime
 import os
@@ -1381,6 +1381,9 @@ def update_profile():
     cursor.close()
     conn.close()
 
+    # 🔥 UPDATE SESSION SUPAYA LANGSUNG TAMPIL BARU
+    session['admin_email'] = email
+
     return redirect(url_for('admin_bp.pengaturan', updated=1))
 
 @admin_bp.route('/pengaturan/upload-photo', methods=['POST'])
@@ -1408,6 +1411,20 @@ def upload_photo():
 
     # kembalikan response JSON agar JS bisa menampilkan notif
     return jsonify({"status": "success", "message": "Foto profil diperbarui!", "filename": filename})
+
+@admin_bp.app_context_processor
+def inject_admin_profile():
+    admin_data = None
+
+    if 'admin_id' in session:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT id, full_name, photo FROM admin WHERE id = %s", (session['admin_id'],))
+        admin_data = cursor.fetchone()
+        cursor.close()
+        conn.close()
+
+    return {"global_admin": admin_data}
 
 # ============================
 # 🔐 SUPER ADMIN CHECK

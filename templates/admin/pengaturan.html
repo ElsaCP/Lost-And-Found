@@ -74,23 +74,30 @@
       </div>
     </div>
 
-    <div class="card profile-view">
+<div class="card profile-view">
 
-      <!-- FOTO -->
-      <div class="profile-view-left">
-        <div class="avatar-wrapper">
-          <img id="pvAvatar"
-            src="{% if admin.photo %}{{ url_for('admin_bp.static', filename='upload/' + admin.photo) }}{% else %}{{ url_for('admin_bp.static', filename='image/default-avatar.png') }}{% endif %}"
-            class="avatar" alt="Foto Admin">
+  <!-- FOTO -->
+  <div class="profile-view-left">
+    <div class="avatar-wrapper">
 
-          <div class="avatar-overlay" id="btnChangePhoto">
-            <i class="bi bi-camera"></i>
-            <span>Ganti Foto</span>
-          </div>
-        </div>
+      <img id="pvAvatar"
+        src="{% if admin.photo %}
+              {{ url_for('admin_bp.static', filename='upload/' ~ admin.photo) }}?v={{ admin.photo }}
+            {% else %}
+              {{ url_for('admin_bp.static', filename='image/default-avatar.png') }}
+            {% endif %}"
+        class="avatar"
+        alt="Foto Admin">
 
-        <input id="avatarFile" type="file" accept="image/*" hidden>
+      <div class="avatar-overlay" id="btnChangePhoto">
+        <i class="bi bi-camera"></i>
+        <span>Ganti Foto</span>
       </div>
+
+    </div>
+
+    <input id="avatarFile" type="file" accept="image/*" hidden>
+  </div>
 
       <!-- DATA -->
       <div class="profile-view-right">

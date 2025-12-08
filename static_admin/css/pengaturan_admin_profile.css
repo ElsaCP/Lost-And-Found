@@ -116,6 +116,8 @@
   transition: opacity 0.3s ease;
   text-align: center;
   font-size: 13px;
+
+  pointer-events: none;
 }
 
 .avatar-overlay i {
