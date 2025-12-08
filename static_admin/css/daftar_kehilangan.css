@@ -15,25 +15,6 @@
   color: #0056a6;
 }
 
-/* ===== HEADER ===== */
-.header {
-  background-color: #0056a6;
-  height: 70px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0px;
-}
-
-.header .logo-wrapper .rectangle-bg {
-  height: 60px;
-}
-
-.header .logo-wrapper .logo-front {
-  height: 50px;
-  width: auto;
-}
-
 /* ===== TABEL ===== */
 #dataTable {
   width: 100%;

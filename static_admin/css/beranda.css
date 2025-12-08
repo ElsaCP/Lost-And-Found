@@ -143,27 +143,28 @@ body {
   font-weight: 600;
 }
 
-/* Profile kanan */
 /* === Header Logo (atas) === */
 .header .logo-wrapper {
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
-  height: 100px; /* sama dengan tinggi header */
+  justify-content: flex-start; /* geser seluruh blok ke kiri */
+  height: 100px;
+  margin-left: -10px; /* tambah geser kiri */
 }
 
 .header .rectangle-bg {
-  height: 60px;  /* biar ada jarak dari tepi atas/bawah header */
+  height: 60px;
   width: auto;
+  margin-left: -10px; /* rectangle ikut kiri */
 }
 
 .header .logo-front {
   position: absolute;
+  left: 15px; /* logo depannya geser kiri */
   height: 50px;
   width: auto;
 }
-
 
 /* Search */
 .search-box {
@@ -356,30 +357,4 @@ font-size: 30px;
 #dataTable tbody td.aksi a i {
   display: inline-block;
   transform: translateY(6px);
-}
-
-/* ==========================================
-   KHUSUS HALAMAN BERANDA
-========================================== */
-
-.page-beranda .header .logo-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start; /* Geser ke kiri */
-  gap: 8px;
-  height: 100px;
-  margin-left: -20px; /* Sesuaikan geser kiri */
-}
-
-.page-beranda .header .rectangle-bg {
-  height: 60px;
-  width: auto;
-}
-
-.page-beranda .header .logo-front {
-  position: absolute;
-  left: 25px;  /* Geser logo depannya */
-  height: 50px;
-  width: auto;
 }

@@ -10,7 +10,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 
-<body class="page-beranda">
+<body>
 
 <!-- SIDEBAR -->
 <aside class="sidebar">
@@ -45,15 +45,15 @@
     <h2>Beranda - Semua Laporan</h2>
 
  <div class="profile-icon"
-     onclick="window.location.href='{{ url_for('admin_bp.pengaturan') }}'"
-     style="cursor:pointer;">
-    {% if global_admin and global_admin.photo %}
-      <img src="{{ url_for('admin_bp.static', filename='upload/' ~ global_admin.photo) }}"
-           class="profile-header-img">
-    {% else %}
-      <i class="bi bi-person-circle"></i>
-    {% endif %}
-</div>
+      onclick="window.location.href='{{ url_for('admin_bp.pengaturan') }}'"
+      style="cursor:pointer;">
+      {% if global_admin and global_admin.photo %}
+        <img src="{{ url_for('admin_bp.static', filename='upload/' ~ global_admin.photo) }}"
+            class="profile-header-img">
+      {% else %}
+        <i class="bi bi-person-circle"></i>
+      {% endif %}
+  </div>
   </div>
 
   <div class="search-box">
