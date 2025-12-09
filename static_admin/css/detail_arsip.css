@@ -13,9 +13,7 @@ body {
   background: #f8f9fc;
 }
 
-/* ============================================
-   SIDEBAR — COPY DARI BERANDA
-============================================ */
+/* ===== SIDEBAR (SAMA PERSIS BERANDA) ===== */
 .sidebar {
   width: 193px;
   background-color: #0056a6;
@@ -26,8 +24,13 @@ body {
   justify-content: space-between;
   padding: 7px 15px;
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+
+  position: fixed;
+  top: 0;
+  left: 0;
 }
 
+/* Logo sidebar */
 .logo-wrapper {
   position: relative;
   display: flex;
@@ -36,16 +39,19 @@ body {
   gap: 10px;
 }
 
-.logo-wrapper .rectangle-bg {
+.sidebar .rectangle-bg {
   width: 178px;
 }
 
-.logo-wrapper .logo-front {
+.sidebar .logo-front {
+  position: absolute;
+  top: 55%;
+  left: 55%;
+  transform: translate(-50%, -55%);
   width: 100px;
   height: auto;
 }
 
-/* Menu */
 .sidebar nav {
   display: flex;
   flex-direction: column;
@@ -62,12 +68,12 @@ body {
   color: #e5e5e5;
   text-decoration: none;
   border-radius: 10px;
-  transition: background 0.3s, color 0.3s;
+  transition: 0.3s;
 }
 
 .sidebar nav a:hover,
 .sidebar nav a.active {
-  background: #fff;
+  background-color: #fff;
   color: #0056a6;
   font-weight: 600;
 }
@@ -80,55 +86,53 @@ body {
   background: #004a93;
   padding: 12px 15px;
   border-radius: 10px;
+  font-size: 16px;
+  text-decoration: none;
   color: #fff;
-  transition: background 0.3s;
+  transition: 0.3s;
 }
 
 .sidebar .logout:hover {
   background: #003c7a;
 }
 
-/* ============================================
-   HEADER — COPY BERANDA
-============================================ */
+/* ===== HEADER (SAMA PERSIS BERANDA) ===== */
 .header {
   background: #0056a6;
   height: 70px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 0 20px;
 
-  padding: 0px 20px;
-  margin: -20px -40px 20px -40px;
-
-  border-radius: 0;
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 193px;
+  right: 0;
+  z-index: 9998;
 }
 
-/* Header logo */
+/* Logo header */
 .header .logo-wrapper {
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  gap: 8px;
   height: 100px;
-  margin-left: -20px;
+  margin-left: -10px;
 }
 
 .header .rectangle-bg {
   height: 60px;
-  width: 196px;
+  margin-left: -10px;
 }
 
 .header .logo-front {
   position: absolute;
-  left: 25px;
+  left: 15px;
   height: 50px;
-  width: auto;
 }
 
-/* Title */
+/* Title tengah header */
 .header h2 {
   position: absolute;
   left: 50%;
@@ -138,7 +142,7 @@ body {
   color: #fff;
 }
 
-/* Profile kanan */
+/* Profil header */
 .profile-icon {
   width: 45px;
   height: 45px;
@@ -152,25 +156,21 @@ body {
   transition: 0.2s;
 }
 
-.profile-icon:hover {
-  transform: scale(1.05);
-}
-
 .profile-icon img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-/* ============================================
-   MAIN CONTENT DETAIL
-============================================ */
+.profile-icon:hover {
+  transform: scale(1.05);
+}
+
 .main-content-detail {
-  flex: 1;
-  padding: 20px 40px;
+  margin-left: 400px;   /* tetap geser sesuai sidebar */
+  padding-top: 115px;       /* TIDAK turun lagi */
   background: #f8f9fc;
   min-height: 100vh;
-  position: relative;
 }
 
 /* ============================================
@@ -178,7 +178,7 @@ body {
 ============================================ */
 .detail-container {
   background: #fff;
-  border: 1px solid #2BC1F3;
+  border: 1px solid #60818b;
   border-radius: 18px;
   padding: 30px 40px;
   display: flex;
@@ -254,13 +254,15 @@ body {
   background: #ddd;
   padding: 6px 14px;
   border-radius: 6px;
+  color: #000 !important;            /* teks hitam */
+  text-decoration: none !important;  /* hilangkan garis bawah */
+  border: none;                      /* biar tidak ada border default */
+  font-weight: 500;
 }
 
-/* ============================================
-   FIX BACKGROUND
-============================================ */
-body,
-.page-arsip,
-.main-content {
-  background: #f8f9fc !important;
+.btn-secondary:hover {
+  background: #c9c9c9;               /* sedikit lebih gelap saat hover */
+  color: #000 !important;
+  text-decoration: none !important;
 }
+

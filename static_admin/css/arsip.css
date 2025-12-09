@@ -1,84 +1,177 @@
+/* RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+/* ===== SIDEBAR (SAMA PERSIS BERANDA) ===== */
 .sidebar {
   width: 193px;
-  height: 90vh;
-  position: fixed;  /* tetap di tempat saat scroll */
+  background-color: #0056a6;
+  color: #fff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 7px 15px;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+
+  position: fixed;
   top: 0;
   left: 0;
 }
 
-.main-content {
-  margin-left: 440px; /* geser supaya tidak tertutup sidebar */
-  margin-top: 90px;   /* sejajar header */
-  padding: 30px 50px 60px 50px;
-  background-color: #f8f8f8;
-  min-height: calc(100vh - 70px);
-  font-family: "Poppins", sans-serif;
-  box-sizing: border-box;
+/* Logo sidebar */
+.logo-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
 }
 
-/* ====== HEADER ====== */
+.sidebar .rectangle-bg {
+  width: 178px;
+}
+
+.sidebar .logo-front {
+  position: absolute;
+  top: 55%;
+  left: 55%;
+  transform: translate(-50%, -55%);
+  width: 100px;
+  height: auto;
+}
+
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  margin-top: 50px;
+}
+
+.sidebar nav a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 15px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #e5e5e5;
+  text-decoration: none;
+  border-radius: 10px;
+  transition: 0.3s;
+}
+
+.sidebar nav a:hover,
+.sidebar nav a.active {
+  background-color: #fff;
+  color: #0056a6;
+  font-weight: 600;
+}
+
+.sidebar .logout {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 40px;
+  background: #004a93;
+  padding: 12px 15px;
+  border-radius: 10px;
+  font-size: 16px;
+  text-decoration: none;
+  color: #fff;
+  transition: 0.3s;
+}
+
+.sidebar .logout:hover {
+  background: #003c7a;
+}
+
+/* ===== HEADER (SAMA PERSIS BERANDA) ===== */
 .header {
-  position: fixed;
-  top: 0;
-  left: 233px;
-  right: 0;
-  height: 90px;
-  background-color: #0056a6;
+  background: #0056a6;
+  height: 70px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 15px;
-  z-index: 100;
+  padding: 0 20px;
+
+  position: fixed;
+  top: 0;
+  left: 193px;
+  right: 0;
+  z-index: 9998;
 }
 
+/* Logo header */
 .header .logo-wrapper {
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 167px;
-  height: 59px;
-  margin-top: 21px;
+  height: 100px;
+  margin-left: -10px;
 }
 
-.header .logo-wrapper .rectangle-bg {
+.header .rectangle-bg {
   height: 60px;
+  margin-left: -10px;
 }
 
-.header .logo-wrapper .logo-front {
+.header .logo-front {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  left: 15px;
   height: 50px;
 }
 
+/* Title tengah header */
 .header h2 {
-  flex: 1;
-  text-align: center;
-  color: #fff;
-  font-weight: 600;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   font-size: 28px;
-  margin: 8px 0 0 0;
-}
-
-.header .right-header i {
-  font-size: 30px;
+  font-weight: 600;
   color: #fff;
-  margin-right: 12px;
 }
 
-/* ====== HILANGKAN PADDING PADA KONTEN UTAMA ====== */
+/* Profil header */
+.profile-icon {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e0e0e0;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.profile-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-icon:hover {
+  transform: scale(1.05);
+}
+
+/* ===== MAIN CONTENT (LAYOUT BERANDA) ===== */
 .main-content {
-  padding-left: 0 !important;
-  padding-right: 0 !important;
+  margin-left: 193px;
+  margin-top: 70px;
+  padding: 20px 40px;
+  background: #f8f9fc;
+  min-height: 100vh;
 }
 
-/* ====== SEARCH BAR (nempel kiri banget) ====== */
+/* === SEARCH BAR ARSIP === */
 .search-bar {
-  width: calc(100vw - 380px);   /* tambah lebar kanan biar full */
-  margin-left: -150px;          /* geser kiri maksimal */
-  margin-bottom: 25px;
+  width: 100%;
+  margin: 20px 0 25px 0;
 }
 
 .search-bar input {
@@ -88,8 +181,6 @@
   border: 1px solid #aaa;
   font-size: 17px;
   background: #fff;
-  outline: none;
-  transition: all 0.2s ease;
 }
 
 .search-bar input:focus {
@@ -97,13 +188,12 @@
   box-shadow: 0 0 6px rgba(0, 86, 166, 0.3);
 }
 
-/* ====== TABEL ARSIP (benar-benar sejajar sidebar kiri) ====== */
+/* === TABEL ARSIP === */
 .tabel-wrapper {
-  width: calc(100vw - 380px);   /* lebih lebar biar kanan ikut full */
-  margin-left: -150px;          /* geser kiri sejajar dengan header/daftar kehilangan */
+  width: 100%;
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   margin-bottom: 40px;
 }
@@ -111,43 +201,34 @@
 .arsip-table {
   width: 100%;
   border-collapse: collapse;
-  background: #f3f3f3;   /* abu lembut */
-  border-radius: 12px;
   font-size: 16px;
   color: #000;
 }
 
-/* Header tabel */
 .arsip-table thead {
-  background: #c2c2c2;
+  background: #c4c4c4; 
 }
 
 .arsip-table th {
-  text-align: center;
   padding: 18px;
   font-weight: 600;
-  border: 1px solid #b2b2b2;
-  color: #000;
-  font-size: 16px;
+  border: 1px solid #ccc;
 }
 
-/* Isi tabel */
 .arsip-table td {
   padding: 18px;
-  text-align: center;
   border: 1px solid #ccc;
-  font-size: 15.5px;
 }
 
 .arsip-table tbody tr:nth-child(even) {
-  background: #ececec;
+  background:  #f2f2f2;
 }
 
 .arsip-table tbody tr:hover {
-  background: #dcdcdc;
+  background:  #e6e6e6;
 }
 
-/* ====== TOMBOL AKSI ====== */
+/* Aksi tombol */
 .aksi {
   display: flex;
   justify-content: center;
@@ -167,17 +248,11 @@
 }
 
 .btn-view i { color: #007bff; }
-.btn-view i:hover { color: #0056b3; }
 
-.btn-restore i { color: #28a745; }
-.btn-restore i:hover { color: #1f7a33; }
-
-/* ====== BACK BUTTON (ikut kiri tabel) ====== */
+/* Tombol kembali */
 .back-btn {
-  width: calc(100vw - 380px);
-  margin-left: -150px;
-  margin-top: 25px;
-  margin-bottom: 15px;
+  width: 100%;
+  margin: 20px 0;
   text-align: left;
 }
 
@@ -185,25 +260,12 @@
   text-decoration: none;
   font-size: 18px;
   color: #000;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 6px;
-  transition: color 0.2s ease;
 }
 
 .back-btn a:hover {
-  text-decoration: underline;
   color: #0056a6;
-}
-
-/* Geser ikon profil ke kiri & ke bawah */
-.header .profile-icon {
-  margin-right: 25px !important;   /* geser kiri */
-  margin-top: 15px !important;     /* geser turun */
-}
-
-/* Atur ukuran ikon */
-.header .profile-icon i {
-  font-size: 32px;
-  color: #fff;
+  text-decoration: underline;
 }

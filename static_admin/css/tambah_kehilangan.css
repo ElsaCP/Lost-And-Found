@@ -1,112 +1,247 @@
-body {
+/* =============================================
+   RESET & BODY
+   ============================================= */
+* {
   margin: 0;
   padding: 0;
-  overflow: hidden; 
-  font-family: 'Poppins', sans-serif;
-  background-color: #f8f9fc;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
 }
 
-.main-container {
+body {
   display: flex;
-  height: 100vh;
+  background: #f8f8f8;
 }
 
+/* =============================================
+   SIDEBAR – FIXED, STAY, LOGOUT DI BAWAH
+   ============================================= */
 .sidebar {
-  position: fixed;
+  position: fixed;       /* biar stay tidak bisa digeser */
   top: 0;
   left: 0;
-  width: 193px; 
   height: 100vh;
+  width: 193px;
   background-color: #0056a6;
+  color: #fff;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  color: #fff;
-  overflow: hidden;
-  z-index: 5;
+  justify-content: space-between; /* nav di atas, logout di bawah */
+  padding: 7px 15px;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+  z-index: 9999;       
+
+  clip-path: inset(0 0 0 0px);
 }
 
-.header {
-  position: fixed;
-  top: 0;
-  left: 193px; /* pas dengan lebar sidebar 196.5px */
-  right: 0;
-  height: 70px;
-  background-color: #0056a6;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px; /* jarak kanan kiri lebih proporsional */
-  color: #fff;
-  z-index: 10;
-  border: none;
-  margin: 0;
-  box-shadow: none;
-}
-
-/* Logo wrapper agar nyambung ke sidebar */
-.header .logo-wrapper {
+/* =============================================
+   SIDEBAR – LOGO DAN RECTANGLE DIATAS
+   ============================================= */
+.logo-wrapper {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  margin-left: -20px; /* dorong sedikit ke kiri biar rectangle nyatu dengan sidebar */
+  gap: 10px;
+  margin-top: 0; /* tarik ke atas */
 }
 
-.header .logo-wrapper .rectangle-bg {
-  height: 60px;
+/* Rectangle background */
+.sidebar .rectangle-bg {
+  width: 178px;
+  opacity: 1;
+  filter: brightness(1);
+  display: block;
+  margin-top: 0; /* tarik ke atas */
 }
 
-.header .logo-wrapper .logo-front {
+/* Logo depan */
+.sidebar .logo-front {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  top: 15px;   /* tarik logo ke atas */
+  left: 55%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: auto;
+}
+
+/* Nav */
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  margin-top: 50px;
+}
+
+/* Submenu */
+.submenu {
+  margin-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.submenu a {
+  font-size: 16px;
+}
+
+.submenu a.active {
+  background-color: #fff;
+  color: #0056a6;
+  font-weight: 600;
+}
+
+.sidebar nav a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 15px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #e5e5e5;
+  text-decoration: none;
+  border-radius: 10px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.sidebar nav a:hover,
+.sidebar nav a.active {
+  background-color: #ffffff;
+  color: #0056a6;
+  font-weight: 600;
+}
+
+/* Logout tetap di bawah sidebar */
+.sidebar .logout {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  color: #fff;
+  text-decoration: none;
+  background: #004a93;
+  padding: 12px 15px;
+  border-radius: 10px;
+  transition: background 0.3s;
+  margin-bottom: 1px; /* jarak ke bawah */
+}
+
+.sidebar .logout:hover {
+  background: #003c7a;
+}
+
+/* =============================================
+/* Wrapper yang fixed */
+.header-wrapper {
+    position: fixed;
+    top: 0;
+    left: 193px;       /* offset agar tidak menindih sidebar */
+    right: 0;
+    z-index: 9998;
+}
+
+.header {
+  position: fixed;          /* stay */
+  top: 20px;                /* kunci supaya tidak naik melebihi desain */
+  left: 193px;              /* geser supaya sejajar sidebar */
+  right: 40px;              /* mengikuti margin sisi kananmu */
+
+  z-index: 9998;
+  background: #0056a6;
+  height: 70px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0px 20px;
+  margin: -20px -40px 20px -40px; /* BIARKAN */
+
+  border-radius: 0;
+}
+
+/* Logo header */
+.header .logo-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 100px;
+  margin-left: 30px;
+}
+
+.header .rectangle-bg {
+  height: 60px;
+  margin-left: -10px;
+}
+
+.header .logo-front {
+  position: absolute;
+  left: 15px;
   height: 50px;
   width: auto;
-  z-index: 2;
 }
 
-/* Profil kanan agar tidak terlalu dekat teks tengah */
-.header .profile-icon {
+/* Title tengah */
+.header h2 {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 28px;
+  color: white;
+  font-weight: 600;
+}
+
+/* Profile icon */
+.profile-icon {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: -20px; /* sedikit dorong ke kanan */
+  background-color: #e0e0e0;
   cursor: pointer;
+  transition: 0.2s ease;
 }
 
-.header .profile-icon i {
-  font-size: 30px;
+.profile-icon:hover {
+  transform: scale(1.05);
+}
+
+.profile-icon img,
+.profile-icon i {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  font-size: 32px;
   color: #fff;
 }
 
-/* === AREA KONTEN YANG BISA DIGULIR === */
-/* FIX supaya form bisa sampai kebawah */
+/* =============================================
+   CONTENT AREA – disesuaikan layout beranda
+   ============================================= */
 .content {
-  margin-left: 200px;           
-  margin-top: 90px;             /* tetap memberi jarak dari header */
-  
-  max-height: calc(100vh - 90px);   /* bukan height —> biar tetap punya jarak di atas */
-  overflow-y: auto;
-  overflow-x: hidden;
-
+  margin-left: 193px;
+  margin-top: 70px;
+  flex: 1;
   background: #f8f9fc;
-  padding: 30px 40px 140px 40px; /* tambah jarak bawah agar tombol muncul */
-  box-sizing: border-box;
+  padding: 20px 40px;
+  min-height: 100vh;
+  overflow-y: auto;
 }
 
-
-/* === FORM TAMBAH KEHILANGAN === */
+/* =============================================
+   FORM TAMBAH KEHILANGAN (ISI TETAP, STYLE DISAMAKAN)
+   ============================================= */
 .container.tambah-kehilangan {
   background: #fff;
   border-radius: 12px;
-  padding: 50px 60px 60px 60px; /* tambah padding top dan bottom agar tombol terlihat */
+  padding: 50px 60px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  margin-bottom: 40px;
   border: 1px solid #e0e0e0;
+
   max-width: 850px;
-  margin-inline: auto;
+  margin: 30px auto 50px auto;
 }
 
 .container.tambah-kehilangan h3 {
@@ -114,8 +249,8 @@ body {
   font-weight: 700;
   margin-bottom: 30px;
   border-bottom: 3px solid #0056a6;
-  display: inline-block;
   padding-bottom: 5px;
+  display: inline-block;
 }
 
 .container.tambah-kehilangan form {
@@ -124,33 +259,31 @@ body {
   gap: 15px;
 }
 
-/* LABEL & INPUT */
-.container.tambah-kehilangan form label {
+.container.tambah-kehilangan label {
   font-weight: 500;
   color: #222;
-  margin-top: 5px;
 }
 
-.container.tambah-kehilangan form .form-control,
-.container.tambah-kehilangan form .form-select,
-.container.tambah-kehilangan form textarea {
+.container.tambah-kehilangan .form-control,
+.container.tambah-kehilangan .form-select,
+.container.tambah-kehilangan textarea {
   border-radius: 8px;
   border: 1px solid #ccc;
   padding: 10px 12px;
-  transition: all 0.2s ease;
   font-size: 15px;
+  transition: 0.2s;
 }
 
-.container.tambah-kehilangan form .form-control:focus,
-.container.tambah-kehilangan form .form-select:focus,
-.container.tambah-kehilangan form textarea:focus {
+.container.tambah-kehilangan .form-control:focus,
+.container.tambah-kehilangan .form-select:focus,
+.container.tambah-kehilangan textarea:focus {
   border-color: #0056a6;
-  box-shadow: 0 0 4px rgba(0, 86, 166, 0.3);
+  box-shadow: 0 0 4px rgba(0,86,166,0.3);
   outline: none;
 }
 
-/* TOMBOL BAGIAN BAWAH */
-.container.tambah-kehilangan .button-group {
+/* Tombol */
+.button-group {
   text-align: right;
   margin-top: 25px;
 }
@@ -162,102 +295,67 @@ body {
   padding: 10px 40px;
   font-weight: 600;
   font-size: 15px;
-  transition: all 0.3s ease;
+  transition: 0.3s;
 }
 
 .btn-save {
-  background-color: #0056a6;
+  background: #0056a6;
   color: #fff;
 }
 
 .btn-save:hover {
-  background-color: #004b8d;
+  background: #004b8d;
   transform: translateY(-2px);
-  box-shadow: 0 3px 8px rgba(0, 86, 166, 0.3);
 }
 
 .btn-cancel {
-  background-color: #b0b6bc;
+  background: #b0b6bc;
   color: #fff;
   margin-right: 10px;
 }
 
 .btn-cancel:hover {
-  background-color: #939aa1;
+  background: #939aa1;
   transform: translateY(-2px);
-  box-shadow: 0 3px 8px rgba(147, 154, 161, 0.3);
 }
 
-/* TOMBOL "KEMBALI" */
-.kembali-wrapper {
-  display: flex;
-  align-items: center;
-  margin-top: 20px;
-}
-
+/* Link kembali */
 .kembali-link {
   color: #0056a6;
-  font-weight: 500;
   text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  transition: 0.3s;
+  font-weight: 500;
+  transition: 0.2s;
 }
 
 .kembali-link:hover {
+  color: #003c7a;
   text-decoration: underline;
-  color: #004b8d;
 }
 
-/* Row lokasi bersampingan */
+/* Row lokasi */
 .lokasi-row {
   display: flex;
-  gap: 20px;           /* jarak antara Terminal & Tempat */
-  width: 100%;
+  gap: 20px;
 }
 
-/* Kedua kolom sama besar */
 .lokasi-col {
-  flex: 1;             /* bagi rata */
+  flex: 1;
 }
 
-/* Select biar full width */
-.lokasi-col .form-select,
-#lokasi_lain {
-  width: 100%;
-}
-
-/* RESPONSIF */
+/* Responsif */
 @media (max-width: 768px) {
   .container.tambah-kehilangan {
     padding: 25px;
   }
 
-  .btn-save, .btn-cancel {
-    width: 100%;
-    margin: 5px 0;
-  }
-
-  .container.tambah-kehilangan .button-group {
+  .button-group {
     display: flex;
     flex-direction: column-reverse;
-    align-items: stretch;
+    gap: 10px;
   }
 
-  .back-btn {
-    margin-top: 40px;
-    margin-left: 295px;
-    clear: both;
-  }
-
-  .back-btn a {
-    text-decoration: none;
-    color: #000;
-    font-weight: 500;
-  }
-
-  .back-btn a:hover {
-    text-decoration: underline;
+  .btn-save,
+  .btn-cancel {
+    width: 100%;
   }
 }

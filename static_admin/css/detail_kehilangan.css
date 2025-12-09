@@ -1,28 +1,227 @@
-.header {
-    position: fixed !important;
-    top: 20px;          /* turun 18px seperti permintaanmu */
-    left: 233.5px;        /* sesuaikan lebar sidebar */
-    right: 0;
-    z-index: 9998;
-    background-color: #0056a6;   /* agar tidak ada garis putih */
-    padding-right: 40px;
+/* ==========================================================
+   GABUNGAN CSS DETAIL KEHILANGAN + HEADER & SIDEBAR BERANDA
+   DITAMBAH SUBMENU MIRIP DAFTAR KEHILANGAN
+   ========================================================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
 }
 
-/* Sidebar tetap nempel */
+body {
+  display: flex;
+  background: #f8f8f8;
+}
+
+/* =========================================
+   SIDEBAR STAY FIXED & LOGOUT DI BAWAH
+   ========================================= */
 .sidebar {
-    position: fixed !important;
-    top: 0;
-    left: 0;
-    height: 100vh;
-    z-index: 9999;
+  position: fixed;        
+  top: 0;
+  left: 0;
+
+  width: 193px;
+  background-color: #0056a6;
+  color: #fff;
+
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; 
+  padding: 7px 15px;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
 }
 
-/* Konten ikut turun dari posisi header yang baru */
+/* LOGO */
+.logo-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  margin-top: 0;
+}
+
+.sidebar .rectangle-bg {
+  width: 178px;
+  opacity: 1;
+  filter: brightness(1);
+  display: block;
+}
+
+.sidebar .logo-front {
+  position: absolute;
+  top: 15px;
+  left: 55%;
+  transform: translateX(-50%);
+  width: 100px;
+}
+
+/* NAV */
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  margin-top: 50px;
+}
+
+/* SUBMENU */
+.submenu {
+  margin-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.submenu a {
+  font-size: 16px;
+}
+
+.submenu a.active {
+  background-color: #fff;
+  color: #0056a6;
+  font-weight: 600;
+}
+
+.sidebar nav a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 15px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #e5e5e5;
+  text-decoration: none;
+  border-radius: 10px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.sidebar nav a:hover,
+.sidebar nav a.active {
+  background-color: #ffffff;
+  color: #0056a6;
+  font-weight: 600;
+}
+
+/* LOGOUT */
+.sidebar .logout {
+  margin-top: auto;   /* <<< supaya turun ke paling bawah */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  font-size: 16px;
+  color: #fff;
+  text-decoration: none;
+  background: #004a93;
+  padding: 12px 15px;
+  border-radius: 10px;
+  transition: background 0.3s;
+  margin-bottom: 1px;
+}
+
+.sidebar .logout:hover {
+  background: #003c7a;
+}
+
+.header {
+  position: fixed;          /* stay */
+  top: 20px;                /* kunci supaya tidak naik melebihi desain */
+  left: 193px;              /* geser supaya sejajar sidebar */
+  right: 40px;              /* mengikuti margin sisi kananmu */
+
+  z-index: 9998;
+  background: #0056a6;
+  height: 70px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0px 20px;
+  margin: -20px -40px 20px -40px; /* BIARKAN */
+
+  border-radius: 0;
+}
+
+/* Logo header */
+.header .logo-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 100px;
+  margin-left: 30px;
+}
+
+.header .rectangle-bg {
+  height: 60px;
+  margin-left: -10px;
+}
+
+.header .logo-front {
+  position: absolute;
+  left: 15px;
+  height: 50px;
+  width: auto;
+}
+
+/* Title tengah */
+.header h2 {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 28px;
+  color: white;
+  font-weight: 600;
+}
+
+/* ikon profil header */
+.profile-icon {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e0e0e0;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.profile-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-icon:hover {
+  transform: scale(1.05);
+}
+
+/* =========================================
+   KONTEN TURUN SUPAYA TIDAK KETUTUP HEADER
+   ========================================= */
 .content {
-    margin-left: 250px;
-    margin-top: 100px;   /* 70px tinggi header + 18px turun */
+  flex: 1;
+  padding: 10px 20px;
+  background: #f8f9fc;
+  min-height: 100vh;
+  position: relative;
+
+  /* ===== FIX TERPENTING BIAR TIDAK KETUTUP SIDEBAR ===== */
+  margin-left: 193px;   /* geser sesuai lebar sidebar */
+
+  margin-top: 100px; 
 }
 
+
+/* =========================================
+   DETAIL KEHILANGAN (punyamu sendiri)
+   ========================================= */
 .detail-container {
   margin-top: 25px;
   margin-left: 80px;
@@ -35,46 +234,12 @@
   display: flex;
   justify-content: flex-start;
   align-items: flex-start;
-  gap: 40px; /* lebih lega */
-  font-family: "Poppins", sans-serif;
+  gap: 40px;
+  max-width: 900px;
   box-sizing: border-box;
-  max-width: 1000px; /* batasi lebar tapi lebih besar */
 }
 
-/* ===== PANEL KANAN ===== */
-.right-panel {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 25px;
-  font-size: 14px;
-  color: #222;
-}
-
-/* ===== DATA ROW RAPI ===== */
-.data-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
-  line-height: 1.4;
-}
-
-.data-row span {
-  font-weight: 500;
-  color: #333;
-  min-width: 80px; /* dari 150px jadi 120px, biar teks lebih dekat */
-  text-align: left; /* tetap rata kiri */
-  padding-right: 1px; /* jarak antar titik dua dan isi jadi lebih rapat */
-  display: inline-block;
-}
-
-.data-row strong {
-  font-weight: 600;
-  color: #000;
-}
-
-/* ===== PANEL KIRI ===== */
+/* LEFT PANEL */
 .left-panel {
   display: flex;
   flex-direction: column;
@@ -99,7 +264,7 @@
   letter-spacing: 0.3px;
 }
 
-/* ===== PANEL KANAN ===== */
+/* RIGHT PANEL */
 .right-panel {
   flex: 1;
   display: flex;
@@ -109,21 +274,23 @@
   color: #222;
 }
 
-/* ===== SETIAP BAGIAN ===== */
+/* SECTION TITLES */
 .data-section {
   padding-bottom: 6px;
   border-bottom: 1px solid #e3e3e3;
 }
 
 .data-section h3 {
+  margin-top: 12px;
+  margin-bottom: 15px;
+  color: #003c7a;
+  font-weight: 600;
   font-size: 15px;
-  font-weight: 700;
-  color: #0055B8;
-  margin-bottom: 10px;
-  border-left: 3px solid #2BC1F3;
-  padding-left: 7px;
+  border-left: 4px solid #0090ff;
+  padding-left: 8px;
 }
 
+/* ROW */
 .data-row {
   display: flex;
   align-items: flex-start;
@@ -143,23 +310,35 @@
   color: #000;
 }
 
-/* ===== STATUS ===== */
-.status-select {
-  padding: 4px 8px;
-  border-radius: 5px;
-  border: 1px solid #aaa;
-  font-size: 12px;
-  background-color: #fdfdfd;
-  color: #000;
-  outline: none;
-  transition: 0.2s;
+.data-section {
+  padding-bottom: 6px;
+  border-bottom: 1px solid #e3e3e3;
+  max-width: 520px;    /* <<< GARIS PEMISAH DIPOTONG */
 }
 
-.status-select:hover {
-  border-color: #2BC1F3;
+.data-row input,
+.data-row textarea,
+.data-row select {
+  width: 100%;             /* ikut container */
+  max-width: 520px;        /* batas aman biar tidak melewati container */
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  height: 32px;
+  box-sizing: border-box;
 }
 
-/* ===== BUTTON GROUP ===== */
+/* READONLY STYLE */
+input[readonly] {
+  border: none;
+  background-color: transparent;
+  color: #333;
+  padding-left: 0;
+  font-weight: 500;
+}
+
+/* BUTTON GROUP */
 .button-group {
   display: flex;
   justify-content: flex-end;
@@ -194,54 +373,6 @@
   background-color: #c0c0c0;
 }
 
-/* ===== RESPONSIVE ===== */
-@media (max-width: 1100px) {
-  .detail-container {
-    flex-direction: column;
-    align-items: center;
-    gap: 25px;
-    padding: 25px;
-  }
-
-  .right-panel {
-    width: 100%;
-  }
-
-  .data-row {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .data-row span {
-    min-width: auto;
-  }
-
-  .button-group {
-    justify-content: center;
-  }
-}
-
-/* === Ukuran input dan select diseragamkan === */
-.data-row input,
-.data-row textarea,
-.data-row select {
-  width: 512px; /* samakan semua lebar */
-  padding: 6px 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 14px;
-  height: 32px;
-  box-sizing: border-box;
-}
-
-/* === Biar tetap responsif di layar kecil === */
-@media (max-width: 768px) {
-  .data-row input,
-  .data-row textarea,
-  .data-row select {
-    width: 100%;
-  }
-}
 /* === Samakan gaya form-row dengan data-row === */
 .data-row,
 .form-row {
@@ -292,32 +423,35 @@
   margin-top: 25px;
 }
 
-/* === Jarak antara garis dan judul biru === */
-.data-section h3 {
-  margin-top: 12px;  /* atur jarak dari garis atas */
-  margin-bottom: 15px; /* jarak bawah biar rapi */
-  color: #003c7a;  /* warna biru */
-  font-weight: 600;
-  border-left: 4px solid #0090ff;
-  padding-left: 8px;
+/* RESPONSIVE */
+@media (max-width: 1100px) {
+  .detail-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+    padding: 25px;
+  }
+
+  .right-panel {
+    width: 100%;
+  }
+
+  .data-row {
+    flex-direction: column;
+  }
+
+  .data-row input,
+  .data-row textarea,
+  .data-row select {
+    width: 100%;
+  }
 }
 
-/* === Styling untuk input readonly === */
-input[readonly] {
-  border: none;              /* hilangkan kotak */
-  background-color: transparent; /* hilangkan warna latar */
-  color: #333;               /* warna teks tetap terbaca */
-  padding-left: 0;           /* sejajarkan dengan teks biasa */
-  cursor: default;           /* ubah kursor jadi normal */
-  font-weight: 500;          /* sedikit tebal biar beda */
+.btn-warning {
+    background-color: #03bcff;
+    color: white;
+    border: none;
 }
-
-/* Tapi tetap pertahankan border pada input yang bisa diedit */
-input:not([readonly]),
-textarea,
-select {
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  background-color: #fff;
+.btn-warning:hover {
+    background-color: #03bcff;
 }
-

@@ -1,6 +1,211 @@
 /* ===== KHUSUS HALAMAN PENGATURAN / PROFIL ADMIN =====
    Tidak menimpa .sidebar/.submenu global dari beranda.css
 */
+/* RESET GLOBAL BIAR SAMA KAYAK HALAMAN KLAIM */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  display: flex;
+  background: #f8f8f8;
+}
+
+/* ================================
+   SIDEBAR STAY FIXED + LOGOUT DI BAWAH
+   ================================ */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 193px;
+  height: 100vh;
+  background-color: #0056a6;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 7px 15px;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+}
+
+/* Logo sidebar */
+.logo-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  margin-top: 0;
+}
+
+.sidebar .rectangle-bg {
+  width: 178px;
+  opacity: 1;
+  filter: brightness(1);
+  display: block;
+  margin-top: -1px;
+}
+
+.sidebar .logo-front {
+  position: absolute;
+  top: 15px;
+  left: 55%;
+  transform: translateX(-50%);
+  width: 100px;
+}
+
+/* Nav dan submenu */
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  margin-top: 50px;
+}
+
+.sidebar nav a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 15px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #e5e5e5;
+  text-decoration: none;
+  border-radius: 10px;
+  transition: 0.3s;
+}
+
+.sidebar nav a:hover,
+.sidebar nav a.active {
+  background-color: #fff;
+  color: #0056a6;
+  font-weight: 600;
+}
+
+/* SUBMENU DETAIL PENEMUAN STYLE */
+.submenu {
+  display: flex;
+  flex-direction: column;
+  margin-left: 20px;
+  gap: 5px;
+}
+
+.submenu a {
+  font-size: 16px;
+  color: #dbe9ff;
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
+.submenu a.active {
+  background-color: #fff;
+  color: #0056a6;
+  font-weight: 600;
+}
+
+.submenu a:hover {
+  background-color: #dbe9ff;
+  color: #0056a6;
+}
+
+/* Logout di bawah */
+.sidebar .logout {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  color: #fff;
+  text-decoration: none;
+  background: #004a93;
+  padding: 12px 15px;
+  border-radius: 10px;
+  transition: background 0.3s;
+  margin-bottom: 1px;
+}
+
+.sidebar .logout:hover {
+  background: #003c7a;
+}
+
+.header {
+  position: fixed;          /* stay */
+  top: 20px;                /* kunci supaya tidak naik melebihi desain */
+  left: 193px;              /* geser supaya sejajar sidebar */
+  right: 40px;              /* mengikuti margin sisi kananmu */
+
+  z-index: 9998;
+  background: #0056a6;
+  height: 70px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0px 20px;
+  margin: -20px -40px 20px -40px; /* BIARKAN */
+
+  border-radius: 0;
+}
+
+/* Logo header */
+.header .logo-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 100px;
+  margin-left: 30px;
+}
+
+.header .rectangle-bg {
+  height: 60px;
+  margin-left: -10px;
+}
+
+.header .logo-front {
+  position: absolute;
+  left: 15px;
+  height: 50px;
+  width: auto;
+}
+
+/* Title tengah */
+.header h2 {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 28px;
+  color: white;
+  font-weight: 600;
+}
+
+/* ikon profil header */
+.profile-icon {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e0e0e0;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.profile-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-icon:hover {
+  transform: scale(1.05);
+}
 
 /* Naikkan isi sidebar khusus halaman pengaturan (opsional) */
 .page-pengaturan .sidebar nav { margin-top: 15px !important; }
@@ -127,4 +332,11 @@
 
 .avatar-wrapper:hover .avatar-overlay {
   opacity: 1;
+}
+
+/* ===== AGAR DETAIL CONTAINER TIDAK KETUTUP SIDEBAR & HEADER ===== */
+.page-pengaturan .settings-container {
+  margin-left: 290px;     /* geser keluar dari sidebar */
+  margin-top: 150px;      /* turun agar tidak tertutup header */
+  width: calc(100% - 220px);  /* biar responsif */
 }

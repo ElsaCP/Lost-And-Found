@@ -1,131 +1,228 @@
 /* ==========================================================
-   STYLE HALAMAN TAMBAH KLAIM PENEMUAN
-   Header & Sidebar disamakan dengan TAMBAH KEHILANGAN
+   BELOMMM SELESAI TAMBAH KLAIM — DISESUAIKAN DENGAN DETAIL KEHILANGAN
+   Header & Sidebar sama, Submenu mirip Daftar Kehilangan
    ========================================================== */
 
-/* === SUBMENU (biar muncul di sidebar) === */
-.submenu {
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
   display: flex;
-  flex-direction: column;
-  margin-left: 20px;
-  gap: 8px;
-  margin-top: 5px;
+  background: #f8f8f8;
 }
 
-.submenu a {
-  font-size: 14px;
-  color: #dbe9ff;
-  padding: 6px 0;
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.submenu a.active {
-  color: #ffffff;
-  font-weight: 600;
-}
-
-.submenu a:hover {
-  color: #ffffff;
-}
-
-/* ==========================================================
-   SIDEBAR (100% sama dengan TAMBAH KEHILANGAN)
-   ========================================================== */
+/* =========================================
+   SIDEBAR STAY FIXED & LOGOUT DI BAWAH
+   ========================================= */
 .sidebar {
-  position: fixed;
+  position: fixed;        
   top: 0;
   left: 0;
-  width: 196.5px; 
-  height: 100vh;
+
+  width: 193px;
   background-color: #0056a6;
+  color: #fff;
+
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  color: #fff;
-  overflow: hidden;
-  z-index: 5;
+  justify-content: space-between; 
+  padding: 7px 15px;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
 }
 
-/* ==========================================================
-   HEADER (100% sama dengan TAMBAH KEHILANGAN)
-   ========================================================== */
-.header {
-  position: fixed;
-  top: 0;
-  left: 193px; 
-  right: 0;
-  height: 70px;
-  background-color: #0056a6;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  color: #fff;
-  z-index: 10;
-  border: none;
-  margin: 0;
-  box-shadow: none;
-}
-
-/* Logo wrapper sama seperti TAMBAH KEHILANGAN */
-.header .logo-wrapper {
+/* LOGO */
+.logo-wrapper {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  margin-left: -20px; 
+  gap: 10px;
+  margin-top: 0;
 }
 
-.header .logo-wrapper .rectangle-bg {
-  height: 60px;
+.sidebar .rectangle-bg {
+  width: 178px;
+  opacity: 1;
+  filter: brightness(1);
+  display: block;
 }
 
-.header .logo-wrapper .logo-front {
+.sidebar .logo-front {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  top: 15px;
+  left: 55%;
+  transform: translateX(-50%);
+  width: 100px;
+}
+
+/* NAV */
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  margin-top: 50px;
+}
+
+/* SUBMENU */
+.submenu {
+  margin-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.submenu a {
+  font-size: 16px;
+}
+
+.submenu a.active {
+  background-color: #fff;
+  color: #0056a6;
+  font-weight: 600;
+}
+
+.sidebar nav a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 15px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #e5e5e5;
+  text-decoration: none;
+  border-radius: 10px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.sidebar nav a:hover,
+.sidebar nav a.active {
+  background-color: #ffffff;
+  color: #0056a6;
+  font-weight: 600;
+}
+
+/* LOGOUT */
+.sidebar .logout {
+  margin-top: auto;   /* <<< supaya turun ke paling bawah */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  font-size: 16px;
+  color: #fff;
+  text-decoration: none;
+  background: #004a93;
+  padding: 12px 15px;
+  border-radius: 10px;
+  transition: background 0.3s;
+  margin-bottom: 1px;
+}
+
+.sidebar .logout:hover {
+  background: #003c7a;
+}
+
+/* ===== HEADER ===== */
+.header {
+  position: fixed;          
+  top: 20px;                
+  left: 193px;              
+  right: 40px;              
+
+  z-index: 9998;
+  background: #0056a6;
+  height: 70px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0px 20px;
+  margin: -20px -40px 20px -40px;
+  border-radius: 0;
+}
+
+/* Logo header */
+.header .logo-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 100px;
+  margin-left: 30px;
+}
+
+.header .rectangle-bg {
+  height: 60px;
+  margin-left: -10px;
+}
+
+.header .logo-front {
+  position: absolute;
+  left: 15px;
   height: 50px;
   width: auto;
-  z-index: 2;
 }
 
-/* Profil icon */
-.header .profile-icon {
+/* Title tengah */
+.header h2 {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 28px;
+  color: white;
+  font-weight: 600;
+}
+
+/* ikon profil header */
+.profile-icon {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: -20px;
+  background-color: #e0e0e0;
   cursor: pointer;
+  transition: transform 0.2s ease;
 }
 
-.header .profile-icon i {
-  font-size: 30px;
-  color: #fff;
+.profile-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-/* ==========================================================
-   CONTENT – mengikuti layout TAMBAH KEHILANGAN
-   ========================================================== */
+.profile-icon:hover {
+  transform: scale(1.05);
+}
+
+/* =========================================
+   KONTEN TURUN SUPAYA TIDAK KETUTUP HEADER
+   ========================================= */
 .content {
-  margin-left: 200px;           
-  margin-top: 90px;             
-  max-height: calc(100vh - 90px);
-  overflow-y: auto;
-  overflow-x: hidden;
-  background: #f8f9fc;
+  flex: 1;
   padding: 30px 40px 140px 40px;
+  background: #f8f9fc;
+  min-height: 100vh;
+  position: relative;
+  margin-left: 193px;
+  margin-top: 100px; 
+  overflow-x: hidden;
+  overflow-y: auto;
   box-sizing: border-box;
 }
 
 /* ==========================================================
-   FORM — tetap seperti bawaan TAMBAH KLAIM
+   FORM TAMBAH KLAIM SESUAI DETAIL KEHILANGAN
    ========================================================== */
 .tambah-klaim-container {
-  background: rgb(233, 238, 249);
+  background: #fefefe;
   border-radius: 15px;
   padding: 35px;
   border: 1px solid #cbe2f5;
@@ -145,56 +242,131 @@
 }
 
 .klaim-left {
-  flex: 1;
+  flex: 0 0 230px;
   text-align: center;
 }
 
 .klaim-img {
-  width: 100%;
-  max-width: 260px;
+  width: 230px;
+  height: 260px;
   border: 1px solid #ccc;
   border-radius: 8px;
+  object-fit: cover;
+  background-color: #f9f9f9;
 }
 
 .klaim-right {
-  flex: 2;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
+/* SECTION TITLES */
 .section-title {
   font-weight: 700;
   margin-bottom: 10px;
+  color: #003c7a;
+  font-size: 15px;
+  border-left: 4px solid #0090ff;
+  padding-left: 8px;
 }
 
-label {
+/* FORM ROWS */
+.data-row,
+.form-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.data-row span,
+.form-row label {
+  width: 150px;
   font-weight: 500;
-  font-size: 15px;
+  color: #333;
+  display: inline-block;
 }
 
-.form-control {
-  font-size: 15px;
+.data-row input,
+.data-row select,
+.data-row textarea,
+.form-row select,
+#lokasiLainContainer input {
+  flex: 1;
+  width: 100%;
+  max-width: 480px;
+  padding: 7px 10px;
+  border: 1px solid #ccc;
   border-radius: 6px;
+  font-size: 14px;
 }
 
-/* Tombol */
-.btn-primary {
-  background-color: #007bff;
+input[readonly] {
+  border: none;
+  background-color: transparent;
+  color: #333;
+  padding-left: 0;
+  font-weight: 500;
+}
+
+/* LOKASI TAMBAHAN */
+#lokasiLainContainer {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+#lokasiLainContainer label {
+  width: 150px;
+  font-weight: 500;
+  color: #333;
+  display: inline-block;
+}
+
+/* BUTTONS */
+.button-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.btn {
+  padding: 6px 14px;
   border: none;
   border-radius: 6px;
-  transition: all 0.2s ease;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-primary {
+  background-color: #0055B8;
+  color: #fff;
 }
 
 .btn-primary:hover {
-  background-color: #0069d9;
+  background-color: #00418f;
 }
 
 .btn-secondary {
-  background-color: #bfbfbf;
-  border: none;
-  border-radius: 6px;
+  background-color: #ddd;
+  color: #000;
 }
 
 .btn-secondary:hover {
-  background-color: #a5a5a5;
+  background-color: #c0c0c0;
+}
+
+.btn-warning {
+  background-color: #03bcff;
+  color: white;
+  border: none;
+}
+
+.btn-warning:hover {
+  background-color: #03bcff;
 }
 
 .kembali {
@@ -206,4 +378,28 @@ label {
 
 .kembali:hover {
   color: #007bff;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1100px) {
+  .klaim-wrapper {
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+  }
+
+  .klaim-right {
+    width: 100%;
+  }
+
+  .data-row,
+  .form-row {
+    flex-direction: column;
+  }
+
+  .data-row input,
+  .data-row textarea,
+  .data-row select {
+    width: 100%;
+  }
 }

@@ -106,7 +106,6 @@
 .btn-edit i { color: #ffc107; }
 .btn-delete i { color: #dc3545; }
 .btn-verify i { color: #2ecc71; }
-.btn-archive i { color: #0056a6; }
 
 /* Hilangkan border sel di kolom aksi & padding */
 #dataTable tbody td.aksi {

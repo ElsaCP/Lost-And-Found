@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kehilangan - Tambah Kehilangan</title>
 
-  <link rel="stylesheet" href="{{ url_for('admin_bp.static', filename='css/beranda.css') }}">
-  <link rel="stylesheet" href="{{ url_for('admin_bp.static', filename='css/daftar_kehilangan.css') }}">
   <link rel="stylesheet" href="{{ url_for('admin_bp.static', filename='css/tambah_kehilangan.css') }}">
 
   <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
@@ -43,25 +41,31 @@
     </a>
   </div>
 
-  <div class="header">
-    <div class="logo-wrapper">
-      <img src="{{ url_for('admin_bp.static', filename='image/rectangle2.png')}}" class="rectangle-bg">
-      <img src="{{ url_for('admin_bp.static', filename='image/image5.png')}}" class="logo-front">
-    </div>
-    <h2>Kehilangan - Tambah Kehilangan</h2>
-    <div class="profile-icon"
-        onclick="window.location.href='{{ url_for('admin_bp.pengaturan') }}'"
-        style="cursor:pointer;">
-        {% if global_admin and global_admin.photo %}
-          <img src="{{ url_for('admin_bp.static', filename='upload/' ~ global_admin.photo) }}"
-              class="profile-header-img">
-        {% else %}
-          <i class="bi bi-person-circle"></i>
-        {% endif %}
-    </div>
-  </div>
-
+  <!-- ============================
+       HEADER DIPINDAH KE DALAM CONTENT
+       (TIDAK DIUBAH SAMA SEKALI)
+  ============================= -->
   <div class="content">
+    <div class="header-wrapper">
+    <div class="header">
+      <div class="logo-wrapper">
+        <img src="{{ url_for('admin_bp.static', filename='image/rectangle2.png')}}" class="rectangle-bg">
+        <img src="{{ url_for('admin_bp.static', filename='image/image5.png')}}" class="logo-front">
+      </div>
+      <h2>Kehilangan - Tambah Kehilangan</h2>
+      <div class="profile-icon"
+          onclick="window.location.href='{{ url_for('admin_bp.pengaturan') }}'"
+          style="cursor:pointer;">
+          {% if global_admin and global_admin.photo %}
+            <img src="{{ url_for('admin_bp.static', filename='upload/' ~ global_admin.photo) }}"
+                class="profile-header-img">
+          {% else %}
+            <i class="bi bi-person-circle"></i>
+          {% endif %}
+      </div>
+      </div>
+    </div>
+
     <div class="container tambah-kehilangan">
       <h3>Data Barang Hilang</h3>
 
@@ -138,8 +142,7 @@
         <label>Foto Barang</label>
         <input type="file" name="foto" class="form-control required">
 
-        <!-- STATUS HIDDEN -->
-         <input type="hidden" name="kode_kehilangan" value="{{ kode_baru }}">
+        <input type="hidden" name="kode_kehilangan" value="{{ kode_baru }}">
         <input type="hidden" name="status" value="Verifikasi">
 
         <div class="button-group">

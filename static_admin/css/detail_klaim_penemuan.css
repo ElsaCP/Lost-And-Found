@@ -1,11 +1,150 @@
+/* ==========================================================
+   SIDEBAR & HEADER DETAIL KLAIM MIRIP KLAIM
+   ========================================================== */
 
-/* === FIX HEADER LOGO LEBIH KE KIRI === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  display: flex;
+  background: #f8f8f8;
+}
+
+/* ================================
+   SIDEBAR STAY FIXED + LOGOUT DI BAWAH
+   ================================ */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 193px;
+  height: 100vh;
+  background-color: #0056a6;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 7px 15px;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+}
+
+/* Logo sidebar */
+.sidebar .rectangle-bg {
+  width: 178px;
+  display: block;
+}
+
+.sidebar .logo-front {
+  position: absolute;
+  top: 15px;
+  left: 55%;
+  transform: translateX(-50%);
+  width: 100px;
+}
+
+/* Nav dan submenu */
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  margin-top: 50px;
+}
+
+.sidebar nav a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 15px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #e5e5e5;
+  text-decoration: none;
+  border-radius: 10px;
+  transition: 0.3s;
+}
+
+.sidebar nav a:hover,
+.sidebar nav a.active {
+  background-color: #fff;
+  color: #0056a6;
+  font-weight: 600;
+}
+
+/* SUBMENU */
+.submenu {
+  display: flex;
+  flex-direction: column;
+  margin-left: 20px;
+  gap: 5px;
+}
+
+.submenu a {
+  font-size: 16px;
+  color: #dbe9ff;
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
+.submenu a.active {
+  background-color: #fff;
+  color: #0056a6;
+  font-weight: 600;
+}
+
+.submenu a:hover {
+  background-color: #dbe9ff;
+  color: #0056a6;
+}
+
+/* Logout */
+.sidebar .logout {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  color: #fff;
+  text-decoration: none;
+  background: #004a93;
+  padding: 12px 15px;
+  border-radius: 10px;
+  transition: background 0.3s;
+  margin-bottom: 1px;
+}
+
+.sidebar .logout:hover {
+  background: #003c7a;
+}
+
+/* ================================
+   HEADER MIRIP BERANDA / KLAIM
+   ================================ */
+.header {
+  position: fixed;
+  top: 0;
+  left: 193px;
+  right: 0;
+  height: 70px;
+  background-color: #0056a6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  color: #fff;
+  z-index: 9998;
+}
+
+/* Logo header */
 .header .logo-wrapper {
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  margin-left: -20px;   /* ⬅️ Geser rectangle + foto ke kiri */
+  justify-content: flex-start; /* sama seperti klaim */
+  margin-left: -20px;
 }
 
 .header .logo-wrapper .rectangle-bg {
@@ -22,7 +161,55 @@
   z-index: 2;
 }
 
-/* ==== WRAPPER ==== */
+/* Judul header */
+.header h2 {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 28px;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* Profil header */
+.profile-icon {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e0e0e0;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.profile-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-icon:hover {
+  transform: scale(1.05);
+}
+
+/* Konten utama supaya tidak ketutup header dan sidebar */
+.content {
+  flex: 1;
+  padding: 30px 40px;
+  background: #f8f9fc;
+  min-height: calc(100vh - 90px);
+  overflow-y: auto;
+  box-sizing: border-box;
+  margin-left: 193px;
+  margin-top: 90px;
+}
+
+/* ==========================================================
+   KONTAINER DETAIL KLAIM MILIKMU
+   ========================================================== */
 .detail-wrapper {
   margin: 25px auto;
   background: #fff;
@@ -39,36 +226,7 @@
   font-size: 16px;
 }
 
-/* ===== FIX: Hilangkan ikon silang pada menu Penemuan ==== */
-nav a.active::after {
-  display: none !important;
-  content: "" !important;
-}
-
-/* ===== SUBMENU ===== */
-.submenu {
-  margin-left: 40px !important;
-  margin-top: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.submenu a {
-  text-decoration: none;
-  font-size: 16px;
-  padding: 6px 14px;
-  border-radius: 6px;
-  color: #003c7a;
-  font-weight: 500;
-}
-
-.submenu a.active {
-  background: #0055B8;
-  color: #fff;
-}
-
-/* ==== KIRI (FOTO) ==== */
+/* KIRI (FOTO) */
 .left {
   width: 250px;
   text-align: center;
@@ -81,6 +239,7 @@ nav a.active::after {
   border-radius: 8px;
   overflow: hidden;
   margin: 0 auto;
+  cursor: pointer; /* tambahkan agar bisa diklik */
 }
 
 .detail-photo-box img {
@@ -89,6 +248,7 @@ nav a.active::after {
   object-fit: cover;
 }
 
+/* Label kode barang */
 .kode-barang-label {
   text-align: center;
   font-size: 18px;
@@ -97,7 +257,7 @@ nav a.active::after {
   margin-bottom: 10px;
 }
 
-/* ==== KANAN ==== */
+/* KANAN */
 .detail-right {
   width: 460px;
   display: flex;
@@ -105,7 +265,7 @@ nav a.active::after {
   gap: 25px;
 }
 
-/* ==== JUDUL SECTION ==== */
+/* JUDUL SECTION */
 .data-section h3 {
   font-size: 19px;
   font-weight: 700;
@@ -115,7 +275,7 @@ nav a.active::after {
   margin-bottom: 14px;
 }
 
-/* ==== BARIS DATA ==== */
+/* BARIS DATA */
 .data-row {
   display: flex;
   gap: 10px;
@@ -133,7 +293,7 @@ nav a.active::after {
   font-size: 16px;
 }
 
-/* ==== INPUT STATUS & TEXTAREA ==== */
+/* INPUT STATUS & TEXTAREA */
 .status-select,
 textarea {
   width: 100%;
@@ -143,7 +303,7 @@ textarea {
   font-size: 16px;
 }
 
-/* ==== TOMBOL ==== */
+/* TOMBOL */
 .button-group {
   display: flex;
   justify-content: flex-end;
@@ -170,8 +330,14 @@ textarea {
   color: white;
 }
 
-/* ==== RESPONSIVE ==== */
+/* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
   .detail-wrapper {
     flex-direction: column;
     padding: 25px;
@@ -195,8 +361,13 @@ textarea {
   .button-group {
     justify-content: center;
   }
+
+  .search-bar input {
+    width: 100%;
+  }
 }
 
+/* ===== LIGHTBOX FOTO ===== */
 #lightbox {
   position: fixed;
   top: 0;

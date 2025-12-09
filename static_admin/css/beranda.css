@@ -21,6 +21,10 @@ body {
   padding: 7px 15px;
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
   font-family: "Poppins", sans-serif;
+
+  position: fixed;
+  top: 0;
+  left: 0;
 }
 
 .logo-wrapper .logo-front {
@@ -104,25 +108,26 @@ body {
   background: #f8f9fc;
   min-height: 100vh;
   position: relative;
+  margin-left: 193px;
+  margin-top: 70px;
 }
 
-/* === HEADER === */
 .header {
   background: #0056a6;
   height: 70px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 0 20px;
 
-  /* Kembalikan ciri utama layout lain */
-  padding: 0px 20px;
-
-  /* TARIK KE LUAR, TAPI SESUAI PADDING KONTEN */
-  margin: -20px -40px 20px -40px;
-
-  border-radius: 0;
-  position: relative;
+  /* === FIX BIAR HEADER STAY === */
+  position: fixed;
+  top: 0;
+  left: 193px; /* sejajar sidebar */
+  right: 0;
+  z-index: 9998;
 }
+
 
 .sidebar .logo-front {
   position: absolute;
