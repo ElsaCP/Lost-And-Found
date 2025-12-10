@@ -5,95 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Pengaturan - Tambah Admin</title>
 
-  <!-- CSS Utama -->
-  <link rel="stylesheet" href="{{ url_for('admin_bp.static', filename='css/beranda.css') }}">
-
-  <!-- Bootstrap Icons -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet"/>
-
-  <!-- CSS Tambahan -->
   <link rel="stylesheet" href="{{ url_for('admin_bp.static', filename='css/ganti_password.css') }}">
-
-  <!-- Bootstrap -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-
-  <style>
-      .container-box {
-          background: #ffffff;
-          padding: 25px;
-          border-radius: 12px;
-          box-shadow: 0px 6px 15px rgba(0,0,0,0.1);
-          max-width: 650px;
-          margin: auto;
-          margin-top: 40px;
-      }
-
-      .title {
-          font-size: 24px;
-          font-weight: 700;
-          color: #333;
-          margin-bottom: 20px;
-          text-align: center;
-      }
-
-      label {
-          font-weight: 600;
-          margin-bottom: 6px;
-      }
-
-      .btn-save {
-          background-color: #1E88E5;
-          color: white;
-          padding: 10px 26px;
-          border-radius: 6px;
-          border: none;
-      }
-
-      .btn-back {
-          background-color: #9e9e9e;
-          color: white;
-          padding: 10px 26px;
-          border-radius: 6px;
-          border: none;
-      }
-
-      .btn-save:hover { background-color: #1565C0; }
-      .btn-back:hover { background-color: #757575; }
-
-      .page-tambah-admin aside.sidebar {
-          position: fixed !important;
-          top: 0 !important;
-          left: 0 !important;
-          width: 200px !important;     /* <==== diperkecil dari 260px */
-          height: 100vh !important;
-          overflow: hidden !important;
-          overscroll-behavior: none !important;
-          scrollbar-width: none !important;
-      }
-
-      .page-tambah-admin aside.sidebar::-webkit-scrollbar {
-          display: none !important;
-      }
-
-      /* === HEADER FIXED TANPA UBAH STYLE ASLI === */
-      .page-tambah-admin .header {
-          position: fixed !important;
-          top: 20px !important;         /* <== diturunkan lagi */
-          left: 234px !important;       /* <== digeser kanan lagi */
-          width: calc(100% - 200px) !important;
-          z-index: 999;
-      }
-
-      /* === SUPAYA KONTEN TIDAK KETUTUP HEADER === */
-      .page-tambah-admin .content {
-          margin-left: 200px !important;
-          padding-top: 100px !important;   /* <== diturunkan lagi */
-      }
-  </style>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet"/>
 </head>
 
-<!-- ==== FIX: layout untuk aktifkan struktur halaman normal ==== -->
-<body class="layout page-tambah-admin">
+<body class="pw-pengaturan">
 
 <!-- ================= SIDEBAR ================= -->
 <aside class="sidebar short-sidebar">
@@ -112,9 +28,8 @@
     <div class="submenu">
       <a href="{{ url_for('admin_bp.pengaturan') }}"><i class="bi bi-person"></i> Profil Admin</a>
       <a href="{{ url_for('admin_bp.ganti_password') }}"><i class="bi bi-key"></i> Ganti Password</a>
-
       {% if session.role == 'super_admin' %}
-        <a href="{{ url_for('admin_bp.kelola_admin') }}" class="active"><i class="bi bi-people"></i> Kelola Admin</a>
+      <a href="{{ url_for('admin_bp.kelola_admin') }}" class="active"><i class="bi bi-people"></i> Kelola Admin</a>
       {% endif %}
     </div>
   </nav>
@@ -124,103 +39,100 @@
   </a>
 </aside>
 
-<!-- =============== MAIN CONTENT ================= -->
-<main class="content content-tambah-admin">
-
+<!-- ===== MAIN CONTENT AREA ===== -->
+<div class="content">
   <div class="header">
     <div class="logo-wrapper">
       <img src="{{ url_for('admin_bp.static', filename='image/rectangle2.png')}}" class="rectangle-bg">
       <img src="{{ url_for('admin_bp.static', filename='image/image5.png')}}" class="logo-front">
     </div>
-    <h2>Tambah Admin</h2>
+    <h2>Pengaturan - Tambah Admin</h2>
 
     <div class="profile-icon"
-        onclick="window.location.href='{{ url_for('admin_bp.pengaturan') }}'"
-        style="cursor:pointer;">
-        {% if global_admin and global_admin.photo %}
-            <img src="{{ url_for('admin_bp.static', filename='upload/' ~ global_admin.photo) }}"
-                class="profile-header-img">
-        {% else %}
-            <i class="bi bi-person-circle"></i>
-        {% endif %}
+         onclick="window.location.href='{{ url_for('admin_bp.pengaturan') }}'"
+         style="cursor:pointer;">
+      {% if global_admin and global_admin.photo %}
+        <img src="{{ url_for('admin_bp.static', filename='upload/' ~ global_admin.photo) }}"
+             class="profile-header-img">
+      {% else %}
+        <i class="bi bi-person-circle"></i>
+      {% endif %}
     </div>
   </div>
 
-  <!-- === FORM === -->
-  <div class="container-box">
-      <div class="title">Tambah Admin Baru</div>
+  <!-- ===== PROFILE CONTAINER (SAMA PERSIS DENGAN GANTI PW) ===== -->
+  <div class="profile-container pw-box">
+    <h3><i class="bi bi-people"></i> Tambah Admin Baru</h3>
 
-      <form action="{{ url_for('admin_bp.tambah_admin') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ url_for('admin_bp.tambah_admin') }}" method="POST" enctype="multipart/form-data">
 
-          <div class="mb-3">
-              <label for="full_name">Nama Lengkap</label>
-              <input type="text" class="form-control" id="full_name" name="full_name" required>
-          </div>
+      <div class="form-group">
+        <label>Nama Lengkap :</label>
+        <input type="text" name="full_name" placeholder="Masukkan nama admin" required>
+      </div>
 
-          <div class="mb-3">
-              <label for="email">Email Admin</label>
-              <input type="email" class="form-control" id="email" name="email" required>
-          </div>
+      <div class="form-group">
+        <label>Email Admin :</label>
+        <input type="email" name="email" placeholder="Masukkan email admin" required>
+      </div>
 
-          <div class="mb-3">
-              <label for="phone">Nomor HP</label>
-              <input type="text" class="form-control" id="phone" name="phone" required>
-          </div>
+      <div class="form-group">
+        <label>Nomor HP :</label>
+        <input type="text" name="phone" placeholder="Masukkan nomor HP" required>
+      </div>
 
-          <div class="mb-3">
-              <label for="username">Username Login</label>
-              <input type="text" class="form-control" id="username" name="username" required>
-          </div>
+      <div class="form-group">
+        <label>Username Login :</label>
+        <input type="text" name="username" placeholder="Masukkan username" required>
+      </div>
 
-          <div class="mb-3">
-              <label for="password">Password Login</label>
-              <input type="password" class="form-control" id="password" name="password" required>
-          </div>
+      <div class="form-group">
+        <label>Password Login :</label>
+        <input type="password" id="password" name="password" placeholder="Masukkan password" required>
+      </div>
 
-          <div class="mb-3">
-              <label for="role">Role Admin</label>
-              <select class="form-select" id="role" name="role" required>
-                  <option value="admin">Admin</option>
-                  <option value="superadmin">Super Admin</option>
-              </select>
-          </div>
+      <div class="form-group">
+        <label>Role Admin :</label>
+        <select name="role" required>
+          <option value="admin">Admin</option>
+          <option value="superadmin">Super Admin</option>
+        </select>
+      </div>
 
-          <div class="mb-3">
-              <label for="photo">Foto Profil (opsional)</label>
-              <input type="file" class="form-control" id="photo" name="photo" accept="image/*">
-          </div>
+      <div class="form-group">
+        <label>Foto Profil (opsional) :</label>
+        <input type="file" name="photo" accept="image/*">
+      </div>
 
-          <div class="d-flex justify-content-between mt-4">
-              <a href="{{ url_for('admin_bp.kelola_admin') }}" class="btn-back">Kembali</a>
-              <button type="submit" class="btn-save">Simpan</button>
-          </div>
+      <div class="button-group">
+        <a href="{{ url_for('admin_bp.kelola_admin') }}" class="btn-cancel">Batal</a>
+        <button type="submit" class="btn-save">Simpan Admin</button>
+      </div>
 
-      </form>
+    </form>
   </div>
+</div>
 
-</main>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-    const form = document.querySelector("form");
-    const passwordInput = document.getElementById("password");
+  const form = document.querySelector("form");
+  const passwordInput = document.getElementById("password");
 
-    form.addEventListener("submit", (e) => {
-        const password = passwordInput.value.trim();
-
-        if (password.length < 8) {
-            e.preventDefault();
-            Swal.fire({
-                icon: "error",
-                title: "Password terlalu pendek",
-                text: "Password Login minimal 8 karakter!",
-            });
-        }
-    });
+  form.addEventListener("submit", (e) => {
+      const password = passwordInput.value.trim();
+      if (password.length < 8) {
+          e.preventDefault();
+          Swal.fire({
+              icon: "error",
+              title: "Password terlalu pendek",
+              text: "Password Login minimal 8 karakter!"
+          });
+      }
+  });
 });
 </script>
-
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </body>
 </html>

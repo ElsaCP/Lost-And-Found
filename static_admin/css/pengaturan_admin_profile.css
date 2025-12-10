@@ -1,8 +1,3 @@
-/* ===== KHUSUS HALAMAN PENGATURAN / PROFIL ADMIN =====
-   Tidak menimpa .sidebar/.submenu global dari beranda.css
-*/
-/* RESET GLOBAL BIAR SAMA KAYAK HALAMAN KLAIM */
-/* RESET GLOBAL */
 * {
   margin: 0;
   padding: 0;

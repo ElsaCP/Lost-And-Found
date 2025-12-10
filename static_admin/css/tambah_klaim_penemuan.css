@@ -1,8 +1,3 @@
-/* ==========================================================
-   BELOMMM SELESAI TAMBAH KLAIM — DISESUAIKAN DENGAN DETAIL KEHILANGAN
-   Header & Sidebar sama, Submenu mirip Daftar Kehilangan
-   ========================================================== */
-
 * {
   margin: 0;
   padding: 0;
@@ -15,28 +10,26 @@ body {
   background: #f8f8f8;
 }
 
-/* =========================================
-   SIDEBAR STAY FIXED & LOGOUT DI BAWAH
-   ========================================= */
+/* ================================
+   SIDEBAR STAY FIXED + LOGOUT DI BAWAH
+   ================================ */
 .sidebar {
-  position: fixed;        
+  position: fixed;
   top: 0;
   left: 0;
-
   width: 193px;
+  height: 100vh;
   background-color: #0056a6;
   color: #fff;
-
-  height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: space-between; 
+  justify-content: space-between;
   padding: 7px 15px;
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
   z-index: 9999;
 }
 
-/* LOGO */
+/* Logo sidebar */
 .logo-wrapper {
   position: relative;
   display: flex;
@@ -61,29 +54,11 @@ body {
   width: 100px;
 }
 
-/* NAV */
+/* Nav dan submenu */
 .sidebar nav {
   display: flex;
   flex-direction: column;
   margin-top: 50px;
-}
-
-/* SUBMENU */
-.submenu {
-  margin-left: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.submenu a {
-  font-size: 16px;
-}
-
-.submenu a.active {
-  background-color: #fff;
-  color: #0056a6;
-  font-weight: 600;
 }
 
 .sidebar nav a {
@@ -96,23 +71,48 @@ body {
   color: #e5e5e5;
   text-decoration: none;
   border-radius: 10px;
-  transition: background-color 0.3s, color 0.3s;
+  transition: 0.3s;
 }
 
 .sidebar nav a:hover,
 .sidebar nav a.active {
-  background-color: #ffffff;
+  background-color: #fff;
   color: #0056a6;
   font-weight: 600;
 }
 
-/* LOGOUT */
+/* SUBMENU DETAIL PENEMUAN STYLE */
+.submenu {
+  display: flex;
+  flex-direction: column;
+  margin-left: 20px;
+  gap: 5px;
+}
+
+.submenu a {
+  font-size: 16px;
+  color: #dbe9ff;
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
+.submenu a.active {
+  background-color: #fff;
+  color: #0056a6;
+  font-weight: 600;
+}
+
+.submenu a:hover {
+  background-color: #dbe9ff;
+  color: #0056a6;
+}
+
+/* Logout di bawah */
 .sidebar .logout {
-  margin-top: auto;   /* <<< supaya turun ke paling bawah */
+  margin-top: auto;
   display: flex;
   align-items: center;
   gap: 10px;
-
   font-size: 16px;
   color: #fff;
   text-decoration: none;
@@ -127,24 +127,22 @@ body {
   background: #003c7a;
 }
 
-/* ===== HEADER ===== */
+/* ================================
+   HEADER MIRIP BERANDA
+   ================================ */
 .header {
-  position: fixed;          
-  top: 20px;                
-  left: 193px;              
-  right: 40px;              
-
-  z-index: 9998;
-  background: #0056a6;
+  position: fixed;
+  top: 0;
+  left: 193px;
+  right: 0;
   height: 70px;
-
+  background-color: #0056a6;
   display: flex;
   align-items: center;
   justify-content: space-between;
-
-  padding: 0px 20px;
-  margin: -20px -40px 20px -40px;
-  border-radius: 0;
+  padding: 0 20px;
+  color: #fff;
+  z-index: 9998;
 }
 
 /* Logo header */
@@ -153,7 +151,7 @@ body {
   display: flex;
   align-items: center;
   height: 100px;
-  margin-left: 30px;
+  margin-left: -10px;
 }
 
 .header .rectangle-bg {
@@ -168,17 +166,17 @@ body {
   width: auto;
 }
 
-/* Title tengah */
+/* Judul tengah header */
 .header h2 {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
   font-size: 28px;
-  color: white;
   font-weight: 600;
+  color: #fff;
 }
 
-/* ikon profil header */
+/* Profil header */
 .profile-icon {
   width: 45px;
   height: 45px;
@@ -403,3 +401,141 @@ input[readonly] {
     width: 100%;
   }
 }
+/* ============================================================
+   BOOTSTRAP-LITE - Pengganti Bootstrap untuk halaman ini
+   ============================================================ */
+
+/* ---- GRID ---- */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: -12px;
+  margin-right: -12px;
+}
+.col-md-6 {
+  flex: 0 0 50%;
+  max-width: 50%;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+@media (max-width: 768px){
+  .col-md-6 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}
+
+/* ---- SPACING ---- */
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-3 { margin-bottom: 1rem; }
+.mb-4 { margin-bottom: 1.5rem; }
+.mb-5 { margin-bottom: 3rem; }
+
+.mt-3 { margin-top: 1rem; }
+.mt-5 { margin-top: 3rem; }
+
+.p-4 { padding: 1.5rem; }
+.px-4 { padding-left: 1.5rem; padding-right: 1.5rem; }
+.me-2 { margin-right: 0.5rem; }
+
+/* ---- TEXT ---- */
+.fw-bold { font-weight: 700; }
+.text-end { text-align: end; }
+
+/* ---- CARD / WRAPPER ---- */
+.bg-white { background:#fff; }
+.border { border:1px solid #dee2e6; }
+.shadow-sm { box-shadow: 0 .125rem .25rem rgba(0,0,0,.075); }
+.rounded-4 { border-radius: 12px; }
+
+/* ---- FORM CONTROL ---- */
+.form-label {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  padding: 0.45rem 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  background-color: #fff;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.form-control:focus {
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 3px rgba(13,110,253,.25);
+  outline: none;
+}
+
+textarea.form-control {
+  min-height: 120px;
+  resize: vertical;
+}
+
+input.form-control[type="file"] {
+  padding: 6px;
+}
+
+/* ---- BUTTONS ---- */
+.btn {
+  display: inline-block;
+  padding: 0.45rem 1.3rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.2s ease;
+}
+
+.btn-primary {
+  background: #0d6efd;
+  color: #fff;
+}
+.btn-primary:hover {
+  background: #0b5ed7;
+}
+
+.btn-secondary {
+  background: #d1d5db;
+  color: #000;
+}
+.btn-secondary:hover {
+  background: #bfc4cb;
+}
+
+/* ================================
+   BOOTSTRAP TYPOGRAPHY REPLACEMENT
+   ================================ */
+
+/* H5 mirip Bootstrap */
+h5 {
+  font-size: 1.25rem;     /* 20px */
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: #212529;
+}
+
+/* Small mirip Bootstrap */
+small {
+  font-size: 0.875rem;    /* 14px */
+  color: #f00a0a;         /* abu-abu khas Bootstrap */
+}
+
+/* Label heading seperti “Data Diri”, “Dokumen Pendukung” */
+.section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #212529;
+  margin-bottom: 0.25rem;
+}
+
+/* Jika kamu pakai <small class="text-muted"> */
+.text-muted {
+  color: #6c757d !important;
+}
+

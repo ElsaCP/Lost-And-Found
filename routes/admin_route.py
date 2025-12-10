@@ -1505,61 +1505,86 @@ def edit_admin(id):
         admin_data = cursor.fetchone()
         cursor.close()
         conn.close()
+
         return render_template(
             'edit_admin.html',
             admin=admin_data,
             role=session.get('role')
         )
 
-    # ===== POST =====
+    # ========== POST ==========
     full_name = request.form['full_name']
     email = request.form['email']
     phone = request.form.get('phone')
-    role_ = request.form['role']
-    password = request.form.get('password')  # opsional
+    requested_role = request.form['role']
+    password = request.form.get('password')
+
+    # Ambil data admin yang diedit
+    cursor.execute("SELECT * FROM admin WHERE id=%s", (id,))
+    target_admin = cursor.fetchone()
+
+    # Hitung jumlah super admin
+    cursor.execute("SELECT COUNT(*) AS total FROM admin WHERE role='super admin'")
+    total_super = cursor.fetchone()['total']
+
+    # ===== Cegah Super Admin terakhir diturunkan =====
+    if target_admin['role'] == "super admin" and requested_role != "super admin":
+        if total_super <= 1:
+            cursor.close()
+            conn.close()
+            return render_template(
+                'edit_admin.html',
+                admin=target_admin,
+                role=session.get('role'),
+                error="Minimal harus ada satu Super Admin. Tidak bisa mengubah role."
+            )
+
+    # Kalau target adalah super admin → ROLE TIDAK BOLEH DIUBAH
+    final_role = target_admin['role'] if target_admin['role'] == "super admin" else requested_role
 
     try:
-        if password:  # update password hanya jika diisi
+        if password:
             cursor.execute("""
                 UPDATE admin
                 SET full_name=%s, email=%s, phone=%s, role=%s, password=%s
                 WHERE id=%s
-            """, (full_name, email, phone, role_, password, id))
+            """, (full_name, email, phone, final_role, password, id))
         else:
             cursor.execute("""
                 UPDATE admin
                 SET full_name=%s, email=%s, phone=%s, role=%s
                 WHERE id=%s
-            """, (full_name, email, phone, role_, id))
+            """, (full_name, email, phone, final_role, id))
 
         conn.commit()
-        message = {"success": True, "msg": "Data admin berhasil diperbarui."}
+        success = True
 
     except Exception as e:
         conn.rollback()
         print("Error edit admin:", e)
-        message = {"success": False, "msg": "Terjadi kesalahan saat memperbarui data."}
+        success = False
+        error_msg = "Terjadi kesalahan saat memperbarui data."
 
     finally:
         cursor.close()
         conn.close()
 
-    # Redirect jika sukses, render ulang jika gagal
-    if message["success"]:
+    if success:
         return redirect(url_for('admin_bp.kelola_admin'))
     else:
-        # ambil ulang data admin untuk render halaman
+        # load ulang untuk tampilkan pesan error
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM admin WHERE id=%s", (id,))
         admin_data = cursor.fetchone()
         cursor.close()
         conn.close()
+
         return render_template(
             'edit_admin.html',
             admin=admin_data,
             role=session.get('role'),
-            error=message["msg"]
+            error=error_msg
         )
 
 # ============================

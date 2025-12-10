@@ -89,14 +89,20 @@
   </div>
 
   <!-- Role -->
-  <div class="form-group-role">
+  <div class="form-group"> 
     <label>Role :</label>
-    <div class="input-group">
-      <select name="role" required class="form-control">
-        <option value="admin" {% if admin.role == 'admin' %}selected{% endif %}>Admin</option>
-        <option value="super_admin" {% if admin.role == 'super_admin' %}selected{% endif %}>Super Admin</option>
-      </select>
-    </div>
+    
+    {% if admin.role == 'super_admin' %}
+        <div class="role-text-locked"><b>Super Admin</b></div>
+        <input type="hidden" name="role" value="super_admin">
+    {% else %}
+        <div class="input-group form-group-role">
+            <select name="role" required class="form-control">
+                <option value="admin" {% if admin.role == 'admin' %}selected{% endif %}>Admin</option>
+                <option value="super_admin" {% if admin.role == 'super_admin' %}selected{% endif %}>Super Admin</option>
+            </select>
+        </div>
+    {% endif %}
   </div>
 
   <!-- Password Baru -->
