@@ -2,6 +2,7 @@
    Tidak menimpa .sidebar/.submenu global dari beranda.css
 */
 /* RESET GLOBAL BIAR SAMA KAYAK HALAMAN KLAIM */
+/* RESET GLOBAL */
 * {
   margin: 0;
   padding: 0;
@@ -14,9 +15,9 @@ body {
   background: #f8f8f8;
 }
 
-/* ================================
-   SIDEBAR STAY FIXED + LOGOUT DI BAWAH
-   ================================ */
+/* ======================
+   SIDEBAR (FULL FIX)
+   ====================== */
 .sidebar {
   position: fixed;
   top: 0;
@@ -40,13 +41,10 @@ body {
   align-items: center;
   justify-content: flex-start;
   gap: 10px;
-  margin-top: 0;
 }
 
 .sidebar .rectangle-bg {
   width: 178px;
-  opacity: 1;
-  filter: brightness(1);
   display: block;
   margin-top: -1px;
 }
@@ -59,11 +57,11 @@ body {
   width: 100px;
 }
 
-/* Nav dan submenu */
+/* Nav */
 .sidebar nav {
   display: flex;
   flex-direction: column;
-  margin-top: 50px;
+  margin-top: 40px !important; /* diperbaiki */
 }
 
 .sidebar nav a {
@@ -86,46 +84,49 @@ body {
   font-weight: 600;
 }
 
-/* SUBMENU DETAIL PENEMUAN STYLE */
+/* Submenu */
 .submenu {
+  margin-left: 20px;
+  margin-top: -5px;
   display: flex;
   flex-direction: column;
-  margin-left: 20px;
-  gap: 5px;
+  gap: 6px;
 }
 
 .submenu a {
+  display: flex;
+  align-items: center;
   font-size: 16px;
-  color: #dbe9ff;
-  padding: 4px 10px;
+  color: #fff;
+  padding: 8px 12px;
+  text-decoration: none;
   border-radius: 8px;
+  transition: 0.2s;
+}
+
+.submenu a:hover {
+  background-color: rgba(255,255,255,0.2);
 }
 
 .submenu a.active {
   background-color: #fff;
   color: #0056a6;
-  font-weight: 600;
+  font-weight: 700;
 }
 
-.submenu a:hover {
-  background-color: #dbe9ff;
-  color: #0056a6;
-}
-
-/* Logout di bawah */
+/* Logout */
 .sidebar .logout {
   margin-top: auto;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 16px;
-  color: #fff;
-  text-decoration: none;
   background: #004a93;
   padding: 12px 15px;
   border-radius: 10px;
-  transition: background 0.3s;
-  margin-bottom: 1px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: white;
+  transition: 0.3s;
+  margin-bottom: -2px !important;
 }
 
 .sidebar .logout:hover {
@@ -182,19 +183,17 @@ body {
   color: white;
   font-weight: 600;
 }
-
-/* ikon profil header */
+/* Profil kanan */
 .profile-icon {
   width: 45px;
   height: 45px;
   border-radius: 50%;
   overflow: hidden;
+  background: #e0e0e0;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #e0e0e0;
   cursor: pointer;
-  transition: transform 0.2s ease;
 }
 
 .profile-icon img {
@@ -202,14 +201,6 @@ body {
   height: 100%;
   object-fit: cover;
 }
-
-.profile-icon:hover {
-  transform: scale(1.05);
-}
-
-/* Naikkan isi sidebar khusus halaman pengaturan (opsional) */
-.page-pengaturan .sidebar nav { margin-top: 15px !important; }
-.page-pengaturan .sidebar { padding-top: 8px !important; }
 
 /* WRAPPER */
 .page-pengaturan .settings-container{
