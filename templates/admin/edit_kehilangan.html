@@ -133,7 +133,8 @@
 
 <div class="form-row">
   <label for="terminal">Terminal :</label>
-  <select id="terminal" name="terminal" class="form-select" required>
+  <select id="terminal" name="terminal" class="form-select"
+        data-terminal="{{ laporan.terminal }}" required>
       <option value="">Pilih Terminal</option>
       <option value="Terminal 1" {% if laporan.terminal == "Terminal 1" %}selected{% endif %}>Terminal 1</option>
       <option value="Terminal 2" {% if laporan.terminal == "Terminal 2" %}selected{% endif %}>Terminal 2</option>
@@ -142,7 +143,8 @@
 
 <div class="form-row">
   <label for="tempat">Tempat :</label>
-  <select id="tempat" name="tempat" class="form-select" required>
+  <select id="tempat" name="tempat" class="form-select"
+        data-tempat="{{ laporan.tempat }}" required>
       {% for t in tempat_list %}
           <option value="{{ t }}" {% if laporan.tempat == t %}selected{% endif %}>
               {{ t }}
@@ -206,7 +208,11 @@
 
           <!-- === BUTTON === -->
           <div class="button-group">
-            <button type="button" id="btnKembali" class="btn btn-secondary">Kembali</button>
+            <button onclick="window.location.href='{{ url_for('admin_bp.beranda_admin') if request.args.get('from') == 'beranda' else url_for('admin_bp.daftar_kehilangan') }}'" 
+                    id="btnKembali" 
+                    class="btn btn-secondary">
+              Kembali
+            </button>
             <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
           </div>
         </form>
