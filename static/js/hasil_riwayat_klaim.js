@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                     <div class="text-end p-3">
                         <a href="/detail-klaim/${k.kode_laporan}"
-                           class="btn btn-primary btn-sm">Lihat Detail</a>
+                           class="btn btn-primary btn-sm lihat-detail">Lihat Detail</a>
                     </div>
                 </div>
             `;

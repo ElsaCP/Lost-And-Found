@@ -294,6 +294,96 @@ body {
   transform: translateY(-2px);
 }
 
+/* ============================================================
+   📱 RESPONSIVE HP — 1 CARD PER BARIS + GAMBAR BESAR + TEKS BESAR
+=============================================================== */
+@media (max-width: 576px) {
+
+    /* 1 barang per baris */
+    #listKlaim .col-md-4, 
+    #listKlaim .col-lg-3,
+    #listKlaim .col-6 {
+        width: 100% !important;
+        flex: 0 0 100% !important;
+    }
+
+    /* Card lebih besar & rapi */
+    .card {
+        border-radius: 18px;
+        padding: 12px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+
+    /* Gambar diperbesar dan proporsional */
+    .card img {
+        width: 100%;
+        height: auto !important;      /* penting: biar tidak gepeng */
+        aspect-ratio: 4 / 3;          /* jaga proporsi tampilan */
+        object-fit: cover;            /* tetap rapi */
+        border-radius: 14px;
+    }
+
+
+    /* Judul barang */
+    .card-title {
+        font-size: 2.9rem !important;  /* diperbesar */
+        font-weight: 700;
+        margin-top: 10px;
+    }
+
+    /* Deskripsi, kategori, lokasi */
+    .card-text {
+        font-size: 1.6rem !important;
+        line-height: 1.5;
+    }
+
+    /* Status badge lebih besar */
+    .status {
+        font-size: 1.5rem !important;
+        padding: 8px 14px !important;
+        border-radius: 10px;
+        margin-bottom: 8px;
+        display: inline-block;
+    }
+
+    /* Tombol lebih besar */
+    .lihat-detail {
+        width: 100%;
+        font-size: 1.7rem !important;
+        padding: 10px 0 !important;
+        border-radius: 10px;
+        margin-top: 10px;
+    }
+    .page-content h2 {
+        font-size: 1.9rem !important;     /* besar tapi tetap muat */
+        font-weight: 800 !important;      /* lebih tebal */
+        margin-bottom: 25px !important;
+        text-align: center;
+        line-height: 1.3;
+    }
+}
+
+/* ============================================================
+   📱 HP KECIL (≤ 400px) — gambar tidak terlalu besar melebihi layar
+=============================================================== */
+@media (max-width: 400px) {
+    .card img {
+        aspect-ratio: 4 / 3;
+        height: auto !important;
+    }
+
+    .card-title {
+        font-size: 2.5rem !important;
+    }
+
+    .card-text, .status {
+        font-size: 1.5rem !important;
+    }
+    .page-content h2 {
+        font-size: 1.7rem !important;
+    }
+}
+
 footer {
   background: #0056a6;
   color: white;
