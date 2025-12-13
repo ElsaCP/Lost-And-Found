@@ -103,9 +103,9 @@ def submit_kehilangan():
 
         # === Format tanggal & waktu ===
         now = datetime.now()
-        tanggal_submit = now.strftime("%d/%m/%Y")
+        tanggal_submit = now.strftime("%d-%m-%Y")
         waktu_submit = now.strftime("%H:%M")
-        update_terakhir = now.strftime("%d/%m/%Y %H:%M")
+        update_terakhir = now.strftime("%d-%m-%Y %H:%M")
 
         # === Koneksi database ===
         db = get_db_connection()
@@ -147,7 +147,7 @@ def submit_kehilangan():
         cursor = db.cursor()
         cursor.execute("""
             INSERT INTO riwayat_status (kode_kehilangan, status, catatan, waktu_update)
-            VALUES (%s, %s, %s, DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i'))
+            VALUES (%s, %s, %s, DATE_FORMAT(NOW(), '%d-%m-%Y %H:%i'))
         """, (
             kode_kehilangan,
             "Pending",
@@ -263,7 +263,7 @@ def detail_klaim(kode_laporan):
             k.catatan_admin,
 
             -- FORMAT TANGGAL TANPA GMT
-            DATE_FORMAT(k.update_terakhir, '%d/%m/%Y %H:%i') AS update_terakhir,
+            DATE_FORMAT(k.update_terakhir, '%d-%m-%Y %H:%i') AS update_terakhir,
 
             p.gambar_barang AS gambar_penemuan,
             p.lokasi,
@@ -290,30 +290,69 @@ def detail_klaim(kode_laporan):
 
 @main.route("/admin/update-status", methods=["POST"])
 def admin_update_status():
-    kode_laporan = request.form.get("kode_laporan")
-    status = request.form.get("status")
+    kode_laporan = request.form.get("kode_laporan")   # LF-Cxxx
+    status = request.form.get("status")               # Pending / Ditolak / Disetujui
     catatan = request.form.get("catatan") or ""
 
     db = get_db_connection()
-    cursor = db.cursor()
+    cursor = db.cursor(dictionary=True)
 
-    # update tabel klaim_barang
+    # =========================
+    # 1️⃣ Ambil kode_barang dari klaim
+    # =========================
     cursor.execute("""
-    UPDATE kehilangan 
-    SET status=%s,
-        catatan=%s,
-        update_terakhir=DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i')
-    WHERE kode_kehilangan=%s
-    """, (status, catatan, kode_laporan))
-    db.commit()
+        SELECT kode_barang
+        FROM klaim_barang
+        WHERE kode_laporan = %s
+    """, (kode_laporan,))
+    klaim = cursor.fetchone()
 
-    # simpan riwayat baru (insert)
+    if not klaim:
+        cursor.close()
+        db.close()
+        return redirect("/admin")
+
+    kode_barang = klaim["kode_barang"]
+
+    # =========================
+    # 2️⃣ Update status klaim
+    # =========================
+    cursor.execute("""
+        UPDATE klaim_barang
+        SET status = %s,
+            catatan_admin = %s,
+            update_terakhir = NOW()
+        WHERE kode_laporan = %s
+    """, (status, catatan, kode_laporan))
+
+    # =========================
+    # 3️⃣ UPDATE STATUS BARANG
+    # =========================
+    if status == "Ditolak":
+        cursor.execute("""
+            UPDATE penemuan
+            SET status_barang = 'Tersedia',
+                update_terakhir = NOW()
+            WHERE kode_barang = %s
+        """, (kode_barang,))
+
+    elif status == "Disetujui":
+        cursor.execute("""
+            UPDATE penemuan
+            SET status_barang = 'Diambil',
+                update_terakhir = NOW()
+            WHERE kode_barang = %s
+        """, (kode_barang,))
+
+    # =========================
+    # 4️⃣ Simpan riwayat
+    # =========================
     tambah_riwayat_status(kode_laporan, status, catatan)
 
+    db.commit()
     cursor.close()
     db.close()
 
-    # arahkan kembali (sesuaikan url admin)
     return redirect("/admin/detail/" + kode_laporan)
 
 @main.route("/api/riwayat-status/<kode_laporan>")
@@ -325,7 +364,7 @@ def api_riwayat_status(kode_laporan):
         SELECT 
             status,
             catatan,
-            DATE_FORMAT(waktu_update, '%d/%m/%Y %H:%i') AS waktu_update
+            DATE_FORMAT(waktu_update, '%d-%m-%Y %H:%i') AS waktu_update
         FROM riwayat_klaim_barang
         WHERE kode_laporan = %s
         ORDER BY id ASC
@@ -379,7 +418,9 @@ def submit_klaim():
         db = get_db_connection()
         cursor = db.cursor()
 
-        # ambil data dari form (sama seperti sebelumnya)
+        # =========================
+        # 1️⃣ AMBIL DATA FORM
+        # =========================
         nama = request.form.get("nama")
         telp = request.form.get("telp")
         email = request.form.get("email")
@@ -387,7 +428,38 @@ def submit_klaim():
         kode_barang = request.form.get("kodeBarang")
         kode_laporan_kehilangan = request.form.get("kodeKehilangan")
 
-        # file handling seperti sebelumnya ...
+        # =========================
+        # 2️⃣ CEK STATUS BARANG
+        # =========================
+        cursor.execute("""
+            SELECT status_barang, nama_barang
+            FROM penemuan
+            WHERE kode_barang = %s
+            FOR UPDATE
+        """, (kode_barang,))
+        barang = cursor.fetchone()
+
+        if not barang:
+            cursor.close()
+            db.close()
+            return jsonify({
+                "success": False,
+                "message": "Barang tidak ditemukan."
+            })
+
+        status_barang, nama_barang = barang
+
+        if status_barang != "Tersedia":
+            cursor.close()
+            db.close()
+            return jsonify({
+                "success": False,
+                "message": "Barang sudah diklaim atau tidak tersedia."
+            })
+
+        # =========================
+        # 3️⃣ HANDLE FILE UPLOAD
+        # =========================
         identitas = request.files.get("fileIdentitas")
         bukti = request.files.get("fileLaporan")
         foto_barang = request.files.get("fotoBarang")
@@ -398,61 +470,79 @@ def submit_klaim():
         def simpan_file(file_obj):
             if not file_obj or file_obj.filename == "":
                 return None
-            filename = datetime.now().strftime("%d%m%Y%H%M%S_") + secure_filename(file_obj.filename)
-            path = os.path.join(upload_dir, filename)
-            file_obj.save(path)
+            filename = (
+                datetime.now().strftime("%Y%m%d%H%M%S_")
+                + secure_filename(file_obj.filename)
+            )
+            file_obj.save(os.path.join(upload_dir, filename))
             return filename
 
         nama_identitas = simpan_file(identitas)
         nama_bukti = simpan_file(bukti)
         nama_foto = simpan_file(foto_barang)
 
-        # generate kode_laporan
+        # =========================
+        # 4️⃣ GENERATE KODE LAPORAN
+        # =========================
         cursor.execute("SELECT kode_laporan FROM klaim_barang ORDER BY id DESC LIMIT 1")
         last = cursor.fetchone()
-        if last and last[0]:
-            last_num = int(last[0].split("LF-C")[-1])
-        else:
-            last_num = 0
+        last_num = int(last[0].split("LF-C")[-1]) if last else 0
         kode_laporan = f"LF-C{last_num + 1:03d}"
 
         now = datetime.now()
-        tanggal = now.strftime("%d/%m/%Y")
+        tanggal = now.strftime("%d-%m-%Y")
         waktu = now.strftime("%H:%M")
 
-        # ambil nama_barang dari penemuan jika ada
-        cursor.execute("SELECT nama_barang FROM penemuan WHERE kode_barang=%s", (kode_barang,))
-        nama_barang_row = cursor.fetchone()
-        nama_barang = nama_barang_row[0] if nama_barang_row else "Tidak diketahui"
-
-        query = """
+        # =========================
+        # 5️⃣ INSERT KLAIM BARANG
+        # =========================
+        cursor.execute("""
             INSERT INTO klaim_barang (
                 kode_laporan, kode_barang, kode_laporan_kehilangan, nama_barang,
                 nama_pelapor, no_telp, email, deskripsi_khusus,
                 identitas_diri, bukti_laporan, foto_barang,
                 tanggal_lapor, waktu_lapor, status, catatan_admin
-            ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-        """
-        values = (
+            ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,'Pending','Menunggu verifikasi oleh admin')
+        """, (
             kode_laporan, kode_barang, kode_laporan_kehilangan, nama_barang,
             nama, telp, email, deskripsi_khusus,
             nama_identitas, nama_bukti, nama_foto,
-            tanggal, waktu, "Pending", "Menunggu verifikasi oleh admin."
-        )
+            tanggal, waktu
+        ))
 
-        cursor.execute(query, values)
+        # =========================
+        # 6️⃣ KUNCI BARANG (PALING PENTING)
+        # =========================
+        cursor.execute("""
+            UPDATE penemuan
+            SET status_barang = 'Diklaim'
+            WHERE kode_barang = %s
+        """, (kode_barang,))
+
         db.commit()
         cursor.close()
         db.close()
 
-        # --- PENTING: tulis riwayat awal ke tabel riwayat_klaim ---
-        tambah_riwayat_status(kode_laporan, "Pending", "Menunggu verifikasi oleh admin.")
+        # =========================
+        # 7️⃣ SIMPAN RIWAYAT STATUS
+        # =========================
+        tambah_riwayat_status(
+            kode_laporan,
+            "Pending",
+            "Menunggu verifikasi oleh admin"
+        )
 
-        return jsonify({"success": True, "kode_laporan": kode_laporan})
+        return jsonify({
+            "success": True,
+            "kode_laporan": kode_laporan
+        })
 
     except Exception as e:
         print("Error klaim:", e)
-        return jsonify({"success": False, "message": str(e)})
+        return jsonify({
+            "success": False,
+            "message": str(e)
+        })
 
 # ==========================
 # 🟦 CEK LAPORAN KEHILANGAN
@@ -512,11 +602,11 @@ def hasil_cek():
         if tgl_str and waktu_str:
             try:
                 gabung = datetime.strptime(f"{tgl_str} {waktu_str}", "%Y-%m-%d %H:%M")
-                laporan["tanggal_waktu_submit"] = gabung.strftime("%d/%m/%Y, %H:%M")
+                laporan["tanggal_waktu_submit"] = gabung.strftime("%d-%m-%Y, %H:%M")
             except ValueError:
                 try:
-                    gabung = datetime.strptime(f"{tgl_str} {waktu_str}", "%d/%m/%Y %H:%M")
-                    laporan["tanggal_waktu_submit"] = gabung.strftime("%d/%m/%Y, %H:%M")
+                    gabung = datetime.strptime(f"{tgl_str} {waktu_str}", "%d-%m-%Y %H:%M")
+                    laporan["tanggal_waktu_submit"] = gabung.strftime("%d-%m-%Y, %H:%M")
                 except:
                     laporan["tanggal_waktu_submit"] = f"{tgl_str}, {waktu_str}"
         else:
@@ -552,7 +642,7 @@ def detail_cek(kode_kehilangan):
     # ====== FORMAT TANGGAL SUBMIT (dd/mm/yyyy) ======
     try:
         laporan["tanggal_submit_fmt"] = datetime.strptime(
-            laporan["tanggal_submit"], "%d/%m/%Y"
+            laporan["tanggal_submit"], "%d-%m-%Y"
         ).strftime("%d %B %Y")
     except:
         laporan["tanggal_submit_fmt"] = laporan["tanggal_submit"]
@@ -564,7 +654,7 @@ def detail_cek(kode_kehilangan):
     try:
         laporan["update_terakhir_fmt"] = datetime.strptime(
             laporan["update_terakhir"], "%Y-%m-%d %H:%M"
-        ).strftime("%d/%m/%Y %H:%M")
+        ).strftime("%d-%m-%Y %H:%M")
     except:
         laporan["update_terakhir_fmt"] = laporan["update_terakhir"]
 
@@ -582,7 +672,7 @@ def detail_cek(kode_kehilangan):
         try:
             r["waktu_update_fmt"] = datetime.strptime(
                 r["waktu_update"], "%Y-%m-%d %H:%M"
-            ).strftime("%d/%m/%Y %H:%M")
+            ).strftime("%d-%m-%Y %H:%M")
         except:
             r["waktu_update_fmt"] = r["waktu_update"]
 
@@ -620,14 +710,14 @@ def update_status(kode_kehilangan):
         # Update status di tabel kehilangan
         cursor.execute("""
             UPDATE kehilangan 
-            SET status=%s, update_terakhir=DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i', catatan=%s 
+            SET status=%s, update_terakhir=DATE_FORMAT(NOW(), '%d-%m-%Y %H:%i', catatan=%s 
             WHERE kode_kehilangan=%s
         """, (status_baru, catatan, kode_kehilangan))
 
         # Tambahkan ke riwayat_status
         cursor.execute("""
             INSERT INTO riwayat_status (kode_kehilangan, status, catatan, waktu_update)
-            VALUES (%s, %s, %s, DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i'))
+            VALUES (%s, %s, %s, DATE_FORMAT(NOW(), '%d-%m-%Y %H:%i'))
         """, (kode_kehilangan, status_baru, catatan))
 
         db.commit()
@@ -708,7 +798,7 @@ def rekomendasi(kode_kehilangan):
         # Format tanggal -> dd/mm/yyyy
         if h.get("tanggal_lapor"):
             try:
-                h["tanggal_lapor"] = h["tanggal_lapor"].strftime("%d/%m/%Y")
+                h["tanggal_lapor"] = h["tanggal_lapor"].strftime("%d-%m-%Y")
             except:
                 pass
         
@@ -777,7 +867,7 @@ def rekomendasi_baru(kode_kehilangan):
     for h in hasil:
         # Format tanggal
         if h.get("tanggal_lapor"):
-            h["tanggal_lapor"] = h["tanggal_lapor"].strftime("%d/%m/%Y")
+            h["tanggal_lapor"] = h["tanggal_lapor"].strftime("%d-%m-%Y")
 
         # Tambahkan URL gambar
         h["gambar_barang_url"] = (

@@ -55,7 +55,10 @@ def fetch_public_penemuan(q=None, kategori=None, dari=None, hingga=None, page=1,
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
-    where = ["jenis_barang = 'Publik'"]
+    where = [
+        "jenis_barang = 'Publik'",
+        "status_barang = 'Tersedia'"   # ⬅️ TAMBAHAN SAJA
+    ]
     params = []
 
     if q:
@@ -76,25 +79,28 @@ def fetch_public_penemuan(q=None, kategori=None, dari=None, hingga=None, page=1,
         params.append(hingga)
 
     where_clause = " AND ".join(where)
-    count_sql = f"SELECT COUNT(*) AS cnt FROM penemuan WHERE {where_clause}"
-    cursor.execute(count_sql, params)
-    total = cursor.fetchone()['cnt']
+
+    cursor.execute(
+        f"SELECT COUNT(*) AS cnt FROM penemuan WHERE {where_clause}",
+        params
+    )
+    total = cursor.fetchone()["cnt"]
 
     offset = (page - 1) * per_page
-    sql = f"""
+    cursor.execute(f"""
         SELECT kode_barang, nama_barang, kategori, tanggal_lapor, gambar_barang
         FROM penemuan
         WHERE {where_clause}
         ORDER BY tanggal_lapor DESC
         LIMIT %s OFFSET %s
-    """
-    cursor.execute(sql, params + [per_page, offset])
+    """, params + [per_page, offset])
+
     rows = cursor.fetchall()
 
-    # Format tanggal dd/mm/yyyy
+    # ⬇️ FORMAT TANGGAL SAJA, JANGAN SENTUH GAMBAR
     for r in rows:
-        if r.get('tanggal_lapor'):
-            r['tanggal_lapor'] = r['tanggal_lapor'].strftime('%d/%m/%Y')
+        if r.get("tanggal_lapor"):
+            r["tanggal_lapor"] = r["tanggal_lapor"].strftime("%d/%m/%Y")
 
     cursor.close()
     db.close()
@@ -113,10 +119,6 @@ def get_penemuan_by_kode(kode):
     return r
 
 def fetch_barang_publik_terbaru(limit=4):
-    """
-    Ambil 4 data barang publik terbaru dari tabel penemuan
-    berdasarkan tanggal update_terakhir (atau tanggal_lapor kalau tidak ada)
-    """
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
@@ -124,16 +126,18 @@ def fetch_barang_publik_terbaru(limit=4):
         SELECT kode_barang, nama_barang, kategori, tanggal_lapor, gambar_barang
         FROM penemuan
         WHERE jenis_barang = 'Publik'
+          AND status_barang = 'Tersedia'
         ORDER BY update_terakhir DESC, tanggal_lapor DESC
         LIMIT %s
     """, (limit,))
 
     items = cursor.fetchall()
 
-    # Format data
     for item in items:
         if item.get("tanggal_lapor"):
             item["tanggal_lapor"] = item["tanggal_lapor"].strftime("%d/%m/%Y")
+
+        # INDEX BUTUH PATH LENGKAP
         if item.get("gambar_barang"):
             item["gambar_barang"] = f"/static/uploads/{item['gambar_barang']}"
         else:

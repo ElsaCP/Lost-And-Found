@@ -2,128 +2,121 @@ body {
   font-family: Arial, sans-serif;
   padding-top: 70px; 
 }
-/* ===== NAVBAR STYLE ===== */
+/* ============================
+   NAVBAR DESKTOP
+============================ */
 .navbar {
   background: #0056a6;
   height: 70px;
-  transition: all 0.3s ease;
+  padding: 0 20px;   /* desktop tetap */
   display: flex;
   align-items: center;
-  padding: 0 20px;
 }
 
-/* LOGO */
 .navbar-brand img {
-  height: 100%;              /* Logo setinggi navbar */
+  height: 100%;
   max-height: 70px;
-  width: auto;
-  object-fit: contain;       /* Biar tidak terpotong */
-  transition: all 0.3s ease;
+  object-fit: contain;
 }
 
-/* MENU LINKS */
 .nav-link {
   color: #fff !important;
   margin-right: 18px;
   font-weight: 500;
-  transition: color 0.3s ease, transform 0.2s ease;
+  transition: 0.3s;
 }
 
 .nav-link:hover {
   text-decoration: underline;
   color: #cce4ff !important;
-  transform: translateY(-1px);
 }
 
-/* ICON PROFILE */
 .profile-icon {
   color: #fff;
   font-size: 1.6rem;
-  transition: color 0.3s ease, transform 0.2s ease;
+  transition: 0.3s;
 }
 
 .profile-icon:hover {
   color: #cce4ff;
-  transform: scale(1.1);
 }
 
-/* HAMBURGER BUTTON */
-.navbar-toggler {
-  border: none;
-  background: none;
-  outline: none;
-  box-shadow: none !important;
-}
-
-.navbar-toggler-icon {
-  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='white' stroke-width='2' stroke-linecap='round' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
-}
-
-/* ===== RESPONSIVE BREAKPOINTS ===== */
-
-/* Laptop & Tablet Landscape */
+/* ============================
+   RESPONSIVE NAVBAR (TABLET)
+============================ */
 @media (max-width: 992px) {
   .navbar {
     height: auto;
-    padding: 0px 20px;
+    padding: 10px 20px;
   }
 
-  /* COLLAPSE MENU KECIL DI KANAN BAWAH TOGGLER */
   .navbar-collapse {
     background: #0056a6;
+    padding: 12px 15px;
     border-radius: 10px;
-    padding: 10px 15px;
     position: absolute;
-    top: 60px;               /* sedikit di bawah navbar */
     right: 10px;
-    width: 180px;            /* kecil */
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    top: 70px;
+    width: 200px;
     z-index: 999;
     opacity: 0;
-    transform: scale(0.9);
-    transform-origin: top right;
-    transition: all 0.25s ease;
+    transform: translateY(-8px);
+    transition: 0.25s ease;
   }
 
-  /* Saat collapse aktif */
   .navbar-collapse.show {
     opacity: 1;
-    transform: scale(1);
-  }
-
-  .navbar-nav {
-    text-align: center;
+    transform: translateY(0);
   }
 
   .nav-link {
-    margin: 8px 0;
     display: block;
+    font-size: 1.2rem;
+    padding: 8px 0;
+    text-align: right;
   }
 
   .profile-icon {
     display: block;
-    margin: 10px auto 5px auto;
+    margin: 12px auto 5px auto;
+    font-size: 1.8rem;
   }
 }
 
-/* Smartphone */
+/* ============================
+   MOBILE HP — PADDING LEBIH BESAR 
+   + LOGO DIPERBESAR
+============================ */
 @media (max-width: 576px) {
+
+  /* 🔥 Navbar jauh lebih tebal */
+  .navbar {
+    padding: 20px 22px;       /* PADDING MOBILE DIPERBESAR */
+    height: auto;
+  }
+
+  /* 🔥 Logo lebih besar mengikuti padding */
   .navbar-brand img {
-    height: 45px;
+    height: 65px;             /* tinggi lebih besar dari sebelumnya */
+    max-height: 80px;         /* batas aman */
   }
 
+  /* Collapse */
   .navbar-collapse {
-    width: 160px;
-    right: 8px;
-    top: 55px;
+    width: 200px;
+    top: calc(100% + 5px);    /* tetap di bawah navbar */
+    right: 10px;
+    padding: 16px 14px;
   }
 
+  /* Teks lebih besar */
   .nav-link {
-    font-size: 15px;
+    font-size: 1.4rem;
+    padding: 10px 0;
   }
 
   .profile-icon {
-    font-size: 1.4rem;
+    font-size: 2.1rem;
   }
 }
 
@@ -134,10 +127,15 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
+  z-index: 1050; /* lebih tinggi dari navbar-collapse */
 }
 
 /* Panah kiri - ukuran seperti .arrow-left */
 .back-arrow-header {
+  position: relative;
+  z-index: 1051;
+  pointer-events: auto;
   color: #004b8d;
   font-size: 28px;          /* ukuran sesuai permintaan */
   text-decoration: none;
@@ -171,6 +169,65 @@ body {
   object-fit: contain;
   opacity: 0.95;
   margin-top: -5px;
+}
+
+/* TABLET */
+@media (max-width: 992px) {
+  .header-riwayat {
+    margin-top: 90px;   /* tinggi navbar tablet */
+  }
+  .title-riwayat {
+    font-size: 2.3rem;       /* judul lebih besar */
+  }
+
+  .back-arrow-header,
+  .back-arrow-header i {
+    font-size: 34px;         /* panah diperbesar */
+  }
+
+  .logo-juanda2 {
+    height: 70px;            /* logo lebih besar */
+  }
+}
+
+/* HP */
+@media (max-width: 576px) {
+  .header-riwayat {
+    margin-top: 110px;       /* aman dari navbar tinggi */
+  }
+
+  .title-riwayat {
+    font-size: 2.9rem;       /* judul besar & jelas */
+    text-align: center;
+  }
+
+  .back-arrow-header,
+  .back-arrow-header i {
+    font-size: 42px;         /* panah BESAR (finger friendly) */
+  }
+
+  .logo-juanda2 {
+    height: 85px;            /* logo dominan */
+  }
+}
+
+/* HP KECIL */
+@media (max-width: 400px) {
+  .header-riwayat {
+    margin-top: 90px;
+  }
+  .title-riwayat {
+    font-size: 2.9rem;
+  }
+
+  .back-arrow-header,
+  .back-arrow-header i {
+    font-size: 38px;
+  }
+
+  .logo-juanda2 {
+    height: 75px;
+  }
 }
 
 /* ===== DETAIL LAPORAN ===== */
@@ -283,6 +340,88 @@ body {
   #infoBarang p,
   table td {
     font-size: 13px;
+  }
+}
+
+/* =========================================
+   📱 RESPONSIVE HP — DETAIL LAPORAN
+========================================= */
+@media (max-width: 576px) {
+
+  /* ===== BOX INFO UMUM ===== */
+  .bg-light-blue {
+    font-size: 1.7rem;          /* teks besar */
+    padding: 18px;
+    line-height: 1.6;
+  }
+
+  /* ===== CARD BARANG ===== */
+  #infoBarang {
+    padding: 22px;
+  }
+
+  /* 🔥 GAMBAR FULL & JELAS */
+  #infoBarang img {
+    width: 100%;
+    height: auto !important;    /* FULL proporsional */
+    max-height: none;           /* hilangkan batas */
+    aspect-ratio: 4 / 3;        /* proporsi rapi */
+    object-fit: contain;        /* TIDAK TERPOTONG */
+    border-radius: 14px;
+    margin-bottom: 18px;
+  }
+
+  /* ===== TEKS INFO BARANG ===== */
+  #infoBarang p {
+    font-size: 1.9rem;          /* BESAR & JELAS */
+    line-height: 1.7;
+  }
+
+  /* ===== DETAIL LAPORAN ===== */
+  #detailBox {
+    padding: 22px;
+  }
+
+  #detailBox h5 {
+    font-size: 2.2rem;          /* JUDUL BESAR */
+    margin-bottom: 14px;
+  }
+
+  #detailBox p {
+    font-size: 1.9rem;
+    line-height: 1.7;
+  }
+
+  /* ===== STATUS BADGE ===== */
+  .status-badge {
+    font-size: 1.6rem;
+    padding: 8px 16px;
+    border-radius: 10px;
+  }
+
+  /* ===== TABEL RIWAYAT ===== */
+  .table th,
+  .table td {
+    font-size: 1.6rem;
+    padding: 14px;
+  }
+}
+
+/* =========================================
+   📱 HP KECIL (≤ 400px)
+========================================= */
+@media (max-width: 400px) {
+  #detailBox h5 {
+    font-size: 2rem;
+  }
+
+  #detailBox p,
+  #infoBarang p {
+    font-size: 1.7rem;
+  }
+
+  .bg-light-blue {
+    font-size: 1.6rem;
   }
 }
 
