@@ -77,8 +77,9 @@
               <td>{{ row.jenis }}</td>
               <td>{{ row.status }}</td>
               <td class="aksi">
-                <a href="{{ url_for('admin_bp.detail_arsip') }}?kode={{ row.kode }}" class="btn-view" title="Lihat Detail">
-                  <i class="bi bi-eye"></i>
+                <a href="{{ url_for('admin_bp.detail_arsip', kode=row.kode) }}"
+                    class="btn btn-sm btn-outline-primary">                  
+                    <i class="bi bi-eye"></i>
                 </a>
               </td>
             </tr>

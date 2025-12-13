@@ -1,25 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  // ======================================
-  //  FITUR: TOMBOL LIHAT DETAIL
-  //  (sekarang tabel sudah dipenerate Flask)
-  // ======================================
-  document.querySelectorAll(".btn-view").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const kode = btn.dataset.kode;
-      if (kode) {
-        window.location.href = `/admin/arsip/detail?kode=${encodeURIComponent(kode)}`;
-      } else {
-        Swal.fire({
-          icon: "error",
-          title: "Oops!",
-          text: "Kode laporan tidak ditemukan.",
-          confirmButtonColor: "#d33"
-        });
-      }
-    });
-  });
-
 
   // ======================
   //  FITUR PENCARIAN

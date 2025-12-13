@@ -123,6 +123,10 @@
           data-kode="{{ laporan.kode_barang }}">
           Update Status
         </button>
+
+        <button id="btnExportPdf" class="btn btn-success">
+          <i class="bi bi-file-earmark-pdf"></i> Export PDF
+        </button>
       </div>
 
     </div>
@@ -130,6 +134,10 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 <script src="{{ url_for('admin_bp.static', filename='js/detail_penemuan.js') }}"></script>
 <script src="{{ url_for('admin_bp.static', filename='js/logout.js') }}"></script>
 

@@ -1,8 +1,6 @@
-/* ==========================================================
-   GABUNGAN CSS DETAIL KEHILANGAN + HEADER & SIDEBAR BERANDA
-   DITAMBAH SUBMENU MIRIP DAFTAR KEHILANGAN
-   ========================================================== */
-
+/* =============================================
+   RESET & BODY
+   ============================================= */
 * {
   margin: 0;
   padding: 0;
@@ -15,60 +13,66 @@ body {
   background: #f8f8f8;
 }
 
-/* =========================================
-   SIDEBAR STAY FIXED & LOGOUT DI BAWAH
-   ========================================= */
+/* =============================================
+   SIDEBAR – FIXED, STAY, LOGOUT DI BAWAH
+   ============================================= */
 .sidebar {
-  position: fixed;        
+  position: fixed;       /* biar stay tidak bisa digeser */
   top: 0;
   left: 0;
-
+  height: 100vh;
   width: 193px;
   background-color: #0056a6;
   color: #fff;
-
-  height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: space-between; 
+  justify-content: space-between; /* nav di atas, logout di bawah */
   padding: 7px 15px;
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
-  z-index: 9999;
+  z-index: 9999;       
+
+  clip-path: inset(0 0 0 0px);
 }
 
-/* LOGO */
+/* =============================================
+   SIDEBAR – LOGO DAN RECTANGLE DIATAS
+   ============================================= */
 .logo-wrapper {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: flex-start;
   gap: 10px;
-  margin-top: 0;
+  margin-top: 0; /* tarik ke atas */
 }
 
+/* Rectangle background */
 .sidebar .rectangle-bg {
   width: 178px;
   opacity: 1;
   filter: brightness(1);
   display: block;
+  margin-top: 0; /* tarik ke atas */
 }
 
+/* Logo depan */
 .sidebar .logo-front {
   position: absolute;
-  top: 15px;
+  top: 15px;   /* tarik logo ke atas */
   left: 55%;
   transform: translateX(-50%);
   width: 100px;
+  height: auto;
 }
 
-/* NAV */
+/* Nav */
 .sidebar nav {
   display: flex;
   flex-direction: column;
   margin-top: 50px;
 }
 
-/* SUBMENU */
+/* Submenu */
 .submenu {
   margin-left: 20px;
   display: flex;
@@ -106,13 +110,11 @@ body {
   font-weight: 600;
 }
 
-/* LOGOUT */
+/* Logout tetap di bawah sidebar */
 .sidebar .logout {
-  margin-top: auto;   /* <<< supaya turun ke paling bawah */
   display: flex;
   align-items: center;
   gap: 10px;
-
   font-size: 16px;
   color: #fff;
   text-decoration: none;
@@ -120,7 +122,7 @@ body {
   padding: 12px 15px;
   border-radius: 10px;
   transition: background 0.3s;
-  margin-bottom: 1px;
+  margin-bottom: 1px; /* jarak ke bawah */
 }
 
 .sidebar .logout:hover {

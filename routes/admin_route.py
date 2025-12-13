@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, jsonify, redirect, url_for, session, flash, current_app
 import mysql.connector
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 import time
 from werkzeug.utils import secure_filename
@@ -58,18 +58,60 @@ def login_admin():
     else:
         return jsonify({'success': False, 'message': 'Email atau password salah!'})
 
-# ======================
-# 🏠 BERANDA
-# ======================
+def auto_arsip_laporan():
+    db = get_db_connection()
+    cur = db.cursor(dictionary=True)
+
+    batas_tanggal = datetime.now() - timedelta(days=90)
+
+    # =========================
+    # KEHILANGAN
+    # =========================
+    cur.execute("""
+        SELECT kode_kehilangan, tanggal_kehilangan
+        FROM kehilangan
+        WHERE tanggal_kehilangan < %s
+    """, (batas_tanggal,))
+    for row in cur.fetchall():
+        pindahkan_ke_arsip(row['kode_kehilangan'], 'kehilangan')
+
+    # =========================
+    # PENEMUAN
+    # =========================
+    cur.execute("""
+        SELECT kode_barang, tanggal_lapor
+        FROM penemuan
+        WHERE tanggal_lapor < %s
+    """, (batas_tanggal,))
+    for row in cur.fetchall():
+        pindahkan_ke_arsip(row['kode_barang'], 'penemuan')
+
+    # =========================
+    # KLAIM
+    # =========================
+    cur.execute("""
+        SELECT kode_laporan, tanggal_lapor
+        FROM klaim_barang
+        WHERE tanggal_lapor < %s
+    """, (batas_tanggal,))
+    for row in cur.fetchall():
+        pindahkan_ke_arsip(row['kode_laporan'], 'klaim')
+
+    cur.close()
+    db.close()
+    
 @admin_bp.route('/beranda', endpoint='beranda_admin')
 def beranda_admin():
+    # 🔥 AUTO PINDAH KE ARSIP (>3 BULAN)
+    auto_arsip_laporan()
+
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    
+
     query = """
         (
             SELECT 
-                id AS id,
+                id,
                 kode_kehilangan AS kode,
                 nama_barang,
                 nama_pelapor,
@@ -87,7 +129,7 @@ def beranda_admin():
 
         (
             SELECT 
-                id AS id,
+                id,
                 kode_barang AS kode,
                 nama_barang,
                 nama_pelapor,
@@ -105,7 +147,7 @@ def beranda_admin():
 
         (
             SELECT 
-                id AS id,
+                id,
                 kode_laporan AS kode,
                 nama_barang,
                 nama_pelapor,
@@ -125,6 +167,7 @@ def beranda_admin():
     cursor.execute(query)
     data = cursor.fetchall()
     cursor.close()
+    conn.close()
 
     return render_template("admin/beranda.html", data=data)
 
@@ -196,27 +239,6 @@ def daftar_kehilangan():
         role=session.get('role')
     )
     
-# ======================
-# 🔢 GENERATE KODE KEHILANGAN URUT 
-# ======================
-
-def generate_kode_kehilangan(cursor):
-    cursor.execute("SELECT kode_kehilangan FROM kehilangan ORDER BY id DESC LIMIT 1")
-    result = cursor.fetchone()
-
-    if not result or not result[0]:
-        return "LF-L001"
-
-    last_code = result[0]  # contoh: LF-L001
-
-    match = re.search(r"LF-L(\d+)", last_code)
-    if not match:
-        return "LF-L001"
-
-    number = int(match.group(1))
-    new_number = number + 1
-
-    return f"LF-L{new_number:03d}"
 
 # ======================
 # ➕ TAMBAH KEHILANGAN
@@ -1237,49 +1259,21 @@ def detail_arsip():
     if not kode:
         return redirect(url_for('admin_bp.arsip'))
 
-    db = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="",
-        database="lostfound"
-    )
-    cur = db.cursor(dictionary=True)
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM arsip WHERE kode=%s", (kode,))
+    arsip = cursor.fetchone()
+    cursor.close()
+    conn.close()
 
-    # Ambil data arsip dulu
-    cur.execute("SELECT * FROM arsip WHERE kode=%s", (kode,))
-    arsip_data = cur.fetchone()
-
-    if not arsip_data:
-        flash("Data arsip tidak ditemukan.", "danger")
-        cur.close()
-        db.close()
+    if not arsip:
+        flash("Data arsip tidak ditemukan", "danger")
         return redirect(url_for('admin_bp.arsip'))
-
-    jenis_laporan = arsip_data.get("jenis")
-    data = None
-
-    # Ambil detail lengkap dari tabel asal
-    if jenis_laporan.lower() == "kehilangan":
-        cur.execute("SELECT * FROM kehilangan WHERE kode_kehilangan=%s", (kode,))
-        data = cur.fetchone()
-    elif jenis_laporan.lower() == "penemuan":
-        cur.execute("SELECT * FROM penemuan WHERE kode_barang=%s", (kode,))
-        data = cur.fetchone()
-    elif jenis_laporan.lower() == "klaim barang":
-        cur.execute("SELECT * FROM klaim_barang WHERE kode_laporan=%s", (kode,))
-        data = cur.fetchone()
-
-    # Jika data asli sudah tidak ada (misal dihapus), fallback ke arsip
-    if not data:
-        data = arsip_data
-
-    cur.close()
-    db.close()
-
+    
     return render_template(
         'detail_arsip.html',
-        data=data,
-        jenis_laporan=jenis_laporan
+        data=arsip,     
+        role=session.get('role')
     )
     
 
