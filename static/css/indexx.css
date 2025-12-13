@@ -404,6 +404,73 @@ body {
     text-align: center;
   }
 }
+/* =============================
+   HERO CTA – FORM KEHILANGAN
+============================= */
+.hero-cta {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.btn-hero-cta {
+  background: linear-gradient(135deg, #00c6ff 0%, #2fd9c4 100%);
+  color: #ffffff;
+  border: none;
+  padding: 18px 55px;
+  font-size: 1.2rem;
+  font-weight: 800;
+  border-radius: 50px;
+  cursor: pointer;
+
+  /* Shadow biru–tosca */
+  box-shadow: 0 10px 25px rgba(0, 198, 255, 0.45);
+  transition: all 0.3s ease;
+
+  /* animasi denyut */
+  animation: pulseCTA 1.8s infinite;
+}
+
+.btn-hero-cta:hover {
+  transform: translateY(-3px) scale(1.05);
+  background: linear-gradient(135deg, #009fd9 0%, #1fb9a6 100%);
+  box-shadow: 0 14px 32px rgba(47, 217, 196, 0.55);
+}
+
+.hero-cta-text {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.95rem;
+  color: #e6f9ff;
+  opacity: 0.95;
+  text-align: center;
+}
+
+/* Animasi denyut (warna disesuaikan) */
+@keyframes pulseCTA {
+  0% {
+    box-shadow: 0 0 0 0 rgba(47, 217, 196, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 22px rgba(47, 217, 196, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(47, 217, 196, 0);
+  }
+}
+
+/* MOBILE – tombol makin BESAR */
+@media (max-width: 576px) {
+  .btn-hero-cta {
+    font-size: 1.35rem;
+    padding: 20px 60px;
+  }
+
+  .hero-cta-text {
+    font-size: 1.1rem;
+  }
+}
 
 /* ============================
    HERO SECTION
