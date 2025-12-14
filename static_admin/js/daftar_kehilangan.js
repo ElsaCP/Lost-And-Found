@@ -134,45 +134,61 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if (btn.classList.contains("btn-verify")) {
+
+    const statusSelect = row.querySelector(".status-select");
+    const currentStatus = statusSelect ? statusSelect.value : "";
+
+    // 🔹 JIKA SUDAH VERIFIKASI → INFO SAJA
+    if (currentStatus === "Verifikasi") {
       Swal.fire({
-        title: "Verifikasi Laporan?",
-        text: `Ubah status laporan ${kode} menjadi 'Verifikasi'?`,
-        icon: "question",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#6c757d",
-        confirmButtonText: "Ya, verifikasi!",
-        cancelButtonText: "Batal",
-      }).then((result) => {
-        if (!result.isConfirmed) return;
-
-        fetch("/admin/api/kehilangan/update_status", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ kode, status: "Verifikasi" })
-        })
-        .then(res => res.json())
-        .then(data => {
-          if (!data.success) {
-            Swal.fire("Gagal!", "Tidak dapat memperbarui status.", "error");
-            return;
-          }
-
-          Swal.fire({
-            icon: "success",
-            title: "Diverifikasi!",
-            text: `Status laporan ${kode} berhasil diubah.`,
-            timer: 1500,
-            showConfirmButton: false
-          });
-
-          const statusSelect = row.querySelector(".status-select");
-          if (statusSelect) statusSelect.value = "Verifikasi";
-
-          row.classList.add("status-updated");
-          setTimeout(() => row.classList.remove("status-updated"), 1200);
-        });
+        icon: "info",
+        title: "Sudah Diverifikasi",
+        text: `Laporan ${kode} memang sudah diverifikasi sebelumnya.`,
+        confirmButtonText: "Oke"
       });
+      return;
+    }
+
+    // 🔹 KODE ASLI KAMU (TIDAK DIUBAH)
+    Swal.fire({
+      title: "Verifikasi Laporan?",
+      text: `Ubah status laporan ${kode} menjadi 'Verifikasi'?`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#6c757d",
+      confirmButtonText: "Ya, verifikasi!",
+      cancelButtonText: "Batal",
+    }).then((result) => {
+      if (!result.isConfirmed) return;
+
+      fetch("/admin/api/kehilangan/update_status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ kode, status: "Verifikasi" })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (!data.success) {
+          Swal.fire("Gagal!", "Tidak dapat memperbarui status.", "error");
+          return;
+        }
+
+        Swal.fire({
+          icon: "success",
+          title: "Diverifikasi!",
+          text: `Status laporan ${kode} berhasil diubah.`,
+          timer: 1500,
+          showConfirmButton: false
+        });
+
+        const statusSelect = row.querySelector(".status-select");
+        if (statusSelect) statusSelect.value = "Verifikasi";
+
+        row.classList.add("status-updated");
+        setTimeout(() => row.classList.remove("status-updated"), 1200);
+      });
+    });
     }
   });
 

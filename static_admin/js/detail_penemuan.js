@@ -80,12 +80,16 @@ document.addEventListener("DOMContentLoaded", () => {
     btnExport.addEventListener("click", async () => {
       const { jsPDF } = window.jspdf;
       const element = document.querySelector(".detail-container");
+      const hideElements = document.querySelectorAll(".no-print"); // ✅ TAMBAHAN
 
       Swal.fire({
         title: "Membuat PDF...",
         allowOutsideClick: false,
         didOpen: () => Swal.showLoading()
       });
+
+      // ✅ SEMBUNYIKAN BUTTON SEBELUM CAPTURE
+      hideElements.forEach(el => el.style.display = "none");
 
       try {
         const canvas = await html2canvas(element, { scale: 2 });
@@ -106,8 +110,11 @@ document.addEventListener("DOMContentLoaded", () => {
       } catch (err) {
         console.error(err);
         Swal.fire("Gagal", "Gagal membuat PDF", "error");
+      } finally {
+        // ✅ TAMPILKAN LAGI BUTTON SETELAH EXPORT
+        hideElements.forEach(el => el.style.display = "");
       }
     });
   }
-
+  
 });

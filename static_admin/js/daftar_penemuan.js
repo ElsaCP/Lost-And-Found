@@ -1,5 +1,9 @@
 document.addEventListener("DOMContentLoaded", function () {
 
+  const rows = document.querySelectorAll("#dataTable tbody tr");
+  const searchInput = document.getElementById("searchInput");
+  const filterBulan = document.getElementById("filterBulan");
+
   // =====================================
   // SIMPAN STATUS SEBELUM DIUBAH
   // =====================================
@@ -7,9 +11,8 @@ document.addEventListener("DOMContentLoaded", function () {
     sel.dataset.prev = sel.value;
   });
 
-
   // =====================================
-  // FITUR UBAH STATUS
+  // UBAH STATUS
   // =====================================
   document.addEventListener("change", function (e) {
     if (!e.target.matches(".status-select")) return;
@@ -17,7 +20,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const select = e.target;
     const newStatus = select.value;
     const prevStatus = select.dataset.prev;
-
     const row = select.closest("tr");
     const kode = row.dataset.kode;
 
@@ -35,7 +37,6 @@ document.addEventListener("DOMContentLoaded", function () {
       confirmButtonText: "Ya",
       cancelButtonText: "Batal",
     }).then(result => {
-
       if (!result.isConfirmed) {
         select.value = prevStatus;
         return;
@@ -44,32 +45,29 @@ document.addEventListener("DOMContentLoaded", function () {
       fetch("/admin/api/penemuan/update_status", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ kode: kode, status: newStatus })
+        body: JSON.stringify({ kode, status: newStatus })
       })
       .then(res => res.json())
       .then(data => {
-
         if (!data.success) {
           Swal.fire("Gagal!", data.message || "Tidak dapat memperbarui status.", "error");
           select.value = prevStatus;
           return;
         }
 
-      // 🔥 Jika status Selesai → langsung ke Arsip
-      if (newStatus === "Selesai") {
-        Swal.fire({
-          icon: "success",
-          title: "Dipindahkan ke Arsip",
-          text: "Laporan telah selesai dan kini ada di arsip.",
-          timer: 1200,
-          showConfirmButton: false
-        }).then(() => {
-          window.location.href = "/admin/arsip"; // redirect ke arsip
-        });
-        return; // hentikan proses
-      }
+        if (newStatus === "Selesai") {
+          Swal.fire({
+            icon: "success",
+            title: "Dipindahkan ke Arsip",
+            text: "Laporan telah selesai dan kini ada di arsip.",
+            timer: 1200,
+            showConfirmButton: false
+          }).then(() => {
+            window.location.href = "/admin/arsip";
+          });
+          return;
+        }
 
-        // Jika status biasa (bukan selesai)
         Swal.fire({
           icon: "success",
           title: "Status Diubah!",
@@ -78,18 +76,14 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         select.dataset.prev = newStatus;
-
         row.classList.add("status-updated");
         setTimeout(() => row.classList.remove("status-updated"), 800);
       });
     });
   });
 
-
-
-
   // =====================================
-  // TOMBOL DELETE / VERIFY / ARCHIVE
+  // DELETE / VERIFY
   // =====================================
   document.addEventListener("click", function (e) {
     const btn = e.target.closest("button");
@@ -97,15 +91,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const row = btn.closest("tr");
     const kode = row.dataset.kode;
+    if (!kode) return;
 
-    if (!kode) {
-      Swal.fire("Error!", "Kode tidak ditemukan!", "error");
-      return;
-    }
-
-    // ========== DELETE ==========
+    // DELETE
     if (btn.classList.contains("btn-delete")) {
-
       Swal.fire({
         title: "Hapus Laporan?",
         text: "Data yang dihapus tidak dapat dikembalikan.",
@@ -114,9 +103,7 @@ document.addEventListener("DOMContentLoaded", function () {
         confirmButtonText: "Hapus",
         cancelButtonText: "Batal"
       }).then(result => {
-
         if (!result.isConfirmed) return;
-
         fetch("/admin/penemuan/hapus", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -128,81 +115,116 @@ document.addEventListener("DOMContentLoaded", function () {
             Swal.fire("Gagal!", data.message, "error");
             return;
           }
-
-          Swal.fire({
-            icon: "success",
-            title: "Berhasil Dihapus!",
-            timer: 1500,
-            showConfirmButton: false
-          });
-
+          Swal.fire({ icon: "success", title: "Berhasil Dihapus!", timer: 1500, showConfirmButton: false });
           row.remove();
         });
       });
-
       return;
     }
 
+ // VERIFY
+if (btn.classList.contains("btn-verify")) {
 
-    // ========== VERIFIKASI ==========
-    if (btn.classList.contains("btn-verify")) {
+  const statusSelect = row.querySelector(".status-select");
+  const currentStatus = statusSelect ? statusSelect.value : "";
+
+  // 🔹 JIKA SUDAH VERIFIKASI → INFO SAJA
+  if (currentStatus === "Verifikasi") {
+    Swal.fire({
+      icon: "info",
+      title: "Sudah Diverifikasi",
+      text: `Barang dengan kode ${kode} memang sudah diverifikasi sebelumnya.`,
+      confirmButtonText: "Oke",
+    });
+    return;
+  }
+
+  // 🔹 KODE ASLI KAMU (TIDAK DIUBAH)
+  Swal.fire({
+    title: "Verifikasi Barang?",
+    text: `Barang dengan kode ${kode} akan diverifikasi.`,
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonText: "Verifikasi",
+    cancelButtonText: "Batal",
+  }).then(result => {
+    if (!result.isConfirmed) return;
+
+    fetch("/admin/api/penemuan/verify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ kode })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (!data.success) {
+        Swal.fire("Error!", data.message, "error");
+        return;
+      }
 
       Swal.fire({
-        title: "Verifikasi Barang?",
-        text: `Barang dengan kode ${kode} akan diverifikasi.`,
-        icon: "question",
-        showCancelButton: true,
-        confirmButtonText: "Verifikasi",
-        cancelButtonText: "Batal",
-      }).then(result => {
-
-        if (!result.isConfirmed) return;
-
-        fetch("/admin/api/penemuan/verify", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ kode })
-        })
-        .then(res => res.json())
-        .then(data => {
-
-          if (!data.success) {
-            Swal.fire("Error!", data.message, "error");
-            return;
-          }
-
-          Swal.fire({
-            icon: "success",
-            title: "Berhasil Diverifikasi!",
-            timer: 1500,
-            showConfirmButton: false
-          });
-
-          const select = row.querySelector(".status-select");
-          if (select) select.value = "Verifikasi";
-
-          row.classList.add("verified");
-        });
+        icon: "success",
+        title: "Berhasil Diverifikasi!",
+        timer: 1500,
+        showConfirmButton: false
       });
 
-      return;
-    }
+      const select = row.querySelector(".status-select");
+      if (select) select.value = "Verifikasi";
 
+      row.classList.add("verified");
+    });
   });
 
+  return;
+}
+  });
   // =====================================
-  // FITUR SEARCH
+  // SEARCH & FILTER BULAN
   // =====================================
-  const searchInput = document.getElementById("searchInput");
-  const rows = document.querySelectorAll("#dataTable tbody tr");
+  if (searchInput && filterBulan && rows.length) {
 
-  if (searchInput) {
-    searchInput.addEventListener("keyup", () => {
-      const key = searchInput.value.toLowerCase();
-      rows.forEach(row => {
-        row.style.display = row.textContent.toLowerCase().includes(key) ? "" : "none";
+    // setup 3 bulan terakhir
+    const bulanNama = ["Januari","Februari","Maret","April","Mei","Juni",
+                       "Juli","Agustus","September","Oktober","November","Desember"];
+    const today = new Date();
+    const bulanList = [];
+    for (let i=0; i<3; i++) {
+      const d = new Date(today.getFullYear(), today.getMonth()-i, 1);
+      bulanList.push({
+        key: `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`,
+        label: `${bulanNama[d.getMonth()]} ${d.getFullYear()}`
       });
+    }
+
+    filterBulan.innerHTML = `<option value="all">Semua Data</option>`;
+    bulanList.forEach(b => {
+      filterBulan.insertAdjacentHTML("beforeend", `<option value="${b.key}">${b.label}</option>`);
     });
+
+    function applyFilter() {
+      const keyword = searchInput.value.toLowerCase();
+      const selectedMonth = filterBulan.value;
+
+      rows.forEach(row => {
+        const tanggalStr = row.dataset.tanggal;
+        if (!tanggalStr) return;
+
+        const cleanTanggal = tanggalStr.split(" ")[0];
+        const parts = cleanTanggal.split("-");
+        const tgl = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
+        const key = `${tgl.getFullYear()}-${String(tgl.getMonth()+1).padStart(2,"0")}`;
+
+        const cocokBulan = selectedMonth === "all" ? bulanList.some(b => b.key === key) : key === selectedMonth;
+        const cocokSearch = row.textContent.toLowerCase().includes(keyword);
+        row.style.display = (cocokBulan && cocokSearch) ? "" : "none";
+      });
+    }
+
+    searchInput.addEventListener("keyup", applyFilter);
+    filterBulan.addEventListener("change", applyFilter);
+
+    applyFilter();
   }
 
 });
