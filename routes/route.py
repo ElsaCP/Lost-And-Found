@@ -34,6 +34,17 @@ def get_db_connection():
 def home():
     return render_template('user/indexx.html')
 
+from flask import send_file, request
+from datetime import datetime, timedelta
+import os
+
+# Mapping bulan ke bahasa Indonesia
+BULAN_ID = {
+    1: "Januari", 2: "Februari", 3: "Maret", 4: "April",
+    5: "Mei", 6: "Juni", 7: "Juli", 8: "Agustus",
+    9: "September", 10: "Oktober", 11: "November", 12: "Desember"
+}
+
 @main.route("/download/surat-pengambilan/<kode_laporan>")
 def download_surat_pengambilan(kode_laporan):
     tipe = request.args.get("tipe")  # sendiri / wakil
@@ -42,7 +53,7 @@ def download_surat_pengambilan(kode_laporan):
     cursor = db.cursor(dictionary=True)
 
     cursor.execute("""
-        SELECT kode_laporan, kode_barang, nama_barang
+        SELECT kode_laporan, kode_barang, nama_barang, tanggal_lapor
         FROM klaim_barang
         WHERE kode_laporan = %s
     """, (kode_laporan,))
@@ -54,12 +65,16 @@ def download_surat_pengambilan(kode_laporan):
     if not data:
         return "Data tidak ditemukan", 404
 
-    # ⬇️ TANGGAL DIAMBIL SAAT USER KLIK TOMBOL
-    tanggal_klaim = datetime.now()
-    tanggal_maks = tanggal_klaim + timedelta(days=7)
+    # Ambil tanggal klaim dari database (hanya tanggal)
+    tanggal_str = data["tanggal_lapor"]  # misal '25/11/2025'
+    tanggal_klaim = datetime.strptime(tanggal_str, "%d/%m/%Y")
 
-    tgl_klaim_str = tanggal_klaim.strftime("%d-%m-%Y")
-    tgl_maks_str = tanggal_maks.strftime("%d-%m-%Y")
+    # Tanggal maksimal 7 hari dari saat user menekan tombol
+    tanggal_maks = datetime.now() + timedelta(days=7)
+
+    # Format tanggal dengan nama bulan Indonesia
+    tgl_klaim_str = f"{tanggal_klaim.day} {BULAN_ID[tanggal_klaim.month]} {tanggal_klaim.year}"
+    tgl_maks_str = f"{tanggal_maks.day} {BULAN_ID[tanggal_maks.month]} {tanggal_maks.year}"
 
     filename = f"surat_{tipe}_{kode_laporan}.pdf"
     path = os.path.join("static", "surat", filename)
@@ -76,6 +91,185 @@ def download_surat_pengambilan(kode_laporan):
     return send_file(path, as_attachment=True)
 
 def buat_pdf_surat(path, data, tgl_klaim, tgl_maks, tipe):
+    if tipe == "sendiri":
+        pdf_pengambilan_sendiri(path, data, tgl_klaim, tgl_maks, tipe)
+    else:
+        pdf_pengambilan_wakil(path, data, tgl_klaim, tgl_maks)
+
+def pdf_pengambilan_sendiri(path, data, tgl_klaim, tgl_maks, tipe):
+    styles = getSampleStyleSheet()
+
+    # ================= STYLES =================
+    styles.add(ParagraphStyle(
+        name="Judul",
+        fontSize=10,
+        alignment=TA_CENTER,
+        leading=14,
+        spaceAfter=4
+    ))
+
+    styles.add(ParagraphStyle(
+        name="Isi",
+        fontSize=10,
+        leading=14,          # ⬅️ antar baris lebih lega
+        spaceAfter=4
+    ))
+
+    styles.add(ParagraphStyle(
+        name="Kanan",
+        fontSize=10,
+        alignment=TA_RIGHT,
+        leading=14
+    ))
+
+    styles.add(ParagraphStyle(
+        name="NB",
+        fontSize=9,
+        leading=13,
+        spaceBefore=6
+    ))
+
+    styles.add(ParagraphStyle(
+        name="Materai",
+        fontSize=8,
+        leading=11,
+        alignment=TA_CENTER
+    ))
+    styles.add(ParagraphStyle(
+        name="TTD_Center",
+        fontSize=10,
+        alignment=TA_CENTER,
+        leading=14
+    ))
+
+    # ================= DOCUMENT =================
+    doc = SimpleDocTemplate(
+        path,
+        pagesize=A4,
+        rightMargin=2*cm,
+        leftMargin=2*cm,
+        topMargin=2*cm,
+        bottomMargin=2*cm
+    )
+
+    el = []
+
+    # ================= HEADER =================
+    el.append(Paragraph(
+        "<b>PT ANGKASA PURA BANDARA INTERNASIONAL JUANDA</b>",
+        styles["Judul"]
+    ))
+    el.append(Paragraph(
+        "<b><u>SURAT PENGAMBILAN BARANG</u></b>",
+        styles["Judul"]
+    ))
+    el.append(Spacer(1, 10))
+
+    # ================= IDENTITAS =================
+    el.append(Paragraph("Yang bertanda tangan di bawah ini:", styles["Isi"]))
+    el.append(Spacer(1, 6))
+
+    tabel_identitas = Table([
+        ["Nama Lengkap", ":", "......................................................................................."],
+        ["Tempat / Tanggal Lahir", ":", "......................................................................................."],
+        ["NIK", ":", "......................................................................................."],
+        ["No. Telepon", ":", "......................................................................................."],
+        ["Alamat", ":", "......................................................................................."],
+    ], colWidths=[6*cm, 0.5*cm, 8*cm])
+
+    tabel_identitas.setStyle(TableStyle([
+        ("TOPPADDING", (0,0), (-1,-1), 4),
+        ("BOTTOMPADDING", (0,0), (-1,-1), 4),
+    ]))
+
+    el.append(tabel_identitas)
+    el.append(Spacer(1, 10))
+
+    # ================= DATA BARANG =================
+    el.append(Paragraph(
+        "Dengan ini menyatakan bahwa saya adalah <b>pemilik sah barang temuan</b> dengan data sebagai berikut:",
+        styles["Isi"]
+    ))
+    el.append(Spacer(1, 6))
+
+    tabel_barang = Table([
+        ["Nama Barang", ":", data["nama_barang"]],
+        ["Kode Barang", ":", data["kode_barang"]],
+        ["Kode Laporan", ":", data["kode_laporan"]],
+        ["Tanggal Klaim", ":", tgl_klaim],
+        ["Tanggal Maksimal Pengambilan", ":", tgl_maks],
+    ], colWidths=[6*cm, 0.5*cm, 8*cm])
+
+    tabel_barang.setStyle(TableStyle([
+        ("TOPPADDING", (0,0), (-1,-1), 4),
+        ("BOTTOMPADDING", (0,0), (-1,-1), 4),
+    ]))
+
+    el.append(tabel_barang)
+    el.append(Spacer(1, 10))
+
+    # ================= PERNYATAAN =================
+    el.append(Paragraph(
+        "Saya bersedia mengambil barang tersebut <b>secara langsung</b> di unit "
+        "<b>Lost & Found Bandara Internasional Juanda</b> serta menyatakan bahwa data "
+        "yang saya berikan adalah <b>benar dan dapat dipertanggungjawabkan.</b>",
+        styles["Isi"]
+    ))
+
+    el.append(Paragraph(
+        "Apabila di kemudian hari terdapat permasalahan terkait kepemilikan barang, "
+        "maka hal tersebut menjadi tanggung jawab saya sepenuhnya.",
+        styles["Isi"]
+    ))
+
+    el.append(Spacer(1, 8))
+    el.append(Paragraph(
+        "Demikian surat pernyataan ini dibuat dengan sebenar-benarnya untuk digunakan sebagaimana mestinya.",
+        styles["Isi"]
+    ))
+
+    el.append(Spacer(1, 14))
+
+    # ================= TANGGAL (KANAN) =================
+    el.append(Paragraph(
+        "Surabaya, ..............................................",
+        styles["Kanan"]
+    ))
+
+    el.append(Spacer(1, 18))
+
+    # ================= TTD KANAN + RUANG MATERAI =================
+    ttd_table = Table([
+        ["", Paragraph("Pemilik Barang", styles["TTD_Center"])],
+        ["", Spacer(1, 40)],                       # ⬅️ ruang tanda tangan
+        ["", Paragraph("Materai Rp10.000", styles["Materai"])],
+        ["", Spacer(1, 45)],                       # ⬅️ ruang tempel materai
+        ["", Paragraph("(___________________________)", styles["TTD_Center"])],
+    ], colWidths=[8*cm, 8*cm])                     # ⬅️ kolom kanan tetap
+
+    ttd_table.setStyle(TableStyle([
+        ("ALIGN", (0,0), (0,0), "LEFT"),       # Materai di kiri
+        ("ALIGN", (0,1), (0,1), "LEFT"),       # tanda "(" juga di kiri
+        ("TOPPADDING", (0,0), (-1,-1), 2),
+        ("BOTTOMPADDING", (0,0), (-1,-1), 2),
+    ]))
+
+    el.append(ttd_table)
+    el.append(Spacer(1, 10))
+
+    # ================= NB =================
+    el.append(Paragraph(
+        "<b><i>NB:</i></b><br/>"
+        "<i>• Wajib membawa fotokopi KTP pemilik barang.<br/>"
+        "• Pengambilan maksimal 7 (tujuh) hari sejak tanggal pemilihan cara pengambilan.</i>",
+        styles["NB"]
+    ))
+
+    # ================= BUILD =================
+    doc.build(el)
+
+
+def pdf_pengambilan_wakil(path, data, tgl_klaim, tgl_maks):
     styles = getSampleStyleSheet()
 
     # ================= STYLES (LEGA TAPI AMAN) =================
@@ -224,7 +418,7 @@ def buat_pdf_surat(path, data, tgl_klaim, tgl_maks, tipe):
         ["", "", ""],
         ["", "", ""],
         ["(_________________________)", "", "(_________________________)"],
-        ["Nama Jelas", "", "Nama Jelas"],
+        ["", "", ""],
     ], colWidths=[6*cm, 2*cm, 6*cm])
 
     tabel_ttd.setStyle(TableStyle([
