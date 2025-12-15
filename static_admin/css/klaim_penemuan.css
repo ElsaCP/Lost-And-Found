@@ -404,6 +404,84 @@ body {
   color: #004b8d;
 }
 
+.search-filter-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+/* SEARCH */
+.search-box {
+  flex: 1;
+}
+
+.search-box input {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 15px;
+  outline: none;
+  transition: 0.2s ease;
+}
+
+.search-box input:focus {
+  border-color: #0056a6;
+  box-shadow: 0 0 4px rgba(0, 86, 166, 0.3);
+}
+
+/* FILTER BULAN */
+.filter-box {
+  width: 220px;
+}
+
+.filter-box select {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 15px;
+  background-color: #fff;
+  cursor: pointer;
+  outline: none;
+  transition: 0.2s ease;
+}
+
+.filter-box select:focus {
+  border-color: #0056a6;
+  box-shadow: 0 0 4px rgba(0, 86, 166, 0.3);
+}
+
+.surat-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid #0056a6;
+  background: #fff;
+  color: #0056a6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-icon i {
+  font-size: 18px;
+}
+
+.btn-icon:hover {
+  background: #0056a6;
+  color: #fff;
+}
+
 /* === RESPONSIF === */
 @media (max-width: 992px) {
   .header-klaim {

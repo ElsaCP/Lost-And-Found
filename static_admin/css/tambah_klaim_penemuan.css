@@ -10,9 +10,6 @@ body {
   background: #f8f8f8;
 }
 
-/* ================================
-   SIDEBAR STAY FIXED + LOGOUT DI BAWAH
-   ================================ */
 .sidebar {
   position: fixed;
   top: 0;
