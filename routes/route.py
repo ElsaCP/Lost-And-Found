@@ -8,6 +8,14 @@ from config import get_db_connection
 from models import (fetch_public_penemuan, get_penemuan_by_kode, fetch_barang_publik_terbaru,
                     get_laporan_by_email, get_riwayat_klaim_by_email,
                     tambah_riwayat_status, get_riwayat_status)
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import cm
+from reportlab.lib.enums import TA_CENTER, TA_RIGHT, TA_LEFT
+from reportlab.platypus import KeepTogether
+from flask import send_file
+from datetime import datetime, timedelta
 import os
 import mysql.connector
 
@@ -26,6 +34,230 @@ def get_db_connection():
 def home():
     return render_template('user/indexx.html')
 
+@main.route("/download/surat-pengambilan/<kode_laporan>")
+def download_surat_pengambilan(kode_laporan):
+    tipe = request.args.get("tipe")  # sendiri / wakil
+
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT kode_laporan, kode_barang, nama_barang
+        FROM klaim_barang
+        WHERE kode_laporan = %s
+    """, (kode_laporan,))
+    data = cursor.fetchone()
+
+    cursor.close()
+    db.close()
+
+    if not data:
+        return "Data tidak ditemukan", 404
+
+    # ⬇️ TANGGAL DIAMBIL SAAT USER KLIK TOMBOL
+    tanggal_klaim = datetime.now()
+    tanggal_maks = tanggal_klaim + timedelta(days=7)
+
+    tgl_klaim_str = tanggal_klaim.strftime("%d-%m-%Y")
+    tgl_maks_str = tanggal_maks.strftime("%d-%m-%Y")
+
+    filename = f"surat_{tipe}_{kode_laporan}.pdf"
+    path = os.path.join("static", "surat", filename)
+    os.makedirs("static/surat", exist_ok=True)
+
+    buat_pdf_surat(
+        path=path,
+        data=data,
+        tgl_klaim=tgl_klaim_str,
+        tgl_maks=tgl_maks_str,
+        tipe=tipe
+    )
+
+    return send_file(path, as_attachment=True)
+
+def buat_pdf_surat(path, data, tgl_klaim, tgl_maks, tipe):
+    styles = getSampleStyleSheet()
+
+    # ================= STYLES (LEGA TAPI AMAN) =================
+    styles.add(ParagraphStyle(
+        name="Judul",
+        fontSize=10,
+        alignment=TA_CENTER,
+        leading=13,      # ⬅️ agak lega
+        spaceAfter=3
+    ))
+
+    styles.add(ParagraphStyle(
+        name="Isi",
+        fontSize=10,
+        leading=13       # ⬅️ INI KUNCI: tidak mepet
+    ))
+
+    styles.add(ParagraphStyle(
+        name="Kanan",
+        fontSize=10,
+        alignment=TA_RIGHT,
+        leading=13
+    ))
+
+    styles.add(ParagraphStyle(
+        name="Materai",
+        fontSize=8,
+        leading=10
+    ))
+
+    styles.add(ParagraphStyle(
+        name="NB",
+        fontSize=9,
+        leading=12       # ⬅️ NB tetap nyaman dibaca
+    ))
+
+    # ================= DOCUMENT =================
+    doc = SimpleDocTemplate(
+        path,
+        pagesize=A4,
+        rightMargin=2*cm,
+        leftMargin=2*cm,
+        topMargin=2*cm,
+        bottomMargin=2*cm
+    )
+
+    el = []
+
+    # ================= HEADER =================
+    el.append(Paragraph(
+        "<b>PT ANGKASA PURA BANDARA INTERNASIONAL JUANDA</b>",
+        styles["Judul"]
+    ))
+    el.append(Paragraph(
+        "<b><u>SURAT KUASA PENGAMBILAN BARANG</u></b>",
+        styles["Judul"]
+    ))
+    el.append(Spacer(1, 5))
+
+    # ================= DATA PEMBERI KUASA =================
+    el.append(Paragraph("Yang bertanda tangan di bawah ini:", styles["Isi"]))
+    el.append(Spacer(1, 3))
+
+    tabel_pemberi = Table([
+        ["Nama Lengkap", ":", "................................................................."],
+        ["Tempat / Tanggal Lahir", ":", "................................................................."],
+        ["NIK", ":", "................................................................."],
+        ["No. Telepon", ":", "................................................................."],
+        ["Alamat", ":", "................................................................."],
+    ], colWidths=[6*cm, 0.5*cm, 8*cm])
+
+    tabel_pemberi.setStyle(TableStyle([
+        ("TOPPADDING", (0,0), (-1,-1), 2),
+        ("BOTTOMPADDING", (0,0), (-1,-1), 2),
+    ]))
+
+    el.append(tabel_pemberi)
+    el.append(Spacer(1, 5))
+
+    # ================= DATA PENERIMA KUASA =================
+    el.append(Paragraph("Dengan ini memberikan kuasa kepada:", styles["Isi"]))
+    el.append(Spacer(1, 3))
+
+    tabel_penerima = Table([
+        ["Nama Lengkap", ":", "................................................................."],
+        ["Tempat / Tanggal Lahir", ":", "................................................................."],
+        ["NIK", ":", "................................................................."],
+        ["No. Telepon", ":", "................................................................."],
+        ["Alamat", ":", "................................................................."],
+    ], colWidths=[6*cm, 0.5*cm, 8*cm])
+
+    tabel_penerima.setStyle(TableStyle([
+        ("TOPPADDING", (0,0), (-1,-1), 2),
+        ("BOTTOMPADDING", (0,0), (-1,-1), 2),
+    ]))
+
+    el.append(tabel_penerima)
+    el.append(Spacer(1, 5))
+
+    # ================= DATA BARANG =================
+    el.append(Paragraph(
+        "Dengan data barang Lost & Found Bandara Internasional Juanda sebagai berikut:",
+        styles["Isi"]
+    ))
+    el.append(Spacer(1, 3))
+
+    tabel_barang = Table([
+        ["Nama Barang", ":", data["nama_barang"]],
+        ["Kode Barang", ":", data["kode_barang"]],
+        ["Kode Laporan", ":", data["kode_laporan"]],
+        ["Tanggal Klaim", ":", tgl_klaim],
+        ["Tanggal Maksimal Pengambilan", ":", tgl_maks],
+    ], colWidths=[6*cm, 0.5*cm, 8*cm])
+
+    tabel_barang.setStyle(TableStyle([
+        ("TOPPADDING", (0,0), (-1,-1), 2),
+        ("BOTTOMPADDING", (0,0), (-1,-1), 2),
+    ]))
+
+    el.append(tabel_barang)
+    el.append(Spacer(1, 5))
+
+    # ================= PERNYATAAN =================
+    el.append(Paragraph(
+        "Dengan ini saya memberikan kuasa penuh kepada penerima kuasa untuk "
+        "mengambil barang tersebut atas nama saya. Apabila barang tidak diambil "
+        "sampai dengan tanggal maksimal pengambilan sebagaimana tercantum di atas, "
+        "maka barang akan diproses sesuai dengan ketentuan yang berlaku.",
+        styles["Isi"]
+    ))
+    el.append(Spacer(1, 5))
+
+    # ================= TANGGAL =================
+    el.append(Paragraph(
+        "Surabaya, ...................................................",
+        styles["Kanan"]
+    ))
+    el.append(Spacer(1, 5))
+
+    # ================= TTD + NB (PASTI 1 HALAMAN) =================
+    tabel_ttd = Table([
+        ["Pemberi Kuasa", "", "Penerima Kuasa"],
+        ["", "", ""],
+        ["", "", ""],
+        [Paragraph("Materai Rp10.000", styles["Materai"]), "", ""],
+        ["", "", ""],
+        ["", "", ""],
+        ["(_________________________)", "", "(_________________________)"],
+        ["Nama Jelas", "", "Nama Jelas"],
+    ], colWidths=[6*cm, 2*cm, 6*cm])
+
+    tabel_ttd.setStyle(TableStyle([
+        ("ALIGN", (0,0), (-1,1), "CENTER"),
+        ("ALIGN", (0,2), (0,2), "LEFT"),
+        ("TOPPADDING", (0,0), (-1,-1), 2),
+        ("BOTTOMPADDING", (0,0), (-1,-1), 2),
+    ]))
+
+    bagian_akhir = KeepTogether([
+        tabel_ttd,
+        Spacer(1, 3),
+        Table([[
+            Paragraph(
+                "<b><i>NB:</i></b><br/>"
+                "<i>• Membawa fotokopi KTP pemberi dan penerima kuasa.<br/>"
+                "• Surat ini berlaku maksimal 7 (tujuh) hari sejak tanggal diterbitkan.</i>",
+                styles["NB"]
+            )
+        ]], colWidths=[16.5*cm], style=TableStyle([
+            ("LEFTPADDING", (0,0), (-1,-1), 0),
+            ("RIGHTPADDING", (0,0), (-1,-1), 0),
+            ("TOPPADDING", (0,0), (-1,-1), 2),
+            ("BOTTOMPADDING", (0,0), (-1,-1), 0),
+        ]))
+    ])
+
+    el.append(bagian_akhir)
+
+    # ================= BUILD =================
+    doc.build(el)
+
+    
 @main.route('/login')
 def login():
     return render_template('admin/index.html')

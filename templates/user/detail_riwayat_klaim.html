@@ -86,6 +86,40 @@
           <p><strong>Update Terakhir :</strong> {{ data.update_terakhir }}</p>
         </div>
 
+        <!-- NOTIFIKASI SIAP DIAMBIL -->
+        {% if data.status == 'Siap Diambil' %}
+        <div class="alert alert-success shadow-sm mt-4">
+          <h5 class="fw-bold mb-2">
+            <i class="bi bi-check-circle-fill"></i>
+            Data sudah dikonfirmasi
+          </h5>
+
+          <p class="mb-3">
+            Silakan pilih cara pengambilan barang:
+          </p>
+
+          <div class="d-flex gap-3 flex-wrap">
+            <a href="/download/surat-pengambilan/{{ data.kode_laporan }}?tipe=sendiri"
+              class="btn btn-primary">
+              <i class="bi bi-person"></i> Ambil Sendiri
+            </a>
+
+            <a href="/download/surat-pengambilan/{{ data.kode_laporan }}?tipe=wakil"
+              class="btn btn-warning text-dark">
+              <i class="bi bi-people"></i> Diwakilkan
+            </a>
+          </div>
+
+          <hr>
+
+          <small class="text-muted">
+            <strong>NB:</strong><br>
+            • Ambil sendiri → membawa fotokopi KTP<br>
+            • Diwakilkan → membawa fotokopi KTP kedua belah pihak
+          </small>
+        </div>
+        {% endif %}
+
         <!-- Tabel Riwayat -->
         <div class="card shadow-sm">
           <table class="table table-bordered text-center align-middle mb-0">
