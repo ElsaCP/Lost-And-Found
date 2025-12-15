@@ -1035,17 +1035,21 @@ def daftar_klaim_penemuan():
             k.kode_barang,
             k.nama_pelapor,
             p.nama_barang,
-            k.status
+            k.status,
+            k.tanggal_lapor   -- 🔥 INI KUNCINYA
         FROM klaim_barang k
         LEFT JOIN penemuan p ON k.kode_barang = p.kode_barang
-        ORDER BY k.id DESC
+        ORDER BY k.tanggal_lapor DESC
     """)
 
     data_klaim = cursor.fetchall()
     cursor.close()
     conn.close()
 
-    return render_template("admin/klaim_penemuan.html", data_klaim=data_klaim)
+    return render_template(
+        "admin/klaim_penemuan.html",
+        data_klaim=data_klaim
+    )
 
 # ======================
 # UPDATE STATUS KLAIM

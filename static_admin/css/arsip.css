@@ -269,3 +269,53 @@
   color: #0056a6;
   text-decoration: underline;
 }
+
+.search-filter-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+/* SEARCH */
+.search-box {
+  flex: 1;
+}
+
+.search-box input {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 15px;
+  outline: none;
+  transition: 0.2s ease;
+}
+
+.search-box input:focus {
+  border-color: #0056a6;
+  box-shadow: 0 0 4px rgba(0, 86, 166, 0.3);
+}
+
+/* FILTER BULAN */
+.filter-box {
+  width: 220px;
+}
+
+.filter-box select {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 15px;
+  background-color: #fff;
+  cursor: pointer;
+  outline: none;
+  transition: 0.2s ease;
+}
+
+.filter-box select:focus {
+  border-color: #0056a6;
+  box-shadow: 0 0 4px rgba(0, 86, 166, 0.3);
+}

@@ -77,8 +77,32 @@
   <!-- MAIN CONTENT -->
   <div class="content">
 
-    <div class="search-bar">
-      <input type="text" id="searchInput" placeholder="Cari klaim barang...">
+<div class="surat-actions">
+  <button class="btn-icon"
+    title="Surat Kuasa Ambil Sendiri"
+    onclick="openSurat('{{ url_for('admin_bp.static', filename='upload/surat_kuasa_sendiri.pdf') }}')">
+    <i class="bi bi-person-check"></i>
+  </button>
+
+  <button class="btn-icon"
+    title="Surat Kuasa Diwakilkan"
+    onclick="openSurat('{{ url_for('admin_bp.static', filename='upload/surat_kuasa_diwakilkan.pdf') }}')">
+    <i class="bi bi-people-fill"></i>
+  </button>
+</div>
+
+
+    <div class="mb-3">
+      <div class="search-filter-wrapper">
+        <div class="search-box">
+          <input type="text" id="searchInput" placeholder="Cari laporan...">
+        </div>
+        <div class="filter-box">
+          <select id="filterBulan" class="form-select">
+            <!-- opsi otomatis via JS -->
+          </select>
+        </div>
+      </div>
     </div>
 
     <div class="table-container">
@@ -95,7 +119,7 @@
 
       <tbody>
         {% for item in data_klaim %}
-        <tr>
+        <tr data-bulan="{{ item['tanggal_lapor'][:7] }}">
           <td>{{ item.kode_klaim }}</td>
           <td>{{ item.nama_barang }}</td>
           <td>{{ item.nama_pelapor }}</td>
@@ -120,7 +144,6 @@
     </div>
   </div>
 
-  <!-- SCRIPT -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="{{ url_for('admin_bp.static', filename='js/klaim_penemuan.js') }}"></script>
   <script src="{{ url_for('admin_bp.static', filename='js/logout.js') }}"></script>

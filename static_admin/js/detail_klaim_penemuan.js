@@ -137,34 +137,110 @@ document.addEventListener("DOMContentLoaded", async function () {
         });
     });
 
-// ============================
-// LIGHTBOX / ZOOM GAMBAR
-// ============================
-const zoomImgs = document.querySelectorAll(".zoomable");
-const lightbox = document.getElementById("lightbox");
-const lightboxImg = document.getElementById("lightbox-img");
-const closeBtn = document.querySelector("#lightbox .lightbox-close");
+    // ============================
+    // LIGHTBOX / ZOOM GAMBAR
+    // ============================
+    const zoomImgs = document.querySelectorAll(".zoomable");
+    const lightbox = document.getElementById("lightbox");
+    const lightboxImg = document.getElementById("lightbox-img");
+    const closeBtn = document.querySelector("#lightbox .lightbox-close");
 
-zoomImgs.forEach(img => {
-    img.addEventListener("click", () => {
-        lightbox.style.display = "flex";
-        lightboxImg.src = img.src;
-        document.body.style.overflow = "hidden"; // disable scroll
+    zoomImgs.forEach(img => {
+        img.addEventListener("click", () => {
+            lightbox.style.display = "flex";
+            lightboxImg.src = img.src;
+            document.body.style.overflow = "hidden"; // disable scroll
+        });
     });
-});
 
-// tombol X
-closeBtn.onclick = () => {
-    lightbox.style.display = "none";
-    document.body.style.overflow = "auto";
-};
-
-// klik area gelap
-lightbox.onclick = (e) => {
-    if (e.target === lightbox) {
+    // tombol X
+    closeBtn.onclick = () => {
         lightbox.style.display = "none";
         document.body.style.overflow = "auto";
-    }
-};
+    };
 
+    // klik area gelap
+    lightbox.onclick = (e) => {
+        if (e.target === lightbox) {
+            lightbox.style.display = "none";
+            document.body.style.overflow = "auto";
+        }
+    };
+
+
+    const btnExport = document.getElementById("btnExport");
+
+    if (btnExport) {
+    btnExport.addEventListener("click", async () => {
+        const { jsPDF } = window.jspdf;
+        const element = document.querySelector(".detail-wrapper");
+        const hideElements = document.querySelectorAll(".no-print");
+
+        Swal.fire({
+        title: "Membuat PDF...",
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+        });
+
+        // SEMBUNYIKAN TOMBOL
+        hideElements.forEach(el => el.style.display = "none");
+
+        // 🔥 AKTIFKAN MODE EXPORT (INI KUNCI UTAMA)
+        document.body.classList.add("pdf-export");
+
+        try {
+        const canvas = await html2canvas(element, {
+            scale: 2,
+            useCORS: true,
+            scrollY: -window.scrollY
+        });
+
+        const imgData = canvas.toDataURL("image/png");
+        const pdf = new jsPDF("p", "mm", "a4");
+
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+
+        const imgWidth = pageWidth;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        let remainingHeight = imgHeight;
+        let yOffset = 0;
+
+        /* =========================
+            HALAMAN 1
+        ========================= */
+        pdf.addImage(imgData, "PNG", 0, yOffset, imgWidth, imgHeight);
+        remainingHeight -= pageHeight;
+
+        /* =========================
+            HALAMAN 2 & SETERUSNYA
+            (TANPA ZOOM, TANPA NUMPUK)
+        ========================= */
+        while (remainingHeight > 0) {
+            yOffset -= pageHeight;
+            pdf.addPage();
+            pdf.addImage(imgData, "PNG", 0, yOffset, imgWidth, imgHeight);
+            remainingHeight -= pageHeight;
+        }
+
+        const kode =
+            document.getElementById("kodeLaporan")?.innerText || "Klaim";
+
+        pdf.save(`Detail_Klaim_${kode}.pdf`);
+
+        Swal.close();
+
+        } catch (err) {
+        console.error(err);
+        Swal.fire("Gagal", "Gagal membuat PDF", "error");
+        } finally {
+        // 🔥 MATIKAN MODE EXPORT
+        document.body.classList.remove("pdf-export");
+
+        // TAMPILKAN LAGI TOMBOL
+        hideElements.forEach(el => el.style.display = "");
+        }
+    });
+    }
 });
