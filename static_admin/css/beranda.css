@@ -77,12 +77,10 @@ body {
   font-weight: 600;
 }
 
-/* Emoji as icon styling */
 .sidebar nav a::before {
   font-size: 20px;
 }
 
-/* Logout */
 .sidebar .logout {
   display: flex;
   align-items: center;
@@ -101,7 +99,6 @@ body {
   background: #003c7a;
 }
 
-/* === KONTEN UTAMA === */
 .content {
   flex: 1;
   padding: 20px 40px;
@@ -120,25 +117,22 @@ body {
   justify-content: space-between;
   padding: 0 20px;
 
-  /* === FIX BIAR HEADER STAY === */
   position: fixed;
   top: 0;
-  left: 193px; /* sejajar sidebar */
+  left: 193px; 
   right: 0;
   z-index: 9998;
 }
-
 
 .sidebar .logo-front {
   position: absolute;
   top: 55%;
   left: 55%;
   transform: translate(-50%, -55%);
-  width: 100px; /* kecilin logo di dalam rectangle */
+  width: 100px;
   height: auto;
 }
 
-/* Judul tengah */
 .header h2 {
   position: absolute;
   left: 50%;
@@ -148,31 +142,28 @@ body {
   font-weight: 600;
 }
 
-/* === Header Logo (atas) === */
 .header .logo-wrapper {
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* geser seluruh blok ke kiri */
+  justify-content: flex-start; 
   height: 100px;
-  margin-left: -10px; /* tambah geser kiri */
+  margin-left: -10px; 
 }
 
 .header .rectangle-bg {
   height: 60px;
   width: auto;
-  margin-left: -10px; /* rectangle ikut kiri */
+  margin-left: -10px; 
 }
 
 .header .logo-front {
   position: absolute;
-  left: 15px; /* logo depannya geser kiri */
+  left: 15px; 
   height: 50px;
   width: auto;
 }
 
-
-/* Table */
 table {
   margin: 0 auto;
   width: 100%;
@@ -212,7 +203,6 @@ tbody tr:nth-child(even) {
   background: none;
 }
 
-/* Profile Icon */
 .profile-icon {
 width: 60px;
 height: 40px;
@@ -249,15 +239,13 @@ font-size: 30px;
 .profile-icon img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* biar fotonya pas tanpa ketarik */
+  object-fit: cover; 
 }
 
 .profile-icon:hover {
   transform: scale(1.05);
 }
 
-
-/* ===== Tabel Beranda mirip daftar kehilangan ===== */
 #dataTable {
   width: 100%;
   border-collapse: collapse;
@@ -295,14 +283,12 @@ font-size: 30px;
   background-color: #f2f2f2;
 }
 
-/* Lebar kolom supaya mirip daftar kehilangan */
-#dataTable thead th:nth-child(1) { width: 18%; }  /* Kode */
-#dataTable thead th:nth-child(2) { width: 24%; }  /* Nama Barang */
-#dataTable thead th:nth-child(3) { width: 20%; }  /* Jenis Laporan */
-#dataTable thead th:nth-child(4) { width: 22%; }  /* Status */
-#dataTable thead th:nth-child(5) { width: 16%; }  /* Aksi */
+#dataTable thead th:nth-child(1) { width: 18%; }  
+#dataTable thead th:nth-child(2) { width: 24%; } 
+#dataTable thead th:nth-child(3) { width: 20%; }  
+#dataTable thead th:nth-child(4) { width: 22%; }
+#dataTable thead th:nth-child(5) { width: 16%; }  
 
-/* Dropdown status */
 #dataTable select.status-select {
   width: 100%;
   box-sizing: border-box;
@@ -314,7 +300,6 @@ font-size: 30px;
   border: 1px solid #ccc;
 }
 
-/* Tombol aksi */
 #dataTable tbody td.aksi {
   display: flex;
   justify-content: center;
@@ -353,21 +338,17 @@ font-size: 30px;
   transform: translateY(6px);
 }
 
-/* =============================================
-   SEARCH + FILTER BULAN DI SEBELAH KANAN ATAS
-   ============================================= */
 .search-filter-wrapper {
   display: flex;
-  justify-content: flex-start; /* mulai dari kiri */
+  justify-content: flex-start;
   align-items: center;
-  gap: 15px; /* jarak antar search & filter */
+  gap: 15px; 
   margin-bottom: 20px;
 }
 
-/* Search tetap fleksibel */
 .search-filter-wrapper .search-box {
-  flex: 1;              /* search melebar sesuai sisa ruang */
-  min-width: 0;         /* supaya tidak meluber */
+  flex: 1;              
+  min-width: 0;        
 }
 
 .search-filter-wrapper .search-box input {
@@ -378,13 +359,12 @@ font-size: 30px;
   font-size: 16px;
 }
 
-/* Filter tetap kotak lebar ke kiri */
 .search-filter-wrapper .filter-box {
-  width: 260px; /* lebar tetap */
+  width: 260px;
 }
 
 .search-filter-wrapper .filter-box select.form-select {
-  width: 100%;   /* ikut lebar wrapper filter */
+  width: 100%;   
   padding: 10px 12px;
   border-radius: 8px;
   border: 1px solid #ccc;
@@ -393,7 +373,6 @@ font-size: 30px;
   cursor: pointer;
 }
 
-/* Responsif: bila layar sempit, stack vertikal */
 @media (max-width: 768px) {
   .search-filter-wrapper {
     flex-direction: column;

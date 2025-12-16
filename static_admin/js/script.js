@@ -1,11 +1,7 @@
-// ==============================
-// LOGIN VALIDATION & SUBMISSION
-// ==============================
 document.addEventListener('DOMContentLoaded', function () {
   const loginForm = document.getElementById('loginForm');
   const navbar = document.querySelector('.navbar');
 
-  // === HANDLE LOGIN FORM ===
   if (loginForm) {
     loginForm.addEventListener('submit', async function (e) {
       e.preventDefault();
@@ -16,24 +12,20 @@ document.addEventListener('DOMContentLoaded', function () {
       const submitBtn = loginForm.querySelector('button[type="submit"]');
       const originalText = submitBtn.textContent;
 
-      // --- VALIDASI EMAIL ---
       if (!validateEmail(email)) {
         showNotif('Format email tidak valid!');
         return;
       }
 
-      // --- VALIDASI PASSWORD ---
       if (password.length < 6) {
         showNotif('Password minimal 6 karakter!');
         return;
       }
 
-      // Ubah tombol ke mode loading
       submitBtn.textContent = 'Loading...';
       submitBtn.disabled = true;
 
       try {
-        // Kirim data ke route Flask dengan prefix /admin
         const response = await fetch('/admin/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -46,7 +38,6 @@ document.addEventListener('DOMContentLoaded', function () {
           if (result.success) {
             showNotif('Login berhasil!');
             setTimeout(() => {
-              // arahkan ke halaman beranda admin
               window.location.href = '/admin/beranda';
             }, 1000);
           } else {
@@ -60,15 +51,11 @@ document.addEventListener('DOMContentLoaded', function () {
         showNotif('Terjadi kesalahan koneksi.');
       }
 
-      // Kembalikan tombol
       submitBtn.textContent = originalText;
       submitBtn.disabled = false;
     });
   }
 
-  // ==============================
-  // NAVBAR SCROLL EFFECT
-  // ==============================
   let lastScroll = 0;
   if (navbar) {
     window.addEventListener('scroll', () => {
@@ -82,9 +69,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // ==============================
-  // PASSWORD VISIBILITY TOGGLE
-  // ==============================
   const pwdInput = document.getElementById('password');
   const toggleBtn = document.querySelector('.toggle-password');
   const eyeIcon = document.getElementById('eyeIcon');
@@ -98,9 +82,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // ==============================
-  // CIRCLE DECORATION ANIMATION
-  // ==============================
   const circles = document.querySelectorAll('.circle-decoration');
   circles.forEach(circle => {
     circle.addEventListener('mouseenter', () => {
@@ -113,9 +94,6 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 
-// ==============================
-// HELPER FUNCTIONS
-// ==============================
 function validateEmail(email) {
   const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return re.test(email.toLowerCase());

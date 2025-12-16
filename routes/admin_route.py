@@ -15,15 +15,12 @@ admin_bp = Blueprint(
     template_folder='../templates/admin'
 )
 
-# ======================
-# 🔗 KONEKSI DATABASE
-# ======================
 def get_db_connection():
     return mysql.connector.connect(
         host='localhost',
         user='root',         
         password='',         
-        database='lostfound'  # pastikan sesuai dengan database kamu
+        database='lostfound'  
     )
     
 @admin_bp.route('/login', methods=['GET', 'POST'])
