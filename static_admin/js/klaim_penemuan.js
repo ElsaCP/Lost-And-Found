@@ -115,12 +115,8 @@ filterBulan.addEventListener("change", applyFilter);
 applyFilter();
 });
 
-function openSurat(tipe) {
-  let file = tipe === "wakil"
-    ? "surat_kuasa_diwakilkan.pdf"
-    : "surat_kuasa_ambil_sendiri.pdf";
-
-  window.open(`/admin/static_admin/upload/${file}`, "_blank");
+function openSurat(url) {
+  window.open(url, "_blank");
 }
 
 
