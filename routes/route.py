@@ -67,7 +67,7 @@ def download_surat_pengambilan(kode_laporan):
 
     # Ambil tanggal klaim dari database (hanya tanggal)
     tanggal_str = data["tanggal_lapor"]  # misal '25/11/2025'
-    tanggal_klaim = datetime.strptime(tanggal_str, "%d/%m/%Y")
+    tanggal_klaim = datetime.strptime(tanggal_str, "%d-%m-%Y")
 
     # Tanggal maksimal 7 hari dari saat user menekan tombol
     tanggal_maks = datetime.now() + timedelta(days=7)
@@ -645,7 +645,7 @@ def api_riwayat_klaim(email):
             k.catatan_admin,
             p.gambar_barang,
             p.lokasi,
-            DATE_FORMAT(k.update_terakhir, '%d/%m/%Y %H:%i') AS update_terakhir
+            DATE_FORMAT(k.update_terakhir, '%d-%m-%Y %H:%i') AS update_terakhir
         FROM klaim_barang k
         LEFT JOIN penemuan p ON k.kode_barang = p.kode_barang
         WHERE k.email = %s
@@ -1136,7 +1136,9 @@ def update_status(kode_kehilangan):
         # Update status di tabel kehilangan
         cursor.execute("""
             UPDATE kehilangan 
-            SET status=%s, update_terakhir=DATE_FORMAT(NOW(), '%d-%m-%Y %H:%i', catatan=%s 
+            SET status=%s,
+                catatan=%s,
+                update_terakhir=DATE_FORMAT(NOW(), '%d-%m-%Y %H:%i')
             WHERE kode_kehilangan=%s
         """, (status_baru, catatan, kode_kehilangan))
 
