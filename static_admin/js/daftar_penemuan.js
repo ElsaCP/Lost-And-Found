@@ -4,16 +4,10 @@ document.addEventListener("DOMContentLoaded", function () {
   const searchInput = document.getElementById("searchInput");
   const filterBulan = document.getElementById("filterBulan");
 
-  // =====================================
-  // SIMPAN STATUS SEBELUM DIUBAH
-  // =====================================
   document.querySelectorAll(".status-select").forEach(sel => {
     sel.dataset.prev = sel.value;
   });
 
-  // =====================================
-  // UBAH STATUS
-  // =====================================
   document.addEventListener("change", function (e) {
     if (!e.target.matches(".status-select")) return;
 
@@ -82,9 +76,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // =====================================
-  // DELETE / VERIFY
-  // =====================================
   document.addEventListener("click", function (e) {
     const btn = e.target.closest("button");
     if (!btn) return;
@@ -93,7 +84,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const kode = row.dataset.kode;
     if (!kode) return;
 
-    // DELETE
     if (btn.classList.contains("btn-delete")) {
       Swal.fire({
         title: "Hapus Laporan?",
@@ -122,13 +112,11 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
- // VERIFY
 if (btn.classList.contains("btn-verify")) {
 
   const statusSelect = row.querySelector(".status-select");
   const currentStatus = statusSelect ? statusSelect.value : "";
 
-  // 🔹 JIKA SUDAH VERIFIKASI → INFO SAJA
   if (currentStatus === "Verifikasi") {
     Swal.fire({
       icon: "info",
@@ -139,7 +127,6 @@ if (btn.classList.contains("btn-verify")) {
     return;
   }
 
-  // 🔹 KODE ASLI KAMU (TIDAK DIUBAH)
   Swal.fire({
     title: "Verifikasi Barang?",
     text: `Barang dengan kode ${kode} akan diverifikasi.`,
@@ -179,9 +166,7 @@ if (btn.classList.contains("btn-verify")) {
   return;
 }
   });
-  // =====================================
-  // SEARCH & FILTER BULAN
-  // =====================================
+
   if (searchInput && filterBulan && rows.length) {
 
     // setup 3 bulan terakhir

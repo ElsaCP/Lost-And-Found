@@ -49,7 +49,7 @@ def login_admin():
         session['admin_logged_in'] = True
         session['admin_email'] = admin['email']
         session['admin_id'] = admin['id']
-        session['role'] = admin['role']   # 🔥 WAJIB!
+        session['role'] = admin['role']  
 
         return jsonify({'success': True, 'role': admin['role']})
     else:
@@ -61,9 +61,6 @@ def auto_arsip_laporan():
 
     batas_tanggal = datetime.now() - timedelta(days=90)
 
-    # =========================
-    # KEHILANGAN
-    # =========================
     cur.execute("""
         SELECT kode_kehilangan, tanggal_kehilangan
         FROM kehilangan
@@ -72,9 +69,6 @@ def auto_arsip_laporan():
     for row in cur.fetchall():
         pindahkan_ke_arsip(row['kode_kehilangan'], 'kehilangan')
 
-    # =========================
-    # PENEMUAN
-    # =========================
     cur.execute("""
         SELECT kode_barang, tanggal_lapor
         FROM penemuan
@@ -83,9 +77,6 @@ def auto_arsip_laporan():
     for row in cur.fetchall():
         pindahkan_ke_arsip(row['kode_barang'], 'penemuan')
 
-    # =========================
-    # KLAIM
-    # =========================
     cur.execute("""
         SELECT kode_laporan, tanggal_lapor
         FROM klaim_barang
@@ -99,7 +90,6 @@ def auto_arsip_laporan():
     
 @admin_bp.route('/beranda', endpoint='beranda_admin')
 def beranda_admin():
-    # 🔥 AUTO PINDAH KE ARSIP (>3 BULAN)
     auto_arsip_laporan()
 
     conn = get_db_connection()
@@ -168,9 +158,6 @@ def beranda_admin():
 
     return render_template("admin/beranda.html", data=data)
 
-# ======================
-# 🗑️ ROUTE HAPUS SEMUA JENIS LAPORAN
-# ======================
 @admin_bp.route('/beranda/hapus', methods=['POST'])
 def hapus_laporan():
     if not session.get('admin_logged_in'):
@@ -216,9 +203,6 @@ def hapus_laporan():
         cursor.close()
         conn.close()
 
-# ======================
-# 📋 DAFTAR KEHILANGAN
-# ======================
 @admin_bp.route('/kehilangan/daftar')
 def daftar_kehilangan():
     if not session.get('admin_logged_in'):
@@ -603,9 +587,7 @@ def hapus_kehilangan(id):
     # Kembali ke daftar kehilangan setelah hapus
     return redirect(url_for('admin_bp.daftar_kehilangan'))
 
-# ======================
-# 📦 PENEMUAN
-# ======================
+
 @admin_bp.route('/penemuan/daftar')
 def daftar_penemuan():
     if not session.get('admin_logged_in'):
