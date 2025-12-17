@@ -16,8 +16,12 @@ from reportlab.lib.enums import TA_CENTER, TA_RIGHT, TA_LEFT
 from reportlab.platypus import KeepTogether
 from flask import send_file
 from datetime import datetime, timedelta
+from config import Config
 import os
 import mysql.connector
+import hmac
+import hashlib
+
 
 main = Blueprint('main', __name__)
 
@@ -29,6 +33,19 @@ def get_db_connection():
         password="",  # ubah sesuai MySQL kamu
         database="lostfound"
     )
+SIGN_SECRET = Config.SIGN_SECRET
+
+def sign_payload(payload: str):
+    return hmac.new(
+        SIGN_SECRET.encode(),
+        payload.encode(),
+        hashlib.sha256
+    ).hexdigest()
+
+
+def verify_payload(payload: str, signature: str):
+    return hmac.compare_digest(sign_payload(payload), signature)
+
 # Halaman utama
 @main.route('/')
 def home():
@@ -47,50 +64,86 @@ BULAN_ID = {
 
 @main.route("/download/surat-pengambilan/<kode_laporan>")
 def download_surat_pengambilan(kode_laporan):
-    tipe = request.args.get("tipe")  # sendiri / wakil
+    tipe = request.args.get("tipe")        # sendiri / wakil
+    exp = request.args.get("exp")          # tanggal maksimal
+    sig = request.args.get("sig")          # signature
 
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
-
     cursor.execute("""
         SELECT kode_laporan, kode_barang, nama_barang, tanggal_lapor
         FROM klaim_barang
         WHERE kode_laporan = %s
     """, (kode_laporan,))
     data = cursor.fetchone()
-
     cursor.close()
     db.close()
 
     if not data:
         return "Data tidak ditemukan", 404
 
-    # Ambil tanggal klaim dari database (hanya tanggal)
+    # ======================
+    # TANGGAL KLAIM
+    # ======================
     tanggal_db = data["tanggal_lapor"]
-    if isinstance(tanggal_db, str):
-        tanggal_klaim = datetime.strptime(tanggal_db, "%Y-%m-%d")
-    else:
-        tanggal_klaim = datetime.combine(tanggal_db, datetime.min.time())
-    # Tanggal maksimal 7 hari dari saat user menekan tombol
-    tanggal_maks = datetime.now() + timedelta(days=7)
+    tanggal_klaim = (
+        datetime.strptime(tanggal_db, "%Y-%m-%d")
+        if isinstance(tanggal_db, str)
+        else datetime.combine(tanggal_db, datetime.min.time())
+    )
 
-    # Format tanggal dengan nama bulan Indonesia
+    # ======================
+    # JIKA PERTAMA KALI KLIK
+    # ======================
+    if not exp or not sig:
+        tanggal_maks = datetime.now() + timedelta(days=7)
+        exp = tanggal_maks.strftime("%Y-%m-%d")
+
+        payload = f"{kode_laporan}|{tipe}|{exp}"
+        sig = sign_payload(payload)
+
+        return redirect(
+            url_for(
+                "main.download_surat_pengambilan",
+                kode_laporan=kode_laporan,
+                tipe=tipe,
+                exp=exp,
+                sig=sig
+            )
+        )
+
+    # ======================
+    # VALIDASI URL
+    # ======================
+    payload = f"{kode_laporan}|{tipe}|{exp}"
+    if not verify_payload(payload, sig):
+        return "Link surat tidak valid", 403
+
+    tanggal_maks = datetime.strptime(exp, "%Y-%m-%d")
+
+    # ======================
+    # FORMAT TANGGAL
+    # ======================
     tgl_klaim_str = f"{tanggal_klaim.day} {BULAN_ID[tanggal_klaim.month]} {tanggal_klaim.year}"
     tgl_maks_str = f"{tanggal_maks.day} {BULAN_ID[tanggal_maks.month]} {tanggal_maks.year}"
 
+    # ======================
+    # BUAT PDF (TEMP)
+    # ======================
     filename = f"surat_{tipe}_{kode_laporan}.pdf"
-    path = os.path.join("static", "surat", filename)
-    os.makedirs("static/surat", exist_ok=True)
+    path = os.path.join("static", "temp", filename)
+    os.makedirs("static/temp", exist_ok=True)
 
-    buat_pdf_surat(
-        path=path,
-        data=data,
-        tgl_klaim=tgl_klaim_str,
-        tgl_maks=tgl_maks_str,
-        tipe=tipe
-    )
+    buat_pdf_surat(path, data, tgl_klaim_str, tgl_maks_str, tipe)
 
-    return send_file(path, as_attachment=True)
+    response = send_file(path, as_attachment=True)
+
+    @response.call_on_close
+    def cleanup():
+        if os.path.exists(path):
+            os.remove(path)
+
+    return response
 
 def buat_pdf_surat(path, data, tgl_klaim, tgl_maks, tipe):
     if tipe == "sendiri":
@@ -452,7 +505,6 @@ def pdf_pengambilan_wakil(path, data, tgl_klaim, tgl_maks):
 
     # ================= BUILD =================
     doc.build(el)
-
     
 @main.route('/login')
 def login():

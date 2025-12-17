@@ -17,3 +17,4 @@ class Config:
     SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root:@127.0.0.1:3306/lostfound?charset=utf8mb4"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = "supersecretkey123"
+    SIGN_SECRET = "lostfound-juanda-aman"
