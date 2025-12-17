@@ -11,6 +11,11 @@ body {
   padding: 0 20px;   /* desktop tetap */
   display: flex;
   align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1100; /* lebih tinggi dari header */
 }
 
 .navbar-brand img {
@@ -128,7 +133,7 @@ body {
   justify-content: space-between;
   align-items: center;
   position: relative;
-  z-index: 1050; /* lebih tinggi dari navbar-collapse */
+  z-index: 1000; /* lebih tinggi dari navbar-collapse */
 }
 
 /* Panah kiri - ukuran seperti .arrow-left */

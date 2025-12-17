@@ -66,9 +66,11 @@ def download_surat_pengambilan(kode_laporan):
         return "Data tidak ditemukan", 404
 
     # Ambil tanggal klaim dari database (hanya tanggal)
-    tanggal_str = data["tanggal_lapor"]  # misal '25/11/2025'
-    tanggal_klaim = datetime.strptime(tanggal_str, "%d-%m-%Y")
-
+    tanggal_db = data["tanggal_lapor"]
+    if isinstance(tanggal_db, str):
+        tanggal_klaim = datetime.strptime(tanggal_db, "%Y-%m-%d")
+    else:
+        tanggal_klaim = datetime.combine(tanggal_db, datetime.min.time())
     # Tanggal maksimal 7 hari dari saat user menekan tombol
     tanggal_maks = datetime.now() + timedelta(days=7)
 
@@ -529,9 +531,9 @@ def submit_kehilangan():
 
         # === Format tanggal & waktu ===
         now = datetime.now()
-        tanggal_submit = now.strftime("%d-%m-%Y")
+        tanggal_submit = now.date()
         waktu_submit = now.strftime("%H:%M")
-        update_terakhir = now.strftime("%d-%m-%Y %H:%M")
+        update_terakhir = now
 
         # === Koneksi database ===
         db = get_db_connection()
@@ -916,7 +918,7 @@ def submit_klaim():
         kode_laporan = f"LF-C{last_num + 1:03d}"
 
         now = datetime.now()
-        tanggal = now.strftime("%d-%m-%Y")
+        tanggal = now.date()
         waktu = now.strftime("%H:%M")
 
         # =========================
@@ -1067,9 +1069,7 @@ def detail_cek(kode_kehilangan):
 
     # ====== FORMAT TANGGAL SUBMIT (dd/mm/yyyy) ======
     try:
-        laporan["tanggal_submit_fmt"] = datetime.strptime(
-            laporan["tanggal_submit"], "%d-%m-%Y"
-        ).strftime("%d %B %Y")
+        laporan["tanggal_submit_fmt"] = laporan["tanggal_submit"].strftime("%d %B %Y")
     except:
         laporan["tanggal_submit_fmt"] = laporan["tanggal_submit"]
 
@@ -1138,14 +1138,14 @@ def update_status(kode_kehilangan):
             UPDATE kehilangan 
             SET status=%s,
                 catatan=%s,
-                update_terakhir=DATE_FORMAT(NOW(), '%d-%m-%Y %H:%i')
+                update_terakhir=NOW()
             WHERE kode_kehilangan=%s
         """, (status_baru, catatan, kode_kehilangan))
 
         # Tambahkan ke riwayat_status
         cursor.execute("""
             INSERT INTO riwayat_status (kode_kehilangan, status, catatan, waktu_update)
-            VALUES (%s, %s, %s, DATE_FORMAT(NOW(), '%d-%m-%Y %H:%i'))
+            VALUES (%s, %s, %s, ())
         """, (kode_kehilangan, status_baru, catatan))
 
         db.commit()
