@@ -1,8 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-
-  // =====================================================
-  // 🔄 FITUR UBAH STATUS
-  // =====================================================
+/*habis penemuan dan kehilangan*/
   document.querySelectorAll(".status-select").forEach(select => {
     select.dataset.prevIndex = select.selectedIndex;
 
@@ -68,9 +65,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // =====================================================
-  // 🎛 AKSI BUTTON (VIEW / EDIT / DELETE / VERIFY)
-  // =====================================================
   document.addEventListener("click", async function (e) {
     const btn = e.target.closest("button");
     if (!btn) return;
@@ -79,7 +73,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const jenis = btn.dataset.jenis?.toLowerCase();
     const row = btn.closest("tr");
 
-    // VIEW
     if (btn.classList.contains("btn-view")) {
       if (jenis === "kehilangan")
         location.href = `/admin/kehilangan/detail?kode=${kode}&from=beranda`;
@@ -89,7 +82,6 @@ document.addEventListener("DOMContentLoaded", function () {
         location.href = `/admin/penemuan/klaim/detail/${kode}?from=beranda`;
     }
 
-    // EDIT
     if (btn.classList.contains("btn-edit")) {
       if (jenis === "klaim") {
         Swal.fire("Info", "Klaim tidak bisa diedit", "info");
@@ -98,7 +90,6 @@ document.addEventListener("DOMContentLoaded", function () {
       location.href = `/admin/${jenis}/edit?kode=${kode}&from=beranda`;
     }
 
-    // DELETE
     if (btn.classList.contains("btn-delete")) {
       Swal.fire({
         title: "Hapus Laporan?",
@@ -120,7 +111,6 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
 
-    // VERIFY
     if (btn.classList.contains("btn-verify")) {
       let apiUrl = "";
       let payload = {};
@@ -144,9 +134,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  // =====================================================
-  // 🗓 FILTER 3 BULAN TERAKHIR + SEARCH (GABUNGAN)
-  // =====================================================
   const filterBulan = document.getElementById("filterBulan");
   const searchInput = document.getElementById("searchInput");
   const rows = document.querySelectorAll("#dataTable tbody tr");
@@ -185,14 +172,13 @@ document.addEventListener("DOMContentLoaded", function () {
       const tanggalStr = row.dataset.tanggal;
       if (!tanggalStr) return;
 
-      // ambil YYYY-MM-DD saja
       const cleanTanggal = tanggalStr.split(" ")[0]; 
       const parts = cleanTanggal.split("-");
 
       const tgl = new Date(
-        parseInt(parts[0]),      // year
-        parseInt(parts[1]) - 1,  // month (0-based)
-        parseInt(parts[2])       // day
+        parseInt(parts[0]),      
+        parseInt(parts[1]) - 1, 
+        parseInt(parts[2])     
       );
       const key = `${tgl.getFullYear()}-${String(tgl.getMonth() + 1).padStart(2, "0")}`;
 
@@ -213,4 +199,3 @@ document.addEventListener("DOMContentLoaded", function () {
   applyFilter();
 
 });
-

@@ -11,7 +11,6 @@
 </head>
 <body>
 
-  <!-- SIDEBAR -->
   <div class="sidebar">
     <div>
       <div class="logo-wrapper">
@@ -35,7 +34,6 @@
     <a href="{{ url_for('admin_bp.logout_admin') }}" class="logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
   </div>
 
-  <!-- MAIN CONTENT -->
   <div class="content">
     <div class="header">
       <div class="logo-wrapper">
@@ -55,7 +53,6 @@
       </div>
     </div>
 
-    <!-- FILTER & SEARCH -->
     <div class="mb-3">
       <div class="search-filter-wrapper">
         <div class="search-box">
@@ -63,13 +60,11 @@
         </div>
         <div class="filter-box">
           <select id="filterBulan" class="form-select">
-            <!-- opsi otomatis via JS -->
           </select>
         </div>
       </div>
     </div>
 
-    <!-- TABLE -->
     <table id="dataTable">
       <thead>
         <tr>

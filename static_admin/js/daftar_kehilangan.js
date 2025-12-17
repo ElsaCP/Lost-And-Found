@@ -1,12 +1,4 @@
-// ===============================
-// === daftar_kehilangan.js =====
-// ===============================
-
 document.addEventListener("DOMContentLoaded", function () {
-
-  // ===============================
-  // === Fitur Ubah Status ===
-  // ===============================
   const statusSelects = document.querySelectorAll("#dataTable select");
 
   statusSelects.forEach(select => {
@@ -75,9 +67,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // ===============================
-  // === Tombol Aksi ===
-  // ===============================
   document.addEventListener("click", function (e) {
     const btn = e.target.closest("button");
     if (!btn) return;
@@ -138,7 +127,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const statusSelect = row.querySelector(".status-select");
     const currentStatus = statusSelect ? statusSelect.value : "";
 
-    // 🔹 JIKA SUDAH VERIFIKASI → INFO SAJA
     if (currentStatus === "Verifikasi") {
       Swal.fire({
         icon: "info",
@@ -149,7 +137,6 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    // 🔹 KODE ASLI KAMU (TIDAK DIUBAH)
     Swal.fire({
       title: "Verifikasi Laporan?",
       text: `Ubah status laporan ${kode} menjadi 'Verifikasi'?`,
@@ -192,9 +179,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  // =====================================================
-  // 🗓 FILTER BULAN + SEARCH (GABUNGAN, FIX)
-  // =====================================================
   const filterBulan = document.getElementById("filterBulan");
   const searchInput = document.getElementById("searchInput");
   const rows = document.querySelectorAll("#dataTable tbody tr");
@@ -233,14 +217,13 @@ document.addEventListener("DOMContentLoaded", function () {
       const tanggalStr = row.dataset.tanggal;
       if (!tanggalStr) return;
 
-      // ambil YYYY-MM-DD saja
       const cleanTanggal = tanggalStr.split(" ")[0]; 
       const parts = cleanTanggal.split("-");
 
       const tgl = new Date(
-        parseInt(parts[0]),      // year
-        parseInt(parts[1]) - 1,  // month (0-based)
-        parseInt(parts[2])       // day
+        parseInt(parts[0]),      
+        parseInt(parts[1]) - 1,  
+        parseInt(parts[2])      
       );
       const key = `${tgl.getFullYear()}-${String(tgl.getMonth() + 1).padStart(2, "0")}`;
 

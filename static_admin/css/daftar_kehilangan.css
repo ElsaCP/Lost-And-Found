@@ -1,4 +1,3 @@
-/* ===== SIDEBAR SUBMENU ===== */
 .submenu {
   margin-left: 20px;
   display: flex;
@@ -15,7 +14,6 @@
   color: #0056a6;
 }
 
-/* ===== TABEL ===== */
 #dataTable {
   width: 100%;
   border-collapse: collapse;
@@ -42,26 +40,22 @@
   background-color: #f2f2f2;
 }
 
-/* Lebar kolom agar sesuai isi */
-#dataTable thead th:nth-child(1) { width: 18%; }  /* Kode Kehilangan */
-#dataTable thead th:nth-child(2) { width: 24%; }  /* Nama Barang */
-#dataTable thead th:nth-child(3) { width: 20%; }  /* Jenis Laporan */
-#dataTable thead th:nth-child(4) { width: 22%; }  /* Status diperlebar */
-#dataTable thead th:nth-child(5) { width: 16%; }  /* Aksi */
+#dataTable thead th:nth-child(1) { width: 18%; }  
+#dataTable thead th:nth-child(2) { width: 24%; }  
+#dataTable thead th:nth-child(3) { width: 20%; }  
+#dataTable thead th:nth-child(4) { width: 22%; }  
+#dataTable thead th:nth-child(5) { width: 16%; }  
 
-/* Select status tetap pakai garis kotak browser */
 #dataTable select {
   width: 100%;
   box-sizing: border-box;
   padding: 4px 6px;
   text-align: center;
   font-size: 15px;
-  /* border default browser tetap ada */
   background-color: #fff;
-  border-radius: 4px; /* opsional, biar sudut sedikit membulat */
+  border-radius: 4px; 
 }
 
-/* ===== TOMBOL AKSI ===== */
 .aksi {
   display: flex;
   justify-content: center;
@@ -94,20 +88,17 @@
   transform: scale(1.1);
 }
 
-/* Ikon tombol turun sedikit supaya vertikal center */
 .aksi button i,
 .aksi a i {
   display: inline-block;
   transform: translateY(6px);
 }
 
-/* Warna ikon tombol */
 .btn-view i { color: #007bff; }
 .btn-edit i { color: #ffc107; }
 .btn-delete i { color: #dc3545; }
 .btn-verify i { color: #2ecc71; }
 
-/* Hilangkan border sel di kolom aksi & padding */
 #dataTable tbody td.aksi {
   border: none;
   padding: 8px 0;
