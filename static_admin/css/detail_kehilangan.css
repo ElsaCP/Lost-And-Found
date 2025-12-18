@@ -481,3 +481,31 @@ input[readonly] {
   font-size: 1.1rem;
 }
 
+/* ===============================
+   FIX LOKASI LAINNYA BIAR SEJAJAR
+   =============================== */
+#lokasiLainContainer {
+  display: flex ;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 12px;
+  padding-left: 0;
+}
+
+/* Samakan label kiri */
+#lokasiLainContainer label {
+  width: 150px;              /* SAMA dengan form-row label */
+  font-weight: 500;
+  color: #333;
+  margin: 0;
+}
+
+/* Input kanan */
+#lokasiLainContainer input {
+  flex: 1;
+  max-width: 520px;
+  padding: 7px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+}

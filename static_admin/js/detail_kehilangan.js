@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  const btnUpdate = document.getElementById("btnUpdateStatus");
+  const btnUpdate = document.getElementById("btnUpdate");
   const btnKembali = document.getElementById("btnKembali");
   const btnExport = document.getElementById("btnExportPdf");
 

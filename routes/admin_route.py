@@ -230,7 +230,7 @@ def tambah_kehilangan():
         return redirect(url_for('admin_bp.login_admin'))
 
     conn = get_db_connection()
-    cursor = conn.cursor()
+    cursor = conn.cursor(dictionary=True, buffered=True)
 
     # ======================
     # GET — tampilkan halaman + kode otomatis
@@ -250,7 +250,7 @@ def tambah_kehilangan():
     # ======================
     # POST — proses data form
     # ======================
-    kode_kehilangan = request.form.get('kode_kehilangan')  # ← Kode sudah otomatis
+    kode_kehilangan = request.form.get('kode_kehilangan')
     nama_pelapor = request.form.get('nama_pelapor', '').strip()
     email = request.form.get('email', '').strip()
     no_telp = request.form.get('no_telp', '').strip()
@@ -264,19 +264,24 @@ def tambah_kehilangan():
     lokasi = request.form.get('lokasi', '').strip()
     tanggal_kehilangan = request.form.get('tanggal_kehilangan')
     status = request.form.get('status', 'Verifikasi').strip()
-    catatan = ''  # tidak digunakan tapi kolomnya ada
 
-    # Validasi server: field wajib isi
+    # ======================
+    # VALIDASI SERVER
+    # ======================
     required = [
-        nama_pelapor, email, no_telp, nama_barang,
-        kategori, deskripsi, lokasi, tanggal_kehilangan
+        nama_pelapor, email, no_telp,
+        nama_barang, kategori, deskripsi,
+        lokasi, tanggal_kehilangan
     ]
-    if any((v is None or str(v).strip() == '') for v in required):
+
+    if any(not v for v in required):
         cursor.close()
         conn.close()
-        return "Error: Semua field wajib diisi (server-side).", 400
+        return "Error: Semua field wajib diisi.", 400
 
-    # Handle upload foto
+    # ======================
+    # HANDLE UPLOAD FOTO
+    # ======================
     foto = request.files.get('foto')
     foto_filename = None
 
@@ -286,7 +291,9 @@ def tambah_kehilangan():
         foto_filename = foto.filename
         foto.save(os.path.join(upload_folder, foto_filename))
 
-    # Waktu submit
+    # ======================
+    # WAKTU
+    # ======================
     now = datetime.now()
     tanggal_submit = now.strftime("%Y-%m-%d")
     waktu_submit = now.strftime("%H:%M")
@@ -1156,7 +1163,7 @@ def arsip():
         password="",
         database="lostfound"
     )
-    cur = db.cursor(dictionary=True)
+    cur = db.cursor(dictionary=True, buffered=True)
 
     cur.execute("SELECT * FROM arsip ORDER BY tanggal_arsip DESC")
     data_arsip = cur.fetchall()
@@ -1164,21 +1171,34 @@ def arsip():
     cur.close()
     db.close()
 
-    return render_template('arsip.html', role=session.get('role'), data_arsip=data_arsip)
+    return render_template(
+        'arsip.html',
+        role=session.get('role'),
+        data_arsip=data_arsip
+    )
 
 def pindahkan_ke_arsip(kode, jenis_tabel):
     db = get_db_connection()
-    cur = db.cursor(dictionary=True)
+    cur = db.cursor(dictionary=True, buffered=True)
 
     # ============================
     # Ambil data sesuai tabel asal
     # ============================
     if jenis_tabel.lower() == "kehilangan":
-        cur.execute("SELECT * FROM kehilangan WHERE kode_kehilangan=%s", (kode,))
+        cur.execute(
+            "SELECT * FROM kehilangan WHERE kode_kehilangan=%s",
+            (kode,)
+        )
     elif jenis_tabel.lower() == "penemuan":
-        cur.execute("SELECT * FROM penemuan WHERE kode_barang=%s", (kode,))
+        cur.execute(
+            "SELECT * FROM penemuan WHERE kode_barang=%s",
+            (kode,)
+        )
     else:  # klaim barang
-        cur.execute("SELECT * FROM klaim_barang WHERE kode_laporan=%s", (kode,))
+        cur.execute(
+            "SELECT * FROM klaim_barang WHERE kode_laporan=%s",
+            (kode,)
+        )
 
     data = cur.fetchone()
     if not data:
@@ -1191,16 +1211,19 @@ def pindahkan_ke_arsip(kode, jenis_tabel):
     # ============================
     if jenis_tabel.lower() == "kehilangan":
         tanggal = data.get("tanggal_kehilangan")
-    else:  # penemuan atau klaim barang
+    else:
         tanggal = data.get("tanggal_lapor")
- 
-    # Ambil waktu sekarang tanpa detik
+
+    # Waktu arsip (tanpa detik)
     tanggal_arsip = datetime.now().replace(second=0, microsecond=0)
 
+    # ============================
+    # Insert ke tabel arsip
+    # ============================
     cur.execute("""
         INSERT INTO arsip 
         (kode, nama_barang, jenis, kategori, lokasi, tanggal, foto, 
-        nama_pelapor, no_telp, email, status, tanggal_arsip)
+         nama_pelapor, no_telp, email, status, tanggal_arsip)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """, (
         kode,
@@ -1214,18 +1237,27 @@ def pindahkan_ke_arsip(kode, jenis_tabel):
         data.get("no_telp") or data.get("telp") or '-',
         data.get("email") or '-',
         data.get("status") or 'Selesai',
-        tanggal_arsip  # simpan tanpa detik
+        tanggal_arsip
     ))
 
     # ============================
     # Hapus dari tabel asal
     # ============================
     if jenis_tabel.lower() == "kehilangan":
-        cur.execute("DELETE FROM kehilangan WHERE kode_kehilangan=%s", (kode,))
+        cur.execute(
+            "DELETE FROM kehilangan WHERE kode_kehilangan=%s",
+            (kode,)
+        )
     elif jenis_tabel.lower() == "penemuan":
-        cur.execute("DELETE FROM penemuan WHERE kode_barang=%s", (kode,))
+        cur.execute(
+            "DELETE FROM penemuan WHERE kode_barang=%s",
+            (kode,)
+        )
     else:
-        cur.execute("DELETE FROM klaim_barang WHERE kode_laporan=%s", (kode,))
+        cur.execute(
+            "DELETE FROM klaim_barang WHERE kode_laporan=%s",
+            (kode,)
+        )
 
     db.commit()
     cur.close()
@@ -1243,41 +1275,48 @@ def detail_arsip():
         return redirect(url_for('admin_bp.arsip'))
 
     conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM arsip WHERE kode=%s", (kode,))
+    cursor = conn.cursor(dictionary=True, buffered=True)
+
+    cursor.execute(
+        "SELECT * FROM arsip WHERE kode=%s",
+        (kode,)
+    )
     arsip = cursor.fetchone()
+
     cursor.close()
     conn.close()
 
     if not arsip:
         flash("Data arsip tidak ditemukan", "danger")
         return redirect(url_for('admin_bp.arsip'))
-    
+
     return render_template(
         'detail_arsip.html',
-        data=arsip,     
+        data=arsip,
         role=session.get('role')
     )
-    
 
 def generate_kode_kehilangan(cursor):
     cursor.execute("SELECT kode_kehilangan FROM kehilangan")
-    main_codes = [row[0] for row in cursor.fetchall() if row[0]]
+    main_codes = [row['kode_kehilangan'] for row in cursor.fetchall() if row['kode_kehilangan']]
+
     cursor.execute("SELECT kode FROM arsip WHERE jenis='kehilangan'")
-    archive_codes = [row[0] for row in cursor.fetchall() if row[0]]
+    archive_codes = [row['kode'] for row in cursor.fetchall() if row['kode']]
+
     all_codes = main_codes + archive_codes
     if not all_codes:
         return "LF-L001"
-    max_num = max(int(re.search(r"LF-L(\d+)", code).group(1)) for code in all_codes if re.search(r"LF-L(\d+)", code))
-    return f"LF-L{max_num+1:03d}"
 
+    max_num = max(
+        int(re.search(r"LF-L(\d+)", code).group(1))
+        for code in all_codes if re.search(r"LF-L(\d+)", code)
+    )
+    return f"LF-L{max_num + 1:03d}"
 
 def generate_kode_penemuan(cursor):
-    # Ambil dari tabel penemuan
     cursor.execute("SELECT kode_barang FROM penemuan")
     main_codes = [row['kode_barang'] for row in cursor.fetchall() if row['kode_barang']]
 
-    # Ambil dari tabel arsip (jenis penemuan)
     cursor.execute("SELECT kode FROM arsip WHERE jenis='penemuan'")
     archive_codes = [row['kode'] for row in cursor.fetchall() if row['kode']]
 
@@ -1285,9 +1324,11 @@ def generate_kode_penemuan(cursor):
     if not all_codes:
         return "LF-F001"
 
-    max_num = max(int(re.search(r"LF-F(\d+)", code).group(1)) 
-                  for code in all_codes if re.search(r"LF-F(\d+)", code))
-    return f"LF-F{max_num+1:03d}"
+    max_num = max(
+        int(re.search(r"LF-F(\d+)", code).group(1))
+        for code in all_codes if re.search(r"LF-F(\d+)", code)
+    )
+    return f"LF-F{max_num + 1:03d}"
 
 def generate_kode_klaim(cursor):
     import re

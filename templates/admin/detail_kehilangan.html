@@ -85,7 +85,7 @@
       <img
         id="fotoBarang"
         class="foto-barang"
-        src="{{ url_for('static', filename='uploads/' ~ (laporan.foto_barang if laporan.foto_barang else 'placeholder.png')) }}"
+        src="{{ url_for('static', filename='uploads/' ~ (laporan.foto if laporan.foto else 'placeholder.png')) }}"
         alt="Foto Barang">
 
       <!-- ✅ KODE KEHILANGAN (SEPERTI PENEMUAN) -->

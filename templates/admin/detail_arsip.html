@@ -61,7 +61,7 @@
            alt="Foto Barang">
 
       <div class="kode-laporan">{{ data.kode or '-' }}</div>
-      <div class="jenis-laporan-label">{{ jenis_laporan }}</div>
+      <div class="jenis-laporan-label">{{ data.jenis|title }}</div>
     </div>
 
     <div class="right-panel">
@@ -94,7 +94,7 @@
         </div>
 
         <div class="data-row"><span>Jenis Laporan :</span>
-          <strong>{{ jenis_laporan }}</strong>
+          <strong>{{ data.jenis|title }}</strong>
         </div>
 
         <div class="data-row"><span>Lokasi :</span>

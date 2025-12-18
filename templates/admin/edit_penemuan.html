@@ -150,15 +150,15 @@
           </select>
         </div>
 
-        <div id="lokasiLainContainer" style="display:none;">
-          <label for="lokasi_lain">Tulis Lokasi Lainnya :</label>
-          <input
-            type="text"
-            id="lokasi_lain"
-            name="lokasi_lain"
-            placeholder="Contoh: Toilet dekat Gate C"
-            value="{{ laporan.lokasi_lain or '' }}">
-        </div>
+        <div id="lokasiLainContainer" class="data-row" style="display:none;">
+  <span>Tulis Lokasi Lainnya :</span>
+  <input
+    type="text"
+    id="lokasi_lain"
+    name="lokasi_lain"
+    placeholder="Contoh: Toilet dekat Gate C"
+    value="{{ laporan.lokasi_lain or '' }}">
+</div>
 
         <!-- Lokasi final -->
         <input type="hidden" id="lokasi" name="lokasi" value="{{ laporan.lokasi }}">
@@ -169,26 +169,28 @@
         </div>
       </div>
 
-        <div class="data-section">
-          <div class="data-row">
-            <span>Tanggal Penemuan :</span>
-            <input type="text" value="{{ laporan.tanggal_lapor }}" readonly>
-          </div>
+      <div class="data-section">
+        <h3>Waktu & Status</h3>
 
-          <div class="data-row">
-            <span>Update Terakhir :</span>
-            <input id="updateTerakhir" type="text"
-                   name="update_terakhir"
-                   value="{{ laporan.update_terakhir }}">
-          </div>
-          <div class="data-row">
-            <span>Status :</span>
-            <select id="status" name="status" class="status-select">
-              <option value="Pending" {% if laporan.status == 'Pending' %}selected{% endif %}>Pending</option>
-              <option value="Verifikasi" {% if laporan.status == 'Verifikasi' %}selected{% endif %}>Verifikasi</option>
-              <option value="Selesai" {% if laporan.status == 'Selesai' %}selected{% endif %}>Selesai</option>
-            </select>
-          </div>
+        <div class="data-row">
+          <span>Tanggal Penemuan :</span>
+          <strong>{{ laporan.tanggal_lapor }}</strong>
+        </div>
+
+        <div class="data-row">
+          <span>Update Terakhir :</span>
+          <strong>{{ laporan.update_terakhir }}</strong>
+        </div>
+
+        <div class="data-row">
+          <span>Status :</span>
+          <select id="status" name="status" class="status-select">
+            <option value="Pending" {% if laporan.status == 'Pending' %}selected{% endif %}>Pending</option>
+            <option value="Verifikasi" {% if laporan.status == 'Verifikasi' %}selected{% endif %}>Verifikasi</option>
+            <option value="Selesai" {% if laporan.status == 'Selesai' %}selected{% endif %}>Selesai</option>
+          </select>
+        </div>
+      </div>
 
         <div class="button-group">
         <button type="button"

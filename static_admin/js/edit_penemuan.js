@@ -10,18 +10,24 @@ document.addEventListener("DOMContentLoaded", () => {
     "Terminal 2": ["Gate C", "Gate D", "Waiting Area T2", "Bagasi", "Lainnya"],
   };
 
-  /** =====================================
-   *  PREFILL DATA DARI MYSQL
-   *  ===================================== */
-  const lokasiDB = lokasiInput.value;  // contoh: "Terminal 2 - Gate C"
+const lokasiDB = lokasiInput.value?.trim() || "";
+
+// ===== PREFILL LOKASI =====
+if (lokasiDB) {
+  let terminalDB = "";
+  let tempatDB = "";
 
   if (lokasiDB.includes(" - ")) {
-    const [terminalDB, tempatDB] = lokasiDB.split(" - ");
+    [terminalDB, tempatDB] = lokasiDB.split(" - ");
+  } else {
+    // fallback kalau data lama
+    terminalDB = terminalSelect.value;
+    tempatDB = lokasiDB;
+  }
 
-    // set terminal
+  if (terminalDB) {
     terminalSelect.value = terminalDB;
 
-    // rebuild tempat dropdown
     tempatSelect.innerHTML = '<option value="">Pilih Lokasi</option>';
     if (tempatData[terminalDB]) {
       tempatData[terminalDB].forEach((t) => {
@@ -32,17 +38,17 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
-    // cek apakah tempat ada dalam daftar
-    if (tempatData[terminalDB].includes(tempatDB)) {
+    if (tempatData[terminalDB]?.includes(tempatDB)) {
       tempatSelect.value = tempatDB;
       lokasiLainContainer.style.display = "none";
     } else {
-      // berarti ini lokasi lainnya
       tempatSelect.value = "Lainnya";
       lokasiLainContainer.style.display = "block";
       lokasiLain.value = tempatDB;
     }
   }
+}
+
 
   /** Update Lokasi otomatis */
   function updateLokasi() {
@@ -86,13 +92,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   lokasiLain.addEventListener("input", updateLokasi);
-
-  // === Flatpickr untuk update terakhir ===
-  flatpickr("#updateTerakhir", {
-    dateFormat: "Y-m-d H:i",
-    enableTime: true,
-    time_24hr: true,
-  });
 
   // Tombol kembali
   document.getElementById("btnKembali").addEventListener("click", function () {
