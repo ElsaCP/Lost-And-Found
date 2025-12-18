@@ -64,27 +64,30 @@ BULAN_ID = {
 
 @main.route("/download/surat-pengambilan/<kode_laporan>")
 def download_surat_pengambilan(kode_laporan):
-    tipe = request.args.get("tipe")        # sendiri / wakil
-    exp = request.args.get("exp")          # tanggal maksimal
-    sig = request.args.get("sig")          # signature
+    tipe = request.args.get("tipe")  # sendiri / wakil
+
+    if tipe not in ["sendiri", "wakil"]:
+        return "Tipe pengambilan tidak valid", 400
 
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
+
     cursor.execute("""
-        SELECT kode_laporan, kode_barang, nama_barang, tanggal_lapor
+        SELECT kode_laporan, kode_barang, nama_barang,
+               tanggal_lapor, tgl_pilih_pengambilan
         FROM klaim_barang
         WHERE kode_laporan = %s
     """, (kode_laporan,))
     data = cursor.fetchone()
-    cursor.close()
-    db.close()
 
     if not data:
+        cursor.close()
+        db.close()
         return "Data tidak ditemukan", 404
 
-    # ======================
-    # TANGGAL KLAIM
-    # ======================
+    # =========================
+    # TANGGAL KLAIM (DB)
+    # =========================
     tanggal_db = data["tanggal_lapor"]
     tanggal_klaim = (
         datetime.strptime(tanggal_db, "%Y-%m-%d")
@@ -92,44 +95,40 @@ def download_surat_pengambilan(kode_laporan):
         else datetime.combine(tanggal_db, datetime.min.time())
     )
 
-    # ======================
-    # JIKA PERTAMA KALI KLIK
-    # ======================
-    if not exp or not sig:
-        tanggal_maks = datetime.now() + timedelta(days=7)
-        exp = tanggal_maks.strftime("%Y-%m-%d")
+    # =========================
+    # KUNCI TANGGAL PERTAMA
+    # =========================
+    if data["tgl_pilih_pengambilan"] is None:
+        # ⬅️ PERTAMA KALI USER KLIK
+        tgl_pilih = datetime.today().date()
 
-        payload = f"{kode_laporan}|{tipe}|{exp}"
-        sig = sign_payload(payload)
+        cursor.execute("""
+            UPDATE klaim_barang
+            SET tgl_pilih_pengambilan = %s
+            WHERE kode_laporan = %s
+        """, (tgl_pilih, kode_laporan))
+        db.commit()
+    else:
+        # ⬅️ KLIK ULANG → AMBIL DARI DB
+        tgl_pilih = data["tgl_pilih_pengambilan"]
 
-        return redirect(
-            url_for(
-                "main.download_surat_pengambilan",
-                kode_laporan=kode_laporan,
-                tipe=tipe,
-                exp=exp,
-                sig=sig
-            )
-        )
+    cursor.close()
+    db.close()
 
-    # ======================
-    # VALIDASI URL
-    # ======================
-    payload = f"{kode_laporan}|{tipe}|{exp}"
-    if not verify_payload(payload, sig):
-        return "Link surat tidak valid", 403
+    # =========================
+    # HITUNG TANGGAL MAKS
+    # =========================
+    tanggal_maks = datetime.combine(tgl_pilih, datetime.min.time()) + timedelta(days=7)
 
-    tanggal_maks = datetime.strptime(exp, "%Y-%m-%d")
-
-    # ======================
+    # =========================
     # FORMAT TANGGAL
-    # ======================
+    # =========================
     tgl_klaim_str = f"{tanggal_klaim.day} {BULAN_ID[tanggal_klaim.month]} {tanggal_klaim.year}"
     tgl_maks_str = f"{tanggal_maks.day} {BULAN_ID[tanggal_maks.month]} {tanggal_maks.year}"
 
-    # ======================
-    # BUAT PDF (TEMP)
-    # ======================
+    # =========================
+    # BUAT PDF
+    # =========================
     filename = f"surat_{tipe}_{kode_laporan}.pdf"
     path = os.path.join("static", "temp", filename)
     os.makedirs("static/temp", exist_ok=True)

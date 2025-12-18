@@ -288,7 +288,7 @@ body {
 }
 
 .info-item p {
-    font-size: 20px;
+    font-size: 16px;
     margin: 3px 0 0;
     font-weight: 500;
     color: #333;
@@ -428,12 +428,6 @@ body {
         font-size: 1.4rem !important;
     }
 
-    /* Label seperti "Nama", "Email", "Lokasi", dll */
-    .info-card .info-item span {
-        font-size: 1.15rem !important;
-        font-weight: 700 !important;
-    }
-
     /* Isi data seperti nama pelapor, deskripsi, dll */
     .info-card .info-item p {
         font-size: 1.25rem !important;
@@ -536,4 +530,30 @@ footer {
 .profile-icon i {
   color: white;
   font-size: 35px;
+}
+/* === FORCE JAWABAN TIDAK BOLD === */
+.info-answer,
+.info-answer span {
+  font-weight: 400 !important;
+  color: #000 !important;
+}
+
+/* === MOBILE OVERRIDE (INI YANG SERING KETINGGALAN) === */
+@media (max-width: 576px) {
+  .info-card .info-item span {
+    font-size: 1.15rem !important;
+  }
+    /* LABEL (tetap biru & bold) */
+  .info-card .info-label {
+    font-size: 1.15rem !important;
+    font-weight: 600 !important;
+    color: #0056a6 !important;
+  }
+
+  .info-answer,
+  .info-answer span {
+    font-size: 1.15rem !important;
+    font-weight: 300 !important;
+    color: #000 !important;
+  }
 }
