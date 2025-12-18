@@ -98,7 +98,6 @@
         <div class="data-row">
           <span>Status :</span>
           <select id="status" class="status-select">
-            <option value="Pending" {% if laporan.status == 'Pending' %}selected{% endif %}>Pending</option>
             <option value="Verifikasi" {% if laporan.status == 'Verifikasi' %}selected{% endif %}>Verifikasi</option>
             <option value="Selesai" {% if laporan.status == 'Selesai' %}selected{% endif %}>Selesai</option>
           </select>

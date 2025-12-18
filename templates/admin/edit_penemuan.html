@@ -151,14 +151,14 @@
         </div>
 
         <div id="lokasiLainContainer" class="data-row" style="display:none;">
-  <span>Tulis Lokasi Lainnya :</span>
-  <input
-    type="text"
-    id="lokasi_lain"
-    name="lokasi_lain"
-    placeholder="Contoh: Toilet dekat Gate C"
-    value="{{ laporan.lokasi_lain or '' }}">
-</div>
+          <span>Tulis Lokasi Lainnya :</span>
+          <input
+            type="text"
+            id="lokasi_lain"
+            name="lokasi_lain"
+            placeholder="Contoh: Toilet dekat Gate C"
+            value="{{ laporan.lokasi_lain or '' }}">
+        </div>
 
         <!-- Lokasi final -->
         <input type="hidden" id="lokasi" name="lokasi" value="{{ laporan.lokasi }}">
@@ -185,7 +185,6 @@
         <div class="data-row">
           <span>Status :</span>
           <select id="status" name="status" class="status-select">
-            <option value="Pending" {% if laporan.status == 'Pending' %}selected{% endif %}>Pending</option>
             <option value="Verifikasi" {% if laporan.status == 'Verifikasi' %}selected{% endif %}>Verifikasi</option>
             <option value="Selesai" {% if laporan.status == 'Selesai' %}selected{% endif %}>Selesai</option>
           </select>
