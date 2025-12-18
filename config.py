@@ -12,9 +12,20 @@ def get_db_connection():
         charset='utf8mb4'
     )
 
+# config.py
 class Config:
-    # Gunakan database yang kamu pakai (lostfound atau inj_db)
     SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root:@127.0.0.1:3306/lostfound?charset=utf8mb4"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
     SECRET_KEY = "supersecretkey123"
     SIGN_SECRET = "lostfound-juanda-aman"
+
+    # ================= EMAIL =================
+    MAIL_SERVER = "smtp.gmail.com"
+    MAIL_PORT = 587
+    MAIL_USE_TLS = True
+    MAIL_USERNAME = "juandalostfound@gmail.com"
+    MAIL_PASSWORD = "hjycmxzwduzdbxlj"   # APP PASSWORD
+    MAIL_DEFAULT_SENDER = ("Lost & Found Juanda", "juandalostfound@gmail.com")
+
+    ADMIN_EMAIL = "juandalostfound@gmail.com"

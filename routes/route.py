@@ -17,6 +17,9 @@ from reportlab.platypus import KeepTogether
 from flask import send_file
 from datetime import datetime, timedelta
 from config import Config
+from extensions import mail
+from flask_mail import Message
+from config import Config
 import os
 import mysql.connector
 import hmac
@@ -547,7 +550,6 @@ def barang_terbaru():
 def form_kehilangan():
     return render_template('user/form_kehilangan.html')
 
-# --- Route untuk menerima data kehilangan ---
 @main.route("/submit-kehilangan", methods=["POST"])
 def submit_kehilangan():
     try:
@@ -590,43 +592,37 @@ def submit_kehilangan():
         db = get_db_connection()
         cursor = db.cursor()
 
-        # Ambil kode terakhir
+        # === Generate kode kehilangan ===
         cursor.execute("SELECT kode_kehilangan FROM kehilangan ORDER BY id DESC LIMIT 1")
         last_record = cursor.fetchone()
 
         if last_record:
-            last_code = last_record[0] 
-            last_number = int(last_code.split("LF-L")[-1])
-            new_number = last_number + 1
+            last_number = int(last_record[0].split("LF-L")[-1]) + 1
         else:
-            new_number = 1
+            last_number = 1
 
-        kode_kehilangan = f"LF-L{new_number:03d}"
+        kode_kehilangan = f"LF-L{last_number:03d}"
 
         # === Simpan ke database ===
-        query = """
+        cursor.execute("""
             INSERT INTO kehilangan (
                 kode_kehilangan, nama_pelapor, email, no_telp, asal_negara, kota,
                 nama_barang, kategori, jenis_laporan, deskripsi, lokasi,
                 tanggal_kehilangan, tanggal_submit, waktu_submit, update_terakhir,
                 catatan, status, foto
             ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-        """
-        values = (
+        """, (
             kode_kehilangan, nama_pelapor, email, no_telp, asal_negara, kota,
             nama_barang, kategori, jenis_laporan, deskripsi, lokasi,
             tanggal_kehilangan, tanggal_submit, waktu_submit, update_terakhir,
             "Menunggu verifikasi oleh admin", "Pending", foto_filename
-        )
-
-        cursor.execute(query, values)
+        ))
         db.commit()
-        
-        # === Simpan riwayat status pertama ===
-        cursor = db.cursor()
+
+        # === Simpan riwayat status ===
         cursor.execute("""
             INSERT INTO riwayat_status (kode_kehilangan, status, catatan, waktu_update)
-            VALUES (%s, %s, %s, DATE_FORMAT(NOW(), '%d-%m-%Y %H:%i'))
+            VALUES (%s, %s, %s, NOW())
         """, (
             kode_kehilangan,
             "Pending",
@@ -634,21 +630,70 @@ def submit_kehilangan():
         ))
         db.commit()
 
-        # === Tutup koneksi ===
         cursor.close()
         db.close()
+
+        # =========================
+        # 📧 KIRIM EMAIL
+        # =========================
+        try:
+            # Email ke USER
+            msg_user = Message(
+                subject="Konfirmasi Laporan Kehilangan - Lost & Found Juanda",
+                recipients=[email]
+            )
+            msg_user.body = f"""
+Halo {nama_pelapor},
+
+Laporan kehilangan Anda berhasil kami terima.
+
+Kode Laporan : {kode_kehilangan}
+Nama Barang  : {nama_barang}
+Lokasi       : {lokasi}
+Waktu Submit : {tanggal_submit} {waktu_submit}
+
+Silakan simpan kode laporan ini untuk mengecek status laporan Anda.
+
+Terima kasih,
+Lost & Found Bandara Internasional Juanda
+"""
+            mail.send(msg_user)
+
+            # Email ke ADMIN
+            msg_admin = Message(
+                subject=f"[LAPORAN BARU] {kode_kehilangan} - {nama_barang}",
+                recipients=[Config.ADMIN_EMAIL]
+            )
+            msg_admin.body = f"""
+📢 LAPORAN KEHILANGAN BARU
+
+Kode Laporan : {kode_kehilangan}
+Nama Pelapor: {nama_pelapor}
+Email       : {email}
+No Telp     : {no_telp}
+Barang      : {nama_barang}
+Kategori    : {kategori}
+Lokasi      : {lokasi}
+Tanggal     : {tanggal_submit} {waktu_submit}
+
+Silakan login admin untuk melakukan verifikasi.
+"""
+            mail.send(msg_admin)
+
+        except Exception as e:
+            print("❌ Gagal kirim email:", e)
 
         # === Response sukses ===
         return jsonify({
             "success": True,
             "kode_kehilangan": kode_kehilangan,
             "lokasi": lokasi,
-            "tanggal_submit": tanggal_submit,
+            "tanggal_submit": str(tanggal_submit),
             "waktu_submit": waktu_submit
         })
 
     except Exception as e:
-        print("Error:", e)
+        print("❌ ERROR SUBMIT KEHILANGAN:", e)
         return jsonify({"success": False, "message": str(e)})
 
 @main.route('/riwayat-klaim')
