@@ -110,6 +110,13 @@
           <strong>{{ data.tanggal_arsip.strftime('%Y-%m-%d %H:%M') if data.tanggal_arsip else '-' }}</strong>
         </div>
 
+        {% if data.status != 'Selesai' and data.tanggal_inactive %}
+        <div class="data-row">
+          <span>Tanggal Inactive :</span>
+          <strong>{{ data.tanggal_inactive.strftime('%Y-%m-%d') }}</strong>
+        </div>
+        {% endif %}
+
         <div class="data-row"><span>Status :</span>
           <strong>{{ data.status or '-' }}</strong>
         </div>

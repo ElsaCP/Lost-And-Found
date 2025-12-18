@@ -6,6 +6,8 @@ import time
 from werkzeug.utils import secure_filename
 from flask import request
 import re
+from dateutil.relativedelta import relativedelta
+
 
 admin_bp = Blueprint(
     'admin_bp',
@@ -55,39 +57,6 @@ def login_admin():
     else:
         return jsonify({'success': False, 'message': 'Email atau password salah!'})
 
-def auto_arsip_laporan():
-    db = get_db_connection()
-    cur = db.cursor(dictionary=True)
-
-    batas_tanggal = datetime.now() - timedelta(days=90)
-
-    cur.execute("""
-        SELECT kode_kehilangan, tanggal_kehilangan
-        FROM kehilangan
-        WHERE tanggal_kehilangan < %s
-    """, (batas_tanggal,))
-    for row in cur.fetchall():
-        pindahkan_ke_arsip(row['kode_kehilangan'], 'kehilangan')
-
-    cur.execute("""
-        SELECT kode_barang, tanggal_lapor
-        FROM penemuan
-        WHERE tanggal_lapor < %s
-    """, (batas_tanggal,))
-    for row in cur.fetchall():
-        pindahkan_ke_arsip(row['kode_barang'], 'penemuan')
-
-    cur.execute("""
-        SELECT kode_laporan, tanggal_lapor
-        FROM klaim_barang
-        WHERE tanggal_lapor < %s
-    """, (batas_tanggal,))
-    for row in cur.fetchall():
-        pindahkan_ke_arsip(row['kode_laporan'], 'klaim')
-
-    cur.close()
-    db.close()
-    
 @admin_bp.route('/beranda', endpoint='beranda_admin')
 def beranda_admin():
     auto_arsip_laporan()
@@ -1157,19 +1126,14 @@ def arsip():
     if not session.get('admin_logged_in'):
         return redirect(url_for('admin_bp.login_admin'))
 
-    db = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="",
-        database="lostfound"
-    )
-    cur = db.cursor(dictionary=True, buffered=True)
+    auto_arsip_laporan()   # 🔥 TAMBAHKAN INI
 
-    cur.execute("SELECT * FROM arsip ORDER BY tanggal_arsip DESC")
-    data_arsip = cur.fetchall()
-
-    cur.close()
-    db.close()
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True, buffered=True)
+    cursor.execute("SELECT * FROM arsip ORDER BY tanggal_arsip DESC")
+    data_arsip = cursor.fetchall()
+    cursor.close()
+    conn.close()
 
     return render_template(
         'arsip.html',
@@ -1177,28 +1141,90 @@ def arsip():
         data_arsip=data_arsip
     )
 
-def pindahkan_ke_arsip(kode, jenis_tabel):
+def auto_arsip_laporan():
     db = get_db_connection()
-    cur = db.cursor(dictionary=True, buffered=True)
+    cur = db.cursor(dictionary=True)
+
+    batas_tanggal = datetime.now() - relativedelta(months=3)
+    tanggal_inactive = datetime.now().replace(second=0, microsecond=0)
+
+    # ======================
+    # KEHILANGAN
+    # ======================
+    cur.execute("""
+        SELECT kode_kehilangan
+        FROM kehilangan
+        WHERE tanggal_kehilangan < %s
+          AND status != 'Selesai'
+    """, (batas_tanggal,))
+
+    for row in cur.fetchall():
+        pindahkan_ke_arsip(
+            row['kode_kehilangan'],
+            'kehilangan',
+            tanggal_inactive   # 🔥 INI YANG KEMARIN KURANG
+        )
+
+    # ======================
+    # PENEMUAN
+    # ======================
+    cur.execute("""
+        SELECT kode_barang
+        FROM penemuan
+        WHERE tanggal_lapor < %s
+          AND status != 'Selesai'
+    """, (batas_tanggal,))
+
+    for row in cur.fetchall():
+        pindahkan_ke_arsip(
+            row['kode_barang'],
+            'penemuan',
+            tanggal_inactive
+        )
+
+    # ======================
+    # KLAIM
+    # ======================
+    cur.execute("""
+        SELECT kode_laporan
+        FROM klaim_barang
+        WHERE tanggal_lapor < %s
+          AND status != 'Selesai'
+    """, (batas_tanggal,))
+
+    for row in cur.fetchall():
+        pindahkan_ke_arsip(
+            row['kode_laporan'],
+            'klaim',
+            tanggal_inactive
+        )
+
+    cur.close()
+    db.close()
+
+def pindahkan_ke_arsip(kode, jenis_tabel, tanggal_inactive=None):
+    db = get_db_connection()
+    cur = db.cursor(dictionary=True)
 
     # ============================
-    # Ambil data sesuai tabel asal
+    # Tentukan tabel & kolom tanggal
     # ============================
-    if jenis_tabel.lower() == "kehilangan":
-        cur.execute(
-            "SELECT * FROM kehilangan WHERE kode_kehilangan=%s",
-            (kode,)
-        )
-    elif jenis_tabel.lower() == "penemuan":
-        cur.execute(
-            "SELECT * FROM penemuan WHERE kode_barang=%s",
-            (kode,)
-        )
-    else:  # klaim barang
-        cur.execute(
-            "SELECT * FROM klaim_barang WHERE kode_laporan=%s",
-            (kode,)
-        )
+    if jenis_tabel == "kehilangan":
+        cur.execute("SELECT * FROM kehilangan WHERE kode_kehilangan=%s", (kode,))
+        kolom_tanggal = "tanggal_kehilangan"
+
+    elif jenis_tabel == "penemuan":
+        cur.execute("SELECT * FROM penemuan WHERE kode_barang=%s", (kode,))
+        kolom_tanggal = "tanggal_lapor"
+
+    elif jenis_tabel in ("klaim", "klaim_barang"):
+        cur.execute("SELECT * FROM klaim_barang WHERE kode_laporan=%s", (kode,))
+        kolom_tanggal = "tanggal_lapor"
+
+    else:
+        cur.close()
+        db.close()
+        return False
 
     data = cur.fetchone()
     if not data:
@@ -1207,62 +1233,56 @@ def pindahkan_ke_arsip(kode, jenis_tabel):
         return False
 
     # ============================
-    # Tentukan tanggal utama
+    # TANGGAL
     # ============================
-    if jenis_tabel.lower() == "kehilangan":
-        tanggal = data.get("tanggal_kehilangan")
-    else:
-        tanggal = data.get("tanggal_lapor")
-
-    # Waktu arsip (tanpa detik)
+    tanggal_asli = data.get(kolom_tanggal)
     tanggal_arsip = datetime.now().replace(second=0, microsecond=0)
 
+    # 🔥 RULE UTAMA
+    # tanggal_inactive HANYA untuk laporan NON-SELESAI
+    if data.get("status") == "Selesai":
+        tanggal_inactive = None
+    else:
+        tanggal_inactive = tanggal_inactive or tanggal_arsip
+
     # ============================
-    # Insert ke tabel arsip
+    # INSERT KE ARSIP
     # ============================
     cur.execute("""
-        INSERT INTO arsip 
-        (kode, nama_barang, jenis, kategori, lokasi, tanggal, foto, 
-         nama_pelapor, no_telp, email, status, tanggal_arsip)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        INSERT INTO arsip (
+            kode, nama_barang, jenis, kategori, lokasi,
+            tanggal, foto, nama_pelapor, no_telp, email,
+            status, tanggal_arsip, tanggal_inactive
+        ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
     """, (
         kode,
         data.get("nama_barang"),
         jenis_tabel,
         data.get("kategori"),
         data.get("lokasi") or data.get("lokasi_kehilangan"),
-        tanggal,
-        data.get("foto"),
-        data.get("nama_pelapor") or data.get("nama") or '-',
-        data.get("no_telp") or data.get("telp") or '-',
-        data.get("email") or '-',
-        data.get("status") or 'Selesai',
-        tanggal_arsip
+        tanggal_asli,
+        data.get("foto") or data.get("gambar_barang"),
+        data.get("nama_pelapor") or data.get("nama") or "-",
+        data.get("no_telp") or data.get("telp") or "-",
+        data.get("email") or "-",
+        data.get("status"),
+        tanggal_arsip,
+        tanggal_inactive
     ))
 
     # ============================
-    # Hapus dari tabel asal
+    # HAPUS DARI TABEL ASAL
     # ============================
-    if jenis_tabel.lower() == "kehilangan":
-        cur.execute(
-            "DELETE FROM kehilangan WHERE kode_kehilangan=%s",
-            (kode,)
-        )
-    elif jenis_tabel.lower() == "penemuan":
-        cur.execute(
-            "DELETE FROM penemuan WHERE kode_barang=%s",
-            (kode,)
-        )
+    if jenis_tabel == "kehilangan":
+        cur.execute("DELETE FROM kehilangan WHERE kode_kehilangan=%s", (kode,))
+    elif jenis_tabel == "penemuan":
+        cur.execute("DELETE FROM penemuan WHERE kode_barang=%s", (kode,))
     else:
-        cur.execute(
-            "DELETE FROM klaim_barang WHERE kode_laporan=%s",
-            (kode,)
-        )
+        cur.execute("DELETE FROM klaim_barang WHERE kode_laporan=%s", (kode,))
 
     db.commit()
     cur.close()
     db.close()
-
     return True
 
 @admin_bp.route('/arsip/detail')
