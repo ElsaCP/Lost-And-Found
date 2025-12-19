@@ -228,30 +228,46 @@
 {% endif %}
 
 <!-- ===================== FOOTER ===================== -->
-<section class="footer" id="kontak">
-  <footer class="footer text-white">
-    <div class="footer-container">
-      <div class="footer-top">
-        <div class="footer-logo">
-          <img src="{{ url_for('static', filename='image/logo putih.png')}}">
-        </div>
-        <div class="footer-address">
-          <p>Jl. Juanda, Segoro Tambak, Kec. Sedati,<br>
-          Kabupaten Sidoarjo, Jawa Timur 61253</p>
-        </div>
-        <div class="footer-contact">
-          <p><strong>Contact Center :</strong> @ccinjourneyairports</p>
-          <p>📞 172 | 📧 cc172@injourneyairports.id</p>
-        </div>
-      </div>
-      <hr class="footer-divider">
-      <div class="footer-bottom text-center small">
-        © 2025 PT. ANGKASA PURA | BANDARA INTERNASIONAL JUANDA
-      </div>
-    </div>
-  </footer>
-</section>
+  <!-- Footer -->
+  <section class="footer" id="kontak">
+    <footer class="footer text-white" id="kontak">
+      <div class="footer-container">
+        <div class="footer-top">
+          <!-- Logo di pojok kiri -->
+          <div class="footer-logo">
+            <img src={{ url_for('static', filename='image/logo putih.png')}} alt="InJourney Airports">
+          </div>
 
+          <!-- Alamat -->
+          <div class="footer-address">
+            <p>Jl. Juanda, Segoro Tambak, Kec. Sedati,<br>
+            Kabupaten Sidoarjo, Jawa Timur 61253 - Indonesia</p>
+          </div>
+
+          <!-- Kontak Center -->
+          <div class="footer-contact">
+            <p><strong>Contact Center :</strong> @ccinjourneyairports</p>
+            <p>📞 172 &nbsp; | &nbsp; 📧 cc172@injourneyairports.id</p>
+            <p>Ph : T1 (+62 31 2986200) &nbsp; | &nbsp; T2 (+62 31 2986700)</p>
+          </div>
+
+          <!-- Ikon Sosial di pojok kanan -->
+          <div class="footer-icons">
+            <a href="tel:(0623)12986200" class="text-white"><i class="fas fa-phone"></i></a>
+            <a href="mailto:humas.sub@ap1.co.id" class="text-white"><i class="fas fa-envelope"></i></a>
+            <a href="https://www.instagram.com/juanda_airport" target="_blank" class="text-white"><i class="fab fa-instagram"></i></a>
+          </div>
+        </div>
+
+        <hr class="footer-divider">
+
+        <!-- Copyright -->
+        <div class="footer-bottom text-center small">
+          © 2025 PT. ANGKASA PURA | BANDARA INTERNASIONAL JUANDA
+        </div>
+      </div>
+    </footer>
+  </section>
 </div> <!-- END SEMANTIC ROOT -->
 
 <!-- ===================== JS ===================== -->

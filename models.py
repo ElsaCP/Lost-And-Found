@@ -38,12 +38,9 @@ def get_riwayat_status(kode_laporan):
         # format waktu_update ke string supaya JS tidak bingung
         for r in rows:
             if r.get("waktu_update") is not None:
-                # waktu_update biasanya datetime, ubah jadi string dd/mm/YYYY HH:MM
                 r["waktu_update"] = r["waktu_update"].strftime("%d/%m/%Y %H:%M")
             else:
                 r["waktu_update"] = None
-            # sesuaikan nama field catatan jika kolom bernama catatan_admin di DB
-            # keep catatan sebagai alias agar frontend tetap kompatibel
             r["catatan"] = r.get("catatan_admin") or ""
         return rows
     finally:
@@ -57,7 +54,7 @@ def fetch_public_penemuan(q=None, kategori=None, dari=None, hingga=None, page=1,
 
     where = [
         "jenis_barang = 'Publik'",
-        "status_barang = 'Tersedia'"   # ⬅️ TAMBAHAN SAJA
+        "status_barang = 'Tersedia'"   
     ]
     params = []
 

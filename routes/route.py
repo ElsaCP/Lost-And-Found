@@ -14,7 +14,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import cm
 from reportlab.lib.enums import TA_CENTER, TA_RIGHT, TA_LEFT
 from reportlab.platypus import KeepTogether
-from flask import send_file
+from flask import send_file, request
 from datetime import datetime, timedelta
 from config import Config
 from extensions import mail
@@ -28,15 +28,18 @@ import hashlib
 
 main = Blueprint('main', __name__)
 
-# --- Koneksi ke database MySQL ---
 def get_db_connection():
     return mysql.connector.connect(
         host="localhost",
         user="root",
-        password="",  # ubah sesuai MySQL kamu
+        password="", 
         database="lostfound"
     )
 SIGN_SECRET = Config.SIGN_SECRET
+
+@main.route('/')
+def home():
+    return render_template('user/indexx.html')
 
 def sign_payload(payload: str):
     return hmac.new(
@@ -48,15 +51,6 @@ def sign_payload(payload: str):
 
 def verify_payload(payload: str, signature: str):
     return hmac.compare_digest(sign_payload(payload), signature)
-
-# Halaman utama
-@main.route('/')
-def home():
-    return render_template('user/indexx.html')
-
-from flask import send_file, request
-from datetime import datetime, timedelta
-import os
 
 # Mapping bulan ke bahasa Indonesia
 BULAN_ID = {
@@ -1225,11 +1219,9 @@ def update_status(kode_kehilangan):
 
         old_status = old_status[0]
 
-        # Jika status tidak berubah, tidak perlu menambah riwayat
         if old_status == status_baru:
             return jsonify({"success": False, "message": "Status sama, tidak diubah"})
 
-        # Update status di tabel kehilangan
         cursor.execute("""
             UPDATE kehilangan 
             SET status=%s,
@@ -1238,7 +1230,6 @@ def update_status(kode_kehilangan):
             WHERE kode_kehilangan=%s
         """, (status_baru, catatan, kode_kehilangan))
 
-        # Tambahkan ke riwayat_status
         cursor.execute("""
             INSERT INTO riwayat_status (kode_kehilangan, status, catatan, waktu_update)
             VALUES (%s, %s, %s, ())
@@ -1258,20 +1249,17 @@ def rekomendasi(kode_kehilangan):
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
-    # --- Ambil data kehilangan ---
     cursor.execute("SELECT * FROM kehilangan WHERE kode_kehilangan = %s", (kode_kehilangan,))
     lost = cursor.fetchone()
 
     if not lost:
         return jsonify([])
 
-    # --- Normalisasi data kehilangan ---
     nama_lost = lost["nama_barang"].lower()
     kategori = lost["kategori"]
     tanggal_hilang = lost["tanggal_kehilangan"]
     lokasi_lost = lost["lokasi"].lower()
 
-    # Tentukan terminal
     terminal = ""
     if "terminal 1" in lokasi_lost:
         terminal = "terminal 1"
@@ -1280,7 +1268,6 @@ def rekomendasi(kode_kehilangan):
     elif "terminal 3" in lokasi_lost:
         terminal = "terminal 3"
 
-    # --- Query rekomendasi barang mirip ---
     sql = """
         SELECT 
             kode_barang, 
@@ -1302,7 +1289,6 @@ def rekomendasi(kode_kehilangan):
         LIMIT 6
     """
 
-    # Buat pola LIKE supaya match barang yang mirip
     keyword1 = f"%{nama_lost}%"
     keyword2 = f"%{nama_lost.split()[0]}%" if len(nama_lost.split()) > 0 else f"%{nama_lost}%"
     keyword3 = f"%{nama_lost.replace(' ', '')}%"
@@ -1317,16 +1303,13 @@ def rekomendasi(kode_kehilangan):
     cursor.execute(sql, params)
     hasil = cursor.fetchall()
 
-    # --- Format output ---
     for h in hasil:
-        # Format tanggal -> dd/mm/yyyy
         if h.get("tanggal_lapor"):
             try:
                 h["tanggal_lapor"] = h["tanggal_lapor"].strftime("%d-%m-%Y")
             except:
                 pass
-        
-        # Format gambar
+
         if h.get("gambar_barang"):
             h["gambar_barang_url"] = f"/static/uploads/{h['gambar_barang']}"
         else:
@@ -1343,7 +1326,6 @@ def rekomendasi_baru(kode_kehilangan):
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
-    # Ambil data kehilangan
     cursor.execute("SELECT nama_barang, kategori, tanggal_kehilangan FROM kehilangan WHERE kode_kehilangan = %s", 
                    (kode_kehilangan,))
     lost = cursor.fetchone()
@@ -1355,18 +1337,14 @@ def rekomendasi_baru(kode_kehilangan):
     kategori = lost["kategori"]
     tanggal_hilang = lost["tanggal_kehilangan"]
 
-    # --- Pecah nama barang menjadi kata-kata ---
     keywords = [k for k in nama_lost.split() if len(k) >= 3]
 
-    # Jika nama hanya 1 kata, tetap pakai
     if len(keywords) == 0:
         keywords = [nama_lost]
 
-    # Buat query LIKE dinamis
     like_conditions = " OR ".join(["LOWER(nama_barang) LIKE %s" for _ in keywords])
     like_params = [f"%{k}%" for k in keywords]
 
-    # --- Query rekomendasi ---
     sql = f"""
         SELECT 
             kode_barang, 
@@ -1387,13 +1365,10 @@ def rekomendasi_baru(kode_kehilangan):
     cursor.execute(sql, params)
     hasil = cursor.fetchall()
 
-    # --- Format output ---
     for h in hasil:
-        # Format tanggal
         if h.get("tanggal_lapor"):
             h["tanggal_lapor"] = h["tanggal_lapor"].strftime("%d-%m-%Y")
 
-        # Tambahkan URL gambar
         h["gambar_barang_url"] = (
             f"/static/uploads/{h['gambar_barang']}"
             if h["gambar_barang"] else "/static/image/no-image.png"
