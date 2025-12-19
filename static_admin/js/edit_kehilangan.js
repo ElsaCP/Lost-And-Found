@@ -1,8 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-    // ================================
-    // BAGIAN 1 — TERMINAL & TEMPAT
-    // ================================
     const terminalSelect = document.getElementById("terminal");
     const tempatSelect = document.getElementById("tempat");
     const lokasiLainContainer = document.getElementById("lokasiLainContainer");
@@ -62,7 +59,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         lokasiLain.addEventListener("input", updateLokasi);
 
-        // Prefill data dari DB
         if (terminalDB) {
             terminalSelect.value = terminalDB;
 
@@ -89,9 +85,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // ================================
-    // BAGIAN 2 — UPDATE STATUS
-    // ================================
     const btnUpdate = document.getElementById("btnUpdateStatus");
     if (btnUpdate) {
         const kode = btnUpdate.dataset.kode;
@@ -120,7 +113,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     document.getElementById("updateTerakhir").textContent = result.update_terakhir;
 
-                    // === REDIRECT sesuai asal halaman ===
                     setTimeout(() => {
                         if (fromPage === "beranda") {
                             window.location.href = "/admin/beranda_admin";
@@ -151,9 +143,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ================================
-    // BAGIAN 3 — TOMBOL KEMBALI
-    // ================================
     const btnKembali = document.getElementById("btnKembali");
 
     if (btnKembali) {

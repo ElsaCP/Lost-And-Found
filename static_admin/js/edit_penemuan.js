@@ -12,7 +12,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 const lokasiDB = lokasiInput.value?.trim() || "";
 
-// ===== PREFILL LOKASI =====
 if (lokasiDB) {
   let terminalDB = "";
   let tempatDB = "";
@@ -20,7 +19,6 @@ if (lokasiDB) {
   if (lokasiDB.includes(" - ")) {
     [terminalDB, tempatDB] = lokasiDB.split(" - ");
   } else {
-    // fallback kalau data lama
     terminalDB = terminalSelect.value;
     tempatDB = lokasiDB;
   }
@@ -49,8 +47,6 @@ if (lokasiDB) {
   }
 }
 
-
-  /** Update Lokasi otomatis */
   function updateLokasi() {
     const terminal = terminalSelect.value;
     const tempat = tempatSelect.value;
@@ -93,7 +89,6 @@ if (lokasiDB) {
 
   lokasiLain.addEventListener("input", updateLokasi);
 
-  // Tombol kembali
   document.getElementById("btnKembali").addEventListener("click", function () {
     window.location.href = this.dataset.url;
   });

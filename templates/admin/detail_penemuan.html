@@ -37,7 +37,6 @@
   </a>
 </div>
 
-<!-- CONTENT -->
 <div class="content">
   <div class="header">
     <div class="logo-wrapper">
@@ -58,8 +57,6 @@
   </div>
 
   <div class="detail-container">
-
-    <!-- LEFT -->
     <div class="left-panel">
       <img id="fotoBarang" class="foto-barang" 
         src="{{ url_for('static', filename='uploads/' ~ (laporan.gambar_barang if laporan.gambar_barang else 'placeholder.png')) }}"
@@ -67,10 +64,7 @@
       <div id="kodeLaporan" class="kode-laporan">{{ laporan.kode_barang }}</div>
     </div>
 
-    <!-- RIGHT -->
     <div class="right-panel">
-
-      <!-- DATA PELAPOR -->
       <div class="data-section">
         <h3>Data Pelapor</h3>
         <div class="data-row"><span>Nama :</span><strong>{{ laporan.nama_pelapor }}</strong></div>
@@ -78,7 +72,6 @@
         <div class="data-row"><span>Email :</span><strong>{{ laporan.email }}</strong></div>
       </div>
 
-      <!-- DATA BARANG -->
     <div class="data-section">
       <h3>Data Barang</h3>
       <div class="data-row"><span>Nama Barang :</span><strong>{{ laporan.nama_barang }}</strong></div>
@@ -89,7 +82,6 @@
       <div class="data-row"><span>Deskripsi :</span><strong>{{ laporan.deskripsi }}</strong></div>
     </div>
 
-      <!-- WAKTU & STATUS -->
       <div class="data-section">
         <h3>Waktu & Status</h3>
         <div class="data-row"><span>Tanggal Penemuan :</span><strong>{{ laporan.tanggal_lapor }}</strong></div>
@@ -98,20 +90,17 @@
         <div class="data-row">
           <span>Status :</span>
           <select id="status" class="status-select">
-            <option value="Pending" {% if laporan.status == 'Pending' %}selected{% endif %}>Pending</option>
             <option value="Verifikasi" {% if laporan.status == 'Verifikasi' %}selected{% endif %}>Verifikasi</option>
             <option value="Selesai" {% if laporan.status == 'Selesai' %}selected{% endif %}>Selesai</option>
           </select>
         </div>
       </div>
 
-      <!-- BUTTON -->
       <div class="button-group no-print">
         <button id="btnKembali" class="btn btn-secondary">
           Kembali
         </button>
 
-        <!-- TOMBOL KLAIM BARANG -->
         <button id="btnKlaim" 
           class="btn btn-warning"
           data-kode="{{ laporan.kode_barang }}">
@@ -134,10 +123,8 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
 <script src="{{ url_for('admin_bp.static', filename='js/detail_penemuan.js') }}"></script>
 <script src="{{ url_for('admin_bp.static', filename='js/logout.js') }}"></script>
 

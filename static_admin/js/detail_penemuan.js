@@ -1,8 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-
-  // ======================
-  // UPDATE STATUS (PENEMUAN / KLAIM)
-  // ======================
   const btnUpdate = document.getElementById("btnUpdate");
 
   if (btnUpdate) {
@@ -44,9 +40,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ======================
-  // BUTTON KLAIM BARANG
-  // ======================
   const btnKlaim = document.getElementById("btnKlaim");
   if (btnKlaim) {
     btnKlaim.addEventListener("click", () => {
@@ -58,9 +51,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ======================
-  // BUTTON KEMBALI
-  // ======================
   const btnKembali = document.getElementById("btnKembali");
   if (btnKembali) {
     btnKembali.addEventListener("click", () => {
@@ -71,9 +61,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ======================
-  // EXPORT PDF (PENEMUAN)
-  // ======================
   const btnExport = document.getElementById("btnExportPdf");
 
   if (btnExport) {
@@ -88,7 +75,6 @@ document.addEventListener("DOMContentLoaded", () => {
         didOpen: () => Swal.showLoading()
       });
 
-      // ✅ SEMBUNYIKAN BUTTON SEBELUM CAPTURE
       hideElements.forEach(el => el.style.display = "none");
 
       try {
@@ -111,7 +97,6 @@ document.addEventListener("DOMContentLoaded", () => {
         console.error(err);
         Swal.fire("Gagal", "Gagal membuat PDF", "error");
       } finally {
-        // ✅ TAMPILKAN LAGI BUTTON SETELAH EXPORT
         hideElements.forEach(el => el.style.display = "");
       }
     });

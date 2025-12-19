@@ -6,9 +6,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const kode = btnUpdate ? btnUpdate.dataset.kode : null;
 
-  // ======================
-  // UPDATE STATUS
-  // ======================
   if (btnUpdate) {
     btnUpdate.addEventListener("click", async () => {
       const newStatus = document.getElementById("status").value;
@@ -41,9 +38,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ======================
-  // BUTTON KEMBALI
-  // ======================
   if (btnKembali) {
     btnKembali.addEventListener("click", () => {
       const from = new URLSearchParams(window.location.search).get("from");
@@ -53,9 +47,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ======================
-  // EXPORT PDF (FIXED + NO BUTTON)
-  // ======================
   if (btnExport) {
     btnExport.addEventListener("click", async () => {
       const { jsPDF } = window.jspdf;
@@ -68,7 +59,6 @@ document.addEventListener("DOMContentLoaded", () => {
         didOpen: () => Swal.showLoading()
       });
 
-      // ✅ SEMBUNYIKAN BUTTON SEBELUM CAPTURE
       hideElements.forEach(el => el.style.display = "none");
 
       try {
@@ -89,7 +79,6 @@ document.addEventListener("DOMContentLoaded", () => {
         console.error(e);
         Swal.fire("Gagal", "Gagal membuat PDF", "error");
       } finally {
-        // ✅ TAMPILKAN LAGI BUTTON SETELAH EXPORT
         hideElements.forEach(el => el.style.display = "");
       }
     });

@@ -105,7 +105,6 @@
       <td>{{ barang.jenis_laporan }}</td>
       <td>
         <select class="status-select" data-id="{{ barang.kode_barang }}">
-          <option value="Pending" {% if barang.status == 'Pending' %}selected{% endif %}>Pending</option>
           <option value="Verifikasi" {% if barang.status == 'Verifikasi' %}selected{% endif %}>Verifikasi</option>
           <option value="Selesai" {% if barang.status == 'Selesai' %}selected{% endif %}>Selesai</option>
         </select>
