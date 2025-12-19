@@ -13,8 +13,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <!-- Custom CSS -->
   <link rel="stylesheet" href={{ url_for('static', filename='css/indexx.css') }}>
-  <!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Reddit+Sans+Condensed:wght@700;800&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Reddit+Sans+Condensed:wght@700;800&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -30,7 +30,7 @@
       <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
         <ul class="navbar-nav align-items-center">
           <li class="nav-item"><a class="nav-link active" href="#hero">Beranda</a></li>
-          <li class="nav-item"><a class="nav-link" href="#listBarang">List Barang</a></li>
+          <li class="nav-item"><a class="nav-link" href="#statistik">Statistik</a></li>
           <li class="nav-item"><a class="nav-link" href="#panduan">Panduan</a></li>
           <li class="nav-item"><a class="nav-link" href="#kontak">Kontak</a></li>
           <li class="nav-item ms-lg-3">
@@ -69,10 +69,10 @@
       <a class="hero-nav-link active" data-tab="formKehilangan">Form Kehilangan</a>
     </div>
     <div class="hero-nav-item">
-      <a class="hero-nav-link" data-tab="cekLaporan">Cek Laporan</a>
+      <a class="hero-nav-link" data-tab="cekLaporan">Cek Kehilangan</a>
     </div>
     <div class="hero-nav-item">
-      <a class="hero-nav-link" data-tab="cariBarang">Cari Barang</a>
+      <a class="hero-nav-link" data-tab="cekRiwayat">Cek Klaim</a>
     </div>
   </div>
 </div>
@@ -81,7 +81,7 @@
 <div class="info-section active" id="info-formKehilangan">
   <div class="info-content">
     <div class="info-text">
-      Apabila barang tidak tersedia di website dalam jangka waktu lebih dari 1 x 24 jam, silakan klik Isi Form.
+     Jika Anda mengalami kehilangan barang, mohon untuk mengisi Form Kehilangan agar dapat segera ditindaklanjuti.
     </div>
     <button class="info-button" onclick="goToForm()">Isi Form</button>
   </div>
@@ -90,22 +90,22 @@
 <div class="info-section" id="info-cekLaporan">
   <div class="info-content">
     <div class="info-text">
-      Lihat status laporan dengan memasukkan email Anda, silahkan klik Cek Form.
+      Lihat status laporan kehilangan dengan memasukkan Kode Laporan Anda, silahkan klik Cek Form.
     </div>
     <button class="info-button" onclick="goToCekLaporan()">Cek Form</button>
   </div>
 </div>
 
-<div class="info-section" id="info-cariBarang">
+<div class="info-section" id="info-cekRiwayat">
   <div class="info-content">
     <div class="info-text">
-      Klik Tombol Cari untuk membuka form pencarian barang hilang.
+      Klik Tombol Cek Klaim untuk melihat status klaim barang dengan memasukkan kode laporan di email.
     </div>
-    <button class="info-button" onclick="goToCariBarang()">Cari</button>
+    <button class="info-button" onclick="goToCekRiwayat()">Cek Klaim</button>
   </div>
 </div>
 
-<section class="list-barang-section" id="listBarang">
+<section class="list-barang-section" id="statistik">
   <div class="decorative-elements">
     <img src={{ url_for('static', filename='image/lbesar.png')}} alt="" class="deco-large deco-1">
     <img src={{ url_for('static', filename='/image/lbesar.png')}} alt="" class="deco-large deco-2">
@@ -114,16 +114,13 @@
     <img src={{ url_for('static', filename='/image/lkecil.png')}} alt="" class="deco-small deco-6">
   </div>
   <div class="container">
-    <h2 class="section-title gradient-text text-center mb-4">List Barang Hilang Terbaru</h2>
-    <div id="barangTerbaru" class="items-grid scroll-mobile"></div>
-    <div class="view-more text-center mt-4">
-      <a href="{{ url_for('main.cari_barang') }}" class="btn-view-more">
-        Lihat Lainnya
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="9 18 15 12 9 6"></polyline>
-        </svg>
-      </a>
+  <div class="container">
+    <h2 class="section-title gradient-text text-center mb-4">
+      Statistik Barang Lost & Found
+    </h2>
+
+    <div class="card grafik-card">
+      <canvas id="grafikBulanan"></canvas>
     </div>
   </div>
 </section>

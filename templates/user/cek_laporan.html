@@ -27,7 +27,7 @@
       <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
         <ul class="navbar-nav align-items-center">
           <li class="nav-item"><a class="nav-link active" href="{{ url_for('main.home') }}#hero">Beranda</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('main.home') }}#listBarang">List Barang</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('main.home') }}#statistik">Statistik</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ url_for('main.home') }}#panduan">Panduan</a></li>
           <li class="nav-item"><a class="nav-link" href="#kontak">Kontak</a></li>
           <li class="nav-item ms-lg-3">
@@ -55,10 +55,17 @@
         
         <div class="hero-box mx-auto">
           <h1 class="hero-title">Cek Laporan Kehilangan</h1>
-          <p class="hero-subtitle">Masukkan email untuk melihat perkembangan laporan kehilangan Anda</p>
+          <p class="hero-subtitle">Masukkan Kode Kehilangan yang tertera pada email Anda untuk melihat perkembangan laporan kehilangan.</p>
 
           <div class="form-container mx-auto mt-4">
-            <input type="email" id="emailInput" placeholder="Masukkan Email Anda" class="form-control mb-3">
+            <input type="text" id="kodeInput"
+                  placeholder="Masukkan Kode Kehilangan (contoh: LF-L000)"
+                  class="form-control mb-3">
+
+            <input type="email" id="emailInput"
+                  placeholder="Masukkan Email Anda"
+                  class="form-control mb-3">
+
             <button id="cekLaporanBtn" class="btn-cek">
               <i class="fas fa-search"></i> Cek Laporan
             </button>

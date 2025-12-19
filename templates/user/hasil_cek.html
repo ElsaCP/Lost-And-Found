@@ -30,7 +30,7 @@
       <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
         <ul class="navbar-nav align-items-center">
           <li class="nav-item"><a class="nav-link active" href="{{ url_for('main.home') }}#hero">Beranda</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('main.home') }}#listBarang">List Barang</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('main.home') }}#statistik">Statistik</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ url_for('main.home') }}#panduan">Panduan</a></li>
           <li class="nav-item"><a class="nav-link" href="#kontak">Kontak</a></li>
           <li class="nav-item ms-lg-3">
@@ -43,7 +43,7 @@
 
   <div class="main-content">
     <section class="header-detail container">
-      <a href="javascript:history.back()" class="back-arrow-header">
+      <a href="{{ url_for('main.cek_laporan') }}" class="back-arrow-header">
         <i class="fa-solid fa-arrow-left"></i>
       </a>
       <img src="{{ url_for('static', filename='image/logo juanda 2.png') }}" 
@@ -54,7 +54,7 @@
       <div class="container konten-setelah-header mb-5 pb-5">
         <h2 class="judul-hasil text-center m-0 flex-grow-1">Hasil Cek Laporan Kehilangan</h2>
         <p class="text-center text-muted mb-4">
-          Email: <span class="fw-semibold text-primary">{{ email }}</span>
+          Email: <span class="fw-semibold text-primary">{{ laporan.email }}</span>
         </p>
 
         {% if laporan %}

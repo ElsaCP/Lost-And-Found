@@ -1,39 +1,53 @@
 document.addEventListener("DOMContentLoaded", async function () {
-  const container = document.getElementById("barangTerbaru");
-  if (!container) return;
+  const canvas = document.getElementById("grafikBulanan");
+  if (!canvas) return;
 
   try {
-    const res = await fetch("/api/barang-terbaru");
+    const res = await fetch("/api/statistik-bulanan");
     const data = await res.json();
 
-    // FIX PALING PENTING → hapus whitespace tanpa menyisakan enter
-    container.textContent = "";
+    const labels = data.map(d => d.bulan);
+    const kehilangan = data.map(d => d.kehilangan);
+    const penemuan = data.map(d => d.penemuan);
+    const klaim = data.map(d => d.klaim);
 
-    if (!data || data.length === 0) {
-      container.innerHTML = `<p class="text-muted text-center">Belum ada barang publik terbaru.</p>`;
-      return;
-    }
-
-    data.forEach(item => {
-      const card = `
-        <div class="item-card">
-          <img src="${item.gambar_barang}" alt="${item.nama_barang}">
-          <div class="item-info">
-            <h3>${item.nama_barang}</h5>
-            <p><strong>Kategori:</strong> ${item.kategori}</p>
-            <p><small>${item.tanggal_lapor}</small></p>
-            <a href="/detail-barang/${item.kode_barang}" class="btn-detail">Lihat Detail</a>
-          </div>
-        </div>
-      `;
-
-      // Tambahkan card TANPA membuat spasi
-      container.insertAdjacentHTML("beforeend", card);
+    new Chart(canvas, {
+      type: "bar",
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: "Kehilangan",
+            data: kehilangan
+          },
+          {
+            label: "Penemuan",
+            data: penemuan
+          },
+          {
+            label: "Klaim",
+            data: klaim
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: "top"
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { stepSize: 1 }
+          }
+        }
+      }
     });
 
-  } catch (error) {
-    console.error("Gagal memuat data barang:", error);
-    container.innerHTML = `<p class="text-danger text-center">Gagal memuat data barang.</p>`;
+  } catch (err) {
+    console.error("Gagal memuat grafik:", err);
   }
 });
 
@@ -66,6 +80,6 @@ function goToCekLaporan() {
   window.location.href = "/cek-laporan";
 }
 
-function goToCariBarang() {
-  window.location.href = "/cari-Barang";
+function goToCekRiwayat() {
+  window.location.href = "/riwayat-klaim";
 }

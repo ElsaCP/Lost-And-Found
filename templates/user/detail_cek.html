@@ -39,7 +39,7 @@
     <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
       <ul class="navbar-nav align-items-center">
         <li class="nav-item"><a class="nav-link active" href="{{ url_for('main.home') }}#hero">Beranda</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('main.home') }}#listBarang">List Barang</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('main.home') }}#statistik">Statistik</a></li>
         <li class="nav-item"><a class="nav-link" href="{{ url_for('main.home') }}#panduan">Panduan</a></li>
         <li class="nav-item"><a class="nav-link" href="#kontak">Kontak</a></li>
         <li class="nav-item ms-lg-3">
@@ -50,11 +50,11 @@
   </div>
 </nav>
 
-<!-- ===================== HEADER ===================== -->
-<section class="header-detail container d-flex align-items-center justify-content-between">
+<section class="header-detail container-fluid">
   <a href="javascript:history.back()" class="back-arrow-header">
     <i class="fa-solid fa-arrow-left"></i>
   </a>
+
   <img src="{{ url_for('static', filename='image/logo juanda 2.png') }}"
        alt="Logo Juanda 2"
        class="logo-juanda2">

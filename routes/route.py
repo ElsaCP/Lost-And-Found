@@ -17,9 +17,10 @@ from reportlab.platypus import KeepTogether
 from flask import send_file, request
 from datetime import datetime, timedelta
 from config import Config
-from extensions import mail
+from extensions import db, mail
 from flask_mail import Message
 from config import Config
+from sqlalchemy import text
 import os
 import mysql.connector
 import hmac
@@ -47,6 +48,39 @@ def sign_payload(payload: str):
         payload.encode(),
         hashlib.sha256
     ).hexdigest()
+
+@main.route("/api/statistik-bulanan")
+def statistik_bulanan():
+    query = text("""
+        SELECT
+            CONCAT(
+                ELT(MONTH(tanggal),
+                    'Januari','Februari','Maret','April','Mei','Juni',
+                    'Juli','Agustus','September','Oktober','November','Desember'
+                ),
+                ' ',
+                YEAR(tanggal)
+            ) AS bulan,
+            YEAR(tanggal) AS tahun,
+            MONTH(tanggal) AS urut_bulan,
+            SUM(jenis = 'kehilangan') AS kehilangan,
+            SUM(jenis = 'penemuan') AS penemuan,
+            SUM(jenis = 'klaim') AS klaim
+        FROM (
+            SELECT tanggal_kehilangan AS tanggal, 'kehilangan' AS jenis FROM kehilangan
+            UNION ALL
+            SELECT tanggal_lapor AS tanggal, 'penemuan' AS jenis FROM penemuan
+            UNION ALL
+            SELECT tanggal_lapor AS tanggal, 'klaim' AS jenis FROM klaim_barang
+            UNION ALL
+            SELECT tanggal AS tanggal, jenis AS jenis FROM arsip
+        ) AS semua_data
+        GROUP BY tahun, urut_bulan
+        ORDER BY tahun, urut_bulan
+    """)
+
+    rows = db.session.execute(query).mappings().all()
+    return jsonify([dict(r) for r in rows])
 
 
 def verify_payload(payload: str, signature: str):
@@ -639,14 +673,14 @@ def submit_kehilangan():
             msg_user.body = f"""
 Halo {nama_pelapor},
 
-Laporan kehilangan Anda berhasil kami terima.
+Laporan kehilangan Anda berhasil kami terima. Mohon tunggu untuk verifikasi oleh admin.
 
-Kode Laporan : {kode_kehilangan}
+Kode Kehilangan : {kode_kehilangan}
 Nama Barang  : {nama_barang}
 Lokasi       : {lokasi}
 Waktu Submit : {tanggal_submit} {waktu_submit}
 
-Silakan simpan kode laporan ini untuk mengecek status laporan Anda.
+Silakan simpan kode kehilangan ini untuk mengecek status laporan Anda.
 
 Terima kasih,
 Lost & Found Bandara Internasional Juanda
@@ -661,7 +695,7 @@ Lost & Found Bandara Internasional Juanda
             msg_admin.body = f"""
 📢 LAPORAN KEHILANGAN BARU
 
-Kode Laporan : {kode_kehilangan}
+Kode Kehilangan : {kode_kehilangan}
 Nama Pelapor: {nama_pelapor}
 Email       : {email}
 No Telp     : {no_telp}
@@ -1075,62 +1109,82 @@ def proses_cek_laporan():
     try:
         data = request.get_json()
         email = data.get("email")
+        kode = data.get("kode_kehilangan")
+
+        if not email or not kode:
+            return jsonify({"success": False})
 
         db = get_db_connection()
         cursor = db.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM kehilangan WHERE email = %s", (email,))
-        hasil = cursor.fetchall()
+
+        cursor.execute("""
+            SELECT * FROM kehilangan
+            WHERE email = %s
+              AND kode_kehilangan = %s
+        """, (email, kode))
+
+        hasil = cursor.fetchone()
+
         cursor.close()
         db.close()
 
-        if hasil and len(hasil) > 0:
+        if hasil:
             return jsonify({"success": True})
         else:
             return jsonify({"success": False})
+
     except Exception as e:
         print("Error proses cek laporan:", e)
-        return jsonify({"success": False, "message": str(e)})
+        return jsonify({"success": False})
 
 # ==========================
 # 🟩 HALAMAN HASIL CEK LAPORAN
 # ==========================
 @main.route('/hasil-cek')
 def hasil_cek():
-    email = request.args.get("email")
-    if not email:
+    kode = request.args.get("kode")
+    if not kode:
         return redirect(url_for("main.cek_laporan"))
 
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
+
     cursor.execute("""
-        SELECT * FROM kehilangan 
-        WHERE email = %s 
-        ORDER BY tanggal_submit DESC, waktu_submit DESC 
+        SELECT *
+        FROM kehilangan
+        WHERE kode_kehilangan = %s
         LIMIT 1
-    """, (email,))
+    """, (kode,))
+
     laporan = cursor.fetchone()
     cursor.close()
     db.close()
 
-    if laporan:
-        tgl_str = laporan.get("tanggal_submit")
-        waktu_str = laporan.get("waktu_submit")
+    if not laporan:
+        return redirect(url_for("main.cek_laporan"))
 
-        # Gabungkan tanggal + waktu menjadi datetime
-        if tgl_str and waktu_str:
-            try:
-                gabung = datetime.strptime(f"{tgl_str} {waktu_str}", "%Y-%m-%d %H:%M")
-                laporan["tanggal_waktu_submit"] = gabung.strftime("%d-%m-%Y, %H:%M")
-            except ValueError:
-                try:
-                    gabung = datetime.strptime(f"{tgl_str} {waktu_str}", "%d-%m-%Y %H:%M")
-                    laporan["tanggal_waktu_submit"] = gabung.strftime("%d-%m-%Y, %H:%M")
-                except:
-                    laporan["tanggal_waktu_submit"] = f"{tgl_str}, {waktu_str}"
-        else:
-            laporan["tanggal_waktu_submit"] = tgl_str or waktu_str or "-"
+    # ===== FORMAT TANGGAL + WAKTU =====
+    tgl_str = laporan.get("tanggal_submit")
+    waktu_str = laporan.get("waktu_submit")
 
-    return render_template("user/hasil_cek.html", email=email, laporan=laporan)
+    if tgl_str and waktu_str:
+        try:
+            gabung = datetime.strptime(
+                f"{tgl_str} {waktu_str}", "%Y-%m-%d %H:%M"
+            )
+            laporan["tanggal_waktu_submit"] = gabung.strftime(
+                "%d-%m-%Y, %H:%M"
+            )
+        except:
+            laporan["tanggal_waktu_submit"] = f"{tgl_str}, {waktu_str}"
+    else:
+        laporan["tanggal_waktu_submit"] = "-"
+
+    return render_template(
+        "user/hasil_cek.html",
+        laporan=laporan,
+        kode=kode
+    )
 
 @main.route("/detail-cek/<kode_kehilangan>")
 def detail_cek(kode_kehilangan):
