@@ -13,9 +13,6 @@ document.addEventListener("DOMContentLoaded", () => {
     "Terminal 2": ["Gate C", "Gate D", "Waiting Area T2", "Bagasi", "Lainnya"]
   };
 
-  // =========================
-  // UPDATE LOKASI OTOMATIS
-  // =========================
   function updateLokasi() {
     const terminal = terminalSelect.value;
     const tempat = tempatSelect.value;
@@ -53,9 +50,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   lokasiLain.addEventListener("input", updateLokasi);
 
-  // =========================
-  // VALIDASI WAJIB DIISI
-  // =========================
   form.addEventListener("submit", function (e) {
     e.preventDefault();
 
@@ -68,7 +62,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // CEK FIELD WAJIB
     cek("nama_pelapor", "Nama Pelapor");
     cek("no_telp", "Nomor Telepon");
     cek("email", "Email");
@@ -79,22 +72,18 @@ document.addEventListener("DOMContentLoaded", () => {
     cek("tanggal_kehilangan", "Tanggal Kehilangan");
     cek("deskripsi", "Deskripsi");
 
-    // Lokasi khusus
     if (!terminalSelect.value.trim()) errors.push("Terminal");
     if (!tempatSelect.value.trim()) errors.push("Tempat");
 
-    // Jika memilih "Lainnya"
     if (tempatSelect.value === "Lainnya" && !lokasiLain.value.trim()) {
       errors.push("Lokasi Lainnya");
     }
 
-    // Foto barang
     const foto = form.querySelector('[name="foto"]');
     if (!foto.files.length) {
       errors.push("Foto Barang");
     }
 
-    // TAMPILKAN ERROR
     if (errors.length > 0) {
       Swal.fire({
         icon: "warning",
@@ -105,9 +94,6 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // =========================
-    // SUBMIT LANGSUNG TANPA DETIK
-    // =========================
     Swal.fire({
       icon: "success",
       title: "Menyimpan...",
@@ -117,9 +103,6 @@ document.addEventListener("DOMContentLoaded", () => {
     form.submit();
   });
 
-  // =========================
-  // BUTTON CANCEL
-  // =========================
   btnCancel.addEventListener("click", () => {
     Swal.fire({
       icon: "question",

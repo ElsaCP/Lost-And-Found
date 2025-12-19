@@ -37,7 +37,6 @@
   </a>
 </div>
 
-<!-- CONTENT -->
 <div class="content">
   <div class="header">
     <div class="logo-wrapper">
@@ -57,10 +56,8 @@
     </div>
   </div>
 
-  <!-- pindahkan detail-container ke sini -->
   <div class="detail-container">
 
-    <!-- LEFT -->
     <div class="left-panel">
       <img id="fotoBarang" class="foto-barang"
            src="{{url_for('static', filename='uploads/' ~ (laporan.gambar_barang if laporan.gambar_barang else 'no-image.png')) }}"
@@ -68,7 +65,6 @@
       <div id="kodeLaporan" class="kode-laporan">{{ laporan.kode_barang }}</div>
     </div>
 
-    <!-- RIGHT -->
     <div class="right-panel">
 
     <form method="POST" 
@@ -106,7 +102,6 @@
           <input type="text" value="Penemuan" readonly>
         </div>
 
-        <!-- === KATEGORI (Select seperti kehilangan) === -->
         <div class="data-row">
           <span>Kategori :</span>
           <select name="kategori">
@@ -160,7 +155,6 @@
             value="{{ laporan.lokasi_lain or '' }}">
         </div>
 
-        <!-- Lokasi final -->
         <input type="hidden" id="lokasi" name="lokasi" value="{{ laporan.lokasi }}">
 
         <div class="data-row">

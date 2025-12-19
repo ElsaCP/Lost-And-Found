@@ -1,6 +1,3 @@
-/* =============================================
-   RESET & BODY
-   ============================================= */
 * {
   margin: 0;
   padding: 0;
@@ -13,11 +10,8 @@ body {
   background: #f8f8f8;
 }
 
-/* =============================================
-   SIDEBAR – FIXED, STAY, LOGOUT DI BAWAH
-   ============================================= */
 .sidebar {
-  position: fixed;       /* biar stay tidak bisa digeser */
+  position: fixed;      
   top: 0;
   left: 0;
   height: 100vh;
@@ -26,7 +20,7 @@ body {
   color: #fff;
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* nav di atas, logout di bawah */
+  justify-content: space-between; 
   padding: 7px 15px;
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
   z-index: 9999;       
@@ -34,45 +28,38 @@ body {
   clip-path: inset(0 0 0 0px);
 }
 
-/* =============================================
-   SIDEBAR – LOGO DAN RECTANGLE DIATAS
-   ============================================= */
 .logo-wrapper {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: flex-start;
   gap: 10px;
-  margin-top: 0; /* tarik ke atas */
+  margin-top: 0; 
 }
 
-/* Rectangle background */
 .sidebar .rectangle-bg {
   width: 178px;
   opacity: 1;
   filter: brightness(1);
   display: block;
-  margin-top: 0; /* tarik ke atas */
+  margin-top: 0; 
 }
 
-/* Logo depan */
 .sidebar .logo-front {
   position: absolute;
-  top: 15px;   /* tarik logo ke atas */
+  top: 15px;   
   left: 55%;
   transform: translateX(-50%);
   width: 100px;
   height: auto;
 }
 
-/* Nav */
 .sidebar nav {
   display: flex;
   flex-direction: column;
   margin-top: 50px;
 }
 
-/* Submenu */
 .submenu {
   margin-left: 20px;
   display: flex;
@@ -110,7 +97,6 @@ body {
   font-weight: 600;
 }
 
-/* Logout tetap di bawah sidebar */
 .sidebar .logout {
   display: flex;
   align-items: center;
@@ -122,7 +108,7 @@ body {
   padding: 12px 15px;
   border-radius: 10px;
   transition: background 0.3s;
-  margin-bottom: 1px; /* jarak ke bawah */
+  margin-bottom: 1px; 
 }
 
 .sidebar .logout:hover {
@@ -130,10 +116,10 @@ body {
 }
 
 .header {
-  position: fixed;          /* stay */
-  top: 20px;                /* kunci supaya tidak naik melebihi desain */
-  left: 193px;              /* geser supaya sejajar sidebar */
-  right: 40px;              /* mengikuti margin sisi kananmu */
+  position: fixed;          
+  top: 20px;                
+  left: 193px;              
+  right: 40px;              
 
   z-index: 9998;
   background: #0056a6;
@@ -144,12 +130,11 @@ body {
   justify-content: space-between;
 
   padding: 0px 20px;
-  margin: -20px -40px 20px -40px; /* BIARKAN */
+  margin: -20px -40px 20px -40px; 
 
   border-radius: 0;
 }
 
-/* Logo header */
 .header .logo-wrapper {
   position: relative;
   display: flex;
@@ -170,7 +155,6 @@ body {
   width: auto;
 }
 
-/* Title tengah */
 .header h2 {
   position: absolute;
   left: 50%;
@@ -180,7 +164,6 @@ body {
   font-weight: 600;
 }
 
-/* ikon profil header */
 .profile-icon {
   width: 45px;
   height: 45px;
@@ -204,9 +187,6 @@ body {
   transform: scale(1.05);
 }
 
-/* =========================================
-   KONTEN TURUN SUPAYA TIDAK KETUTUP HEADER
-   ========================================= */
 .content {
   flex: 1;
   padding: 10px 20px;
@@ -214,16 +194,11 @@ body {
   min-height: 100vh;
   position: relative;
 
-  /* ===== FIX TERPENTING BIAR TIDAK KETUTUP SIDEBAR ===== */
-  margin-left: 193px;   /* geser sesuai lebar sidebar */
+  margin-left: 193px;  
 
   margin-top: 100px; 
 }
 
-
-/* =========================================
-   DETAIL KEHILANGAN (punyamu sendiri)
-   ========================================= */
 .detail-container {
   margin-top: 25px;
   margin-left: 80px;
@@ -241,7 +216,6 @@ body {
   box-sizing: border-box;
 }
 
-/* LEFT PANEL */
 .left-panel {
   display: flex;
   flex-direction: column;
@@ -266,7 +240,6 @@ body {
   letter-spacing: 0.3px;
 }
 
-/* RIGHT PANEL */
 .right-panel {
   flex: 1;
   display: flex;
@@ -276,7 +249,6 @@ body {
   color: #222;
 }
 
-/* SECTION TITLES */
 .data-section {
   padding-bottom: 6px;
   border-bottom: 1px solid #e3e3e3;
@@ -292,7 +264,6 @@ body {
   padding-left: 8px;
 }
 
-/* ROW */
 .data-row {
   display: flex;
   align-items: flex-start;
@@ -315,14 +286,14 @@ body {
 .data-section {
   padding-bottom: 6px;
   border-bottom: 1px solid #e3e3e3;
-  max-width: 520px;    /* <<< GARIS PEMISAH DIPOTONG */
+  max-width: 520px;   
 }
 
 .data-row input,
 .data-row textarea,
 .data-row select {
-  width: 100%;             /* ikut container */
-  max-width: 520px;        /* batas aman biar tidak melewati container */
+  width: 100%;             
+  max-width: 520px;       
   padding: 6px 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
@@ -331,7 +302,6 @@ body {
   box-sizing: border-box;
 }
 
-/* READONLY STYLE */
 input[readonly] {
   border: none;
   background-color: transparent;
@@ -340,7 +310,6 @@ input[readonly] {
   font-weight: 500;
 }
 
-/* BUTTON GROUP */
 .button-group {
   display: flex;
   justify-content: flex-end;
@@ -375,7 +344,6 @@ input[readonly] {
   background-color: #c0c0c0;
 }
 
-/* === Samakan gaya form-row dengan data-row === */
 .data-row,
 .form-row {
   display: flex;
@@ -383,16 +351,14 @@ input[readonly] {
   margin-bottom: 12px;
 }
 
-/* Label dan span di kiri punya lebar yang sama */
 .data-row span,
 .form-row label {
-  width: 150px; /* samakan dengan lebar label/spannya */
+  width: 150px; 
   font-weight: 500;
   color: #333;
   display: inline-block;
 }
 
-/* Input dan select di kanan pakai lebar konsisten */
 .data-row input,
 .data-row select,
 .data-row textarea,
@@ -406,7 +372,6 @@ input[readonly] {
   border-radius: 6px;
 }
 
-/* Biar container lokasi tambahan juga sejajar */
 #lokasiLainContainer {
   display: flex;
   align-items: center;
@@ -420,33 +385,8 @@ input[readonly] {
   display: inline-block;
 }
 
-/* Jarak dari deskripsi biar gak mepet */
 .lokasi-section {
   margin-top: 25px;
-}
-
-/* RESPONSIVE */
-@media (max-width: 1100px) {
-  .detail-container {
-    flex-direction: column;
-    align-items: center;
-    gap: 25px;
-    padding: 25px;
-  }
-
-  .right-panel {
-    width: 100%;
-  }
-
-  .data-row {
-    flex-direction: column;
-  }
-
-  .data-row input,
-  .data-row textarea,
-  .data-row select {
-    width: 100%;
-  }
 }
 
 .btn-warning {
@@ -481,9 +421,6 @@ input[readonly] {
   font-size: 1.1rem;
 }
 
-/* ===============================
-   FIX LOKASI LAINNYA BIAR SEJAJAR
-   =============================== */
 #lokasiLainContainer {
   display: flex ;
   align-items: center;
@@ -492,15 +429,13 @@ input[readonly] {
   padding-left: 0;
 }
 
-/* Samakan label kiri */
 #lokasiLainContainer label {
-  width: 150px;              /* SAMA dengan form-row label */
+  width: 150px;             
   font-weight: 500;
   color: #333;
   margin: 0;
 }
 
-/* Input kanan */
 #lokasiLainContainer input {
   flex: 1;
   max-width: 520px;
@@ -508,4 +443,27 @@ input[readonly] {
   border: 1px solid #ccc;
   border-radius: 6px;
   box-sizing: border-box;
+}
+
+@media (max-width: 1100px) {
+  .detail-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+    padding: 25px;
+  }
+
+  .right-panel {
+    width: 100%;
+  }
+
+  .data-row {
+    flex-direction: column;
+  }
+
+  .data-row input,
+  .data-row textarea,
+  .data-row select {
+    width: 100%;
+  }
 }

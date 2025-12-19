@@ -10,7 +10,6 @@
 </head>
 <body>
 
-<!-- ================= SIDEBAR ================= -->
 <div class="sidebar">
   <div>
     <div class="logo-wrapper">
@@ -55,7 +54,6 @@
   </a>
 </div>
 
-<!-- ================= MAIN CONTENT ================= -->
 <div class="content">
   <div class="header">
     <div class="logo-wrapper">
@@ -77,10 +75,8 @@
     </div>
   </div>
 
-  <!-- ================= DETAIL ================= -->
   <div class="detail-container">
 
-    <!-- ===== LEFT PANEL ===== -->
     <div class="left-panel text-center">
       <img
         id="fotoBarang"
@@ -88,16 +84,13 @@
         src="{{ url_for('static', filename='uploads/' ~ (laporan.foto if laporan.foto else 'placeholder.png')) }}"
         alt="Foto Barang">
 
-      <!-- ✅ KODE KEHILANGAN (SEPERTI PENEMUAN) -->
       <div id="kodeLaporan" class="kode-laporan">
         {{ laporan.kode_kehilangan }}
       </div>
     </div>
 
-    <!-- ===== RIGHT PANEL ===== -->
     <div class="right-panel">
 
-      <!-- === DATA PELAPOR === -->
       <div class="data-section">
         <h3>Data Pelapor</h3>
         <div class="data-row"><span>Nama :</span><strong>{{ laporan.nama_pelapor }}</strong></div>
@@ -107,7 +100,6 @@
         <div class="data-row"><span>Kota :</span><strong>{{ laporan.kota }}</strong></div>
       </div>
 
-      <!-- === DATA BARANG === -->
       <div class="data-section">
         <h3>Data Barang</h3>
         <div class="data-row"><span>Nama Barang :</span><strong>{{ laporan.nama_barang }}</strong></div>
@@ -120,7 +112,6 @@
         </div>
       </div>
 
-      <!-- === WAKTU & STATUS === -->
       <div class="data-section">
         <h3>Waktu & Status</h3>
 
@@ -151,13 +142,11 @@
         </div>
       </div>
 
-      <!-- === BUTTON === -->
       <div class="button-group no-print">
         <button id="btnKembali" class="btn btn-secondary">
           Kembali
         </button>
 
-        <!-- ✅ ID & DATA SESUAI JS -->
         <button
           id="btnUpdate"
           class="btn btn-primary"
@@ -175,7 +164,6 @@
   </div>
 </div>
 
-<!-- ================= SCRIPT ================= -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>

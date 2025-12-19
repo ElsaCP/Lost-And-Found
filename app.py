@@ -1,4 +1,3 @@
-# app.py
 from flask import Flask
 from config import Config
 from extensions import db, mail
@@ -9,7 +8,7 @@ app = Flask(__name__)
 app.config.from_object(Config)
 
 db.init_app(app)
-mail.init_app(app)   # ✅ INIT MAIL DI SINI
+mail.init_app(app)   
 
 with app.app_context():
     db.create_all()

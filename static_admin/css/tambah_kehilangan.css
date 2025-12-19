@@ -1,6 +1,3 @@
-/* =============================================
-   RESET & BODY
-   ============================================= */
 * {
   margin: 0;
   padding: 0;
@@ -13,11 +10,8 @@ body {
   background: #f8f8f8;
 }
 
-/* =============================================
-   SIDEBAR – FIXED, STAY, LOGOUT DI BAWAH
-   ============================================= */
 .sidebar {
-  position: fixed;       /* biar stay tidak bisa digeser */
+  position: fixed;       
   top: 0;
   left: 0;
   height: 100vh;
@@ -26,7 +20,7 @@ body {
   color: #fff;
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* nav di atas, logout di bawah */
+  justify-content: space-between; 
   padding: 7px 15px;
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
   z-index: 9999;       
@@ -34,45 +28,38 @@ body {
   clip-path: inset(0 0 0 0px);
 }
 
-/* =============================================
-   SIDEBAR – LOGO DAN RECTANGLE DIATAS
-   ============================================= */
 .logo-wrapper {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: flex-start;
   gap: 10px;
-  margin-top: 0; /* tarik ke atas */
+  margin-top: 0; 
 }
 
-/* Rectangle background */
 .sidebar .rectangle-bg {
   width: 178px;
   opacity: 1;
   filter: brightness(1);
   display: block;
-  margin-top: 0; /* tarik ke atas */
+  margin-top: 0; 
 }
 
-/* Logo depan */
 .sidebar .logo-front {
   position: absolute;
-  top: 15px;   /* tarik logo ke atas */
+  top: 15px;   
   left: 55%;
   transform: translateX(-50%);
   width: 100px;
   height: auto;
 }
 
-/* Nav */
 .sidebar nav {
   display: flex;
   flex-direction: column;
   margin-top: 50px;
 }
 
-/* Submenu */
 .submenu {
   margin-left: 20px;
   display: flex;
@@ -110,7 +97,6 @@ body {
   font-weight: 600;
 }
 
-/* Logout tetap di bawah sidebar */
 .sidebar .logout {
   display: flex;
   align-items: center;
@@ -122,29 +108,26 @@ body {
   padding: 12px 15px;
   border-radius: 10px;
   transition: background 0.3s;
-  margin-bottom: 1px; /* jarak ke bawah */
+  margin-bottom: 1px; 
 }
 
 .sidebar .logout:hover {
   background: #003c7a;
 }
 
-/* =============================================
-/* Wrapper yang fixed */
 .header-wrapper {
     position: fixed;
     top: 0;
-    left: 193px;       /* offset agar tidak menindih sidebar */
+    left: 193px;       
     right: 0;
     z-index: 9998;
 }
 
 .header {
-  position: fixed;          /* stay */
-  top: 20px;                /* kunci supaya tidak naik melebihi desain */
-  left: 193px;              /* geser supaya sejajar sidebar */
-  right: 40px;              /* mengikuti margin sisi kananmu */
-
+  position: fixed;          
+  top: 20px;                
+  left: 193px;              
+  right: 40px;              
   z-index: 9998;
   background: #0056a6;
   height: 70px;
@@ -154,12 +137,11 @@ body {
   justify-content: space-between;
 
   padding: 0px 20px;
-  margin: -20px -40px 20px -40px; /* BIARKAN */
+  margin: -20px -40px 20px -40px; 
 
   border-radius: 0;
 }
 
-/* Logo header */
 .header .logo-wrapper {
   position: relative;
   display: flex;
@@ -180,7 +162,6 @@ body {
   width: auto;
 }
 
-/* Title tengah */
 .header h2 {
   position: absolute;
   left: 50%;
@@ -190,7 +171,6 @@ body {
   font-weight: 600;
 }
 
-/* Profile icon */
 .profile-icon {
   width: 45px;
   height: 45px;
@@ -217,9 +197,6 @@ body {
   color: #fff;
 }
 
-/* =============================================
-   CONTENT AREA – disesuaikan layout beranda
-   ============================================= */
 .content {
   margin-left: 193px;
   margin-top: 70px;
@@ -230,9 +207,6 @@ body {
   overflow-y: auto;
 }
 
-/* =============================================
-   FORM TAMBAH KEHILANGAN (ISI TETAP, STYLE DISAMAKAN)
-   ============================================= */
 .container.tambah-kehilangan {
   background: #fff;
   border-radius: 12px;
@@ -319,7 +293,6 @@ body {
   transform: translateY(-2px);
 }
 
-/* Link kembali */
 .kembali-link {
   color: #0056a6;
   text-decoration: none;
@@ -332,7 +305,6 @@ body {
   text-decoration: underline;
 }
 
-/* Row lokasi */
 .lokasi-row {
   display: flex;
   gap: 20px;
@@ -342,7 +314,6 @@ body {
   flex: 1;
 }
 
-/* Responsif */
 @media (max-width: 768px) {
   .container.tambah-kehilangan {
     padding: 25px;
