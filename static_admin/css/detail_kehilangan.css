@@ -467,3 +467,37 @@ input[readonly] {
     width: 100%;
   }
 }
+.foto-penemuan-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+.foto-item {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 5px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.foto-item.active {
+  border-color: #28a745;
+  box-shadow: 0 0 8px rgba(0, 128, 0, 0.5);
+  transform: scale(1.05);
+}
+
+.foto-item img {
+  max-width: 100%;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.foto-item small {
+  display: block;
+  font-size: 12px;
+  margin-top: 3px;
+  word-break: break-word;
+}

@@ -7,6 +7,13 @@ from werkzeug.utils import secure_filename
 from flask import request
 import re
 from dateutil.relativedelta import relativedelta
+from flask import send_file
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
+from openpyxl import Workbook
+import io
 
 
 admin_bp = Blueprint(
@@ -126,6 +133,193 @@ def beranda_admin():
     conn.close()
 
     return render_template("admin/beranda.html", data=data)
+
+def format_bulan_indonesia(bulan_str):
+    bulan_map = {
+        "01": "Januari", "02": "Februari", "03": "Maret",
+        "04": "April", "05": "Mei", "06": "Juni",
+        "07": "Juli", "08": "Agustus", "09": "September",
+        "10": "Oktober", "11": "November", "12": "Desember"
+    }
+
+    tahun, bulan = bulan_str.split("-")
+    return f"{bulan_map.get(bulan, bulan)} {tahun}"
+
+@admin_bp.route('/export/pdf')
+def export_pdf():
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_bp.login_admin'))
+
+    bulan = request.args.get('bulan')  # format: YYYY-MM
+    if not bulan:
+        return "Bulan tidak valid", 400
+
+    # 🔧 FORMAT BULAN UNTUK JUDUL & FILE
+    bulan_label = format_bulan_indonesia(bulan)
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    query = """
+        (
+            SELECT 
+                kode_kehilangan AS kode,
+                nama_barang,
+                'kehilangan' AS jenis,
+                status,
+                DATE_FORMAT(tanggal_kehilangan, '%d-%m-%Y') AS tanggal
+            FROM kehilangan
+            WHERE DATE_FORMAT(tanggal_kehilangan, '%Y-%m') = %s
+        )
+        UNION ALL
+        (
+            SELECT 
+                kode_barang AS kode,
+                nama_barang,
+                'penemuan' AS jenis,
+                status,
+                DATE_FORMAT(tanggal_lapor, '%d-%m-%Y') AS tanggal
+            FROM penemuan
+            WHERE DATE_FORMAT(tanggal_lapor, '%Y-%m') = %s
+        )
+        UNION ALL
+        (
+            SELECT 
+                kode_laporan AS kode,
+                nama_barang,
+                'klaim' AS jenis,
+                status,
+                DATE_FORMAT(tanggal_lapor, '%d-%m-%Y') AS tanggal
+            FROM klaim_barang
+            WHERE DATE_FORMAT(tanggal_lapor, '%Y-%m') = %s
+        )
+        ORDER BY tanggal ASC
+    """
+
+    cursor.execute(query, (bulan, bulan, bulan))
+    data = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4)
+    styles = getSampleStyleSheet()
+
+    # 🔧 JUDUL PDF (SUDAH RAPI)
+    elements = [
+        Paragraph(f"<b>Rekapan Laporan Bulan {bulan_label}</b>", styles['Title'])
+    ]
+
+    table_data = [["Kode", "Nama Barang", "Jenis", "Status", "Tanggal"]]
+
+    for d in data:
+        table_data.append([
+            d['kode'],
+            d['nama_barang'],
+            d['jenis'],
+            d['status'],
+            d['tanggal']
+        ])
+
+    table = Table(table_data, repeatRows=1)
+    table.setStyle(TableStyle([
+        ('GRID', (0,0), (-1,-1), 1, colors.black),
+        ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
+        ('ALIGN', (0,0), (-1,-1), 'CENTER')
+    ]))
+
+    elements.append(table)
+    doc.build(elements)
+
+    buffer.seek(0)
+    return send_file(
+        buffer,
+        as_attachment=True,
+        # 🔧 NAMA FILE PDF
+        download_name=f"rekap_laporan_{bulan_label.replace(' ', '_').lower()}.pdf",
+        mimetype="application/pdf"
+    )
+
+@admin_bp.route('/export/excel')
+def export_excel():
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_bp.login_admin'))
+
+    bulan = request.args.get('bulan')
+    if not bulan:
+        return "Bulan tidak valid", 400
+
+    bulan_label = format_bulan_indonesia(bulan)
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    query = """
+        (
+            SELECT 
+                kode_kehilangan AS kode,
+                nama_barang,
+                'kehilangan' AS jenis,
+                status,
+                tanggal_kehilangan AS tanggal
+            FROM kehilangan
+            WHERE DATE_FORMAT(tanggal_kehilangan, '%Y-%m') = %s
+        )
+        UNION ALL
+        (
+            SELECT 
+                kode_barang AS kode,
+                nama_barang,
+                'penemuan' AS jenis,
+                status,
+                tanggal_lapor AS tanggal
+            FROM penemuan
+            WHERE DATE_FORMAT(tanggal_lapor, '%Y-%m') = %s
+        )
+        UNION ALL
+        (
+            SELECT 
+                kode_laporan AS kode,
+                nama_barang,
+                'klaim' AS jenis,
+                status,
+                tanggal_lapor AS tanggal
+            FROM klaim_barang
+            WHERE DATE_FORMAT(tanggal_lapor, '%Y-%m') = %s
+        )
+        ORDER BY tanggal ASC
+    """
+
+    cursor.execute(query, (bulan, bulan, bulan))
+    data = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Rekap Laporan"
+
+    ws.append(["Kode", "Nama Barang", "Jenis", "Status", "Tanggal"])
+
+    for d in data:
+        ws.append([
+            d['kode'],
+            d['nama_barang'],
+            d['jenis'],
+            d['status'],
+            d['tanggal']
+        ])
+
+    output = io.BytesIO()
+    wb.save(output)
+    output.seek(0)
+
+    return send_file(
+        output,
+        as_attachment=True,
+        download_name=f"rekap_laporan_{bulan_label.replace(' ', '_').lower()}.xlsx",
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
 
 @admin_bp.route('/beranda/hapus', methods=['POST'])
 def hapus_laporan():
@@ -312,20 +506,122 @@ def detail_kehilangan():
     if not session.get('admin_logged_in'):
         return redirect(url_for('admin_bp.login_admin'))
 
-    # Ambil parameter ?kode=LF-L001
     kode_kehilangan = request.args.get('kode')
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM kehilangan WHERE kode_kehilangan = %s", (kode_kehilangan,))
+
+    # =========================
+    # Ambil data kehilangan
+    # =========================
+    cursor.execute(
+        "SELECT * FROM kehilangan WHERE kode_kehilangan = %s",
+        (kode_kehilangan,)
+    )
     laporan = cursor.fetchone()
+
+    if not laporan:
+        cursor.close()
+        conn.close()
+        return "Data tidak ditemukan", 404
+
+    # =========================
+    # Filter H-1, H, H+1
+    # =========================
+    tanggal = laporan['tanggal_kehilangan']
+    h_min_1 = tanggal - timedelta(days=1)
+    h_plus_1 = tanggal + timedelta(days=1)
+
+    # =========================
+    # Ambil penemuan SERUPA
+    # =========================
+    cursor.execute("""
+        SELECT 
+            id,
+            kode_barang,
+            nama_barang,
+            gambar_barang,
+            tanggal_lapor
+        FROM penemuan
+        WHERE tanggal_lapor BETWEEN %s AND %s
+        AND status_barang = 'Tersedia'
+        ORDER BY tanggal_lapor ASC
+    """, (h_min_1, h_plus_1))
+    foto_penemuan = cursor.fetchall()
+
+    # =========================
+    # Ambil rekomendasi yang sudah ada
+    # =========================
+    cursor.execute("""
+        SELECT kode_penemuan
+        FROM rekomendasi_penemuan
+        WHERE kode_kehilangan = %s
+    """, (kode_kehilangan,))
+    rekomendasi_ada = [row['kode_penemuan'] for row in cursor.fetchall()]
+
     cursor.close()
     conn.close()
 
-    if not laporan:
-        return "Data tidak ditemukan", 404
+    return render_template(
+        'detail_kehilangan.html',
+        laporan=laporan,
+        foto_penemuan=foto_penemuan,
+        rekomendasi_ada=rekomendasi_ada
+    )
 
-    return render_template('detail_kehilangan.html', laporan=laporan, role=session.get('role'))
+@admin_bp.route('/rekomendasi/simpan', methods=['POST'])
+def simpan_rekomendasi():
+    data = request.get_json()
+
+    kode_kehilangan = data.get('kode_kehilangan')
+    kode_penemuan_list = data.get('kode_penemuan_list')
+
+    if not kode_kehilangan or not kode_penemuan_list:
+        return jsonify({
+            "success": False,
+            "message": "Data tidak lengkap"
+        }), 400
+
+    admin = session.get('admin_nama', 'admin')
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    for kode_penemuan in kode_penemuan_list:
+        cursor.execute("""
+            INSERT INTO rekomendasi_penemuan
+            (kode_kehilangan, kode_penemuan, dipilih_oleh)
+            VALUES (%s, %s, %s)
+        """, (kode_kehilangan, kode_penemuan, admin))
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return jsonify({
+        "success": True,
+        "message": "Rekomendasi berhasil disimpan"
+    })
+    
+@admin_bp.route('/rekomendasi/list')
+def list_rekomendasi():
+    kode_kehilangan = request.args.get('kode_kehilangan')
+    if not kode_kehilangan:
+        return jsonify({"success": False, "rekomendasi": []})
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("""
+        SELECT kode_penemuan
+        FROM rekomendasi_penemuan
+        WHERE kode_kehilangan = %s
+    """, (kode_kehilangan,))
+    data = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    rekomendasi_list = [row['kode_penemuan'] for row in data]
+    return jsonify({"success": True, "rekomendasi": rekomendasi_list})
 
 # ======================
 # 🔄 API: Update Status Kehilangan

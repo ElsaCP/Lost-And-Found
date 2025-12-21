@@ -166,15 +166,15 @@
       <div class="data-section">
         <h3>Waktu & Status</h3>
 
-        <div class="data-row">
-          <span>Tanggal Penemuan :</span>
-          <strong>{{ laporan.tanggal_lapor }}</strong>
-        </div>
+      <div class="data-row">
+        <span>Tanggal Penemuan :</span>
+        <strong>{{ laporan.tanggal_lapor.strftime("%Y-%m-%d") if laporan.tanggal_lapor else "" }}</strong>
+      </div>
 
-        <div class="data-row">
-          <span>Update Terakhir :</span>
-          <strong>{{ laporan.update_terakhir }}</strong>
-        </div>
+      <div class="data-row">
+        <span>Update Terakhir :</span>
+        <strong>{{ laporan.update_terakhir.strftime("%Y-%m-%d %H:%M") if laporan.update_terakhir else "" }}</strong>
+      </div>
 
         <div class="data-row">
           <span>Status :</span>
