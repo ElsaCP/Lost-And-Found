@@ -730,28 +730,40 @@ Silakan login admin untuk melakukan verifikasi.
 def riwayat_klaim():
     return render_template('user/riwayat_klaim.html')
 
-@main.route("/cek-riwayat", methods=["GET"])
-def cek_riwayat():
-    return render_template("user/cek_riwayat.html")
-
 
 @main.route("/api/cek-riwayat-klaim", methods=["POST"])
 def api_cek_riwayat_klaim():
     data = request.get_json()
-    email = data.get("email")
 
-    if not email:
-        return jsonify({"status": "error", "message": "Email kosong"}), 400
+    kode_kehilangan = data.get("kode_kehilangan")
+    kode_klaim = data.get("kode_klaim")
 
-    from models import get_riwayat_klaim_by_email
-    riwayat = get_riwayat_klaim_by_email(email)
+    if not kode_kehilangan or not kode_klaim:
+        return jsonify({
+            "status": "error",
+            "message": "Kode kehilangan dan kode klaim wajib diisi"
+        }), 400
 
-    if not riwayat:
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT kode_laporan
+        FROM klaim_barang
+        WHERE kode_laporan = %s
+          AND kode_laporan_kehilangan = %s
+    """, (kode_klaim, kode_kehilangan))
+
+    klaim = cursor.fetchone()
+    cursor.close()
+    db.close()
+
+    if not klaim:
         return jsonify({"status": "not_found"}), 200
 
     return jsonify({
         "status": "success",
-        "data": riwayat
+        "kode_klaim": klaim["kode_laporan"]
     }), 200
 
 @main.route("/hasil-riwayat-klaim")
