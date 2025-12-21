@@ -142,6 +142,54 @@
         </div>
       </div>
 
+      <div class="foto-penemuan-section no-print">
+        <h4>Foto Penemuan (H-1, H, H+1)</h4>
+
+        <div class="filter-wrapper">
+          <input
+            type="text"
+            id="filterFoto"
+            class="filter-input"
+            placeholder="Cari ciri barang (contoh: jam tangan hitam)">
+
+          <button
+            id="btnCariFoto"
+            class="btn btn-primary btn-sm">
+            Cari
+          </button>
+        </div>
+
+        <p id="infoCari" class="text-muted">
+          Ketik kata kunci lalu klik <strong>Cari</strong> untuk menampilkan foto penemuan.
+        </p>
+
+        <div class="foto-penemuan-list hidden" id="fotoPenemuanList">
+          {% for f in foto_penemuan %}
+            <div class="foto-item selectable"
+                data-id="{{ f.kode_barang }}"
+                data-nama="{{ f.nama_barang|lower }}">
+
+              <input type="checkbox"
+                    class="select-foto"
+                    value="{{ f.kode_barang  }}">
+
+              <img src="{{ url_for('static', filename='uploads/' ~ f.gambar_barang) }}"
+                  alt="Foto Penemuan">
+
+              <small>
+                {{ f.nama_barang }}<br>
+                {{ f.tanggal_lapor }}
+              </small>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <button id="btnSimpanRekomendasi" class="btn btn-success mt-3">
+        Simpan Rekomendasi
+      </button>
+
+
       <div class="button-group no-print">
         <button id="btnKembali" class="btn btn-secondary">
           Kembali
