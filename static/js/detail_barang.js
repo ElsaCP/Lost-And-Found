@@ -1,3 +1,11 @@
-function klaimBarang(kode) {
-  window.location.href = `/form_klaim_barang?id=${kode}`;
+function klaimBarang(kodeBarang) {
+  const kodeKehilangan = document.getElementById("kodeKehilanganAktif")?.value;
+
+  let url = `/form_klaim_barang?id=${kodeBarang}`;
+
+  if (kodeKehilangan) {
+    url += `&lost=${kodeKehilangan}`;
+  }
+
+  window.location.href = url;
 }

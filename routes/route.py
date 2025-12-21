@@ -1,11 +1,11 @@
 # routes/route.py
-from flask import Blueprint, request, jsonify, render_template,redirect, url_for
+from flask import Blueprint, request, jsonify, render_template,redirect, url_for, session
 from datetime import datetime
 from werkzeug.utils import secure_filename
 from models import fetch_public_penemuan, get_penemuan_by_kode, fetch_barang_publik_terbaru
 from models import get_laporan_by_email, get_riwayat_klaim_by_email,tambah_riwayat_status, get_riwayat_status
 from config import get_db_connection
-from models import (fetch_public_penemuan, get_penemuan_by_kode, fetch_barang_publik_terbaru,
+from models import (fetch_public_penemuan, get_penemuan_by_kode,
                     get_laporan_by_email, get_riwayat_klaim_by_email,
                     tambah_riwayat_status, get_riwayat_status)
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
@@ -21,6 +21,7 @@ from extensions import db, mail
 from flask_mail import Message
 from config import Config
 from sqlalchemy import text
+from utils.email import kirim_email_verifikasi
 import os
 import mysql.connector
 import hmac
@@ -800,6 +801,7 @@ def detail_klaim(kode_laporan):
     cursor.execute("""
         SELECT 
             k.kode_laporan,
+            k.kode_laporan_kehilangan,
             k.kode_barang,
             k.nama_barang,
             k.nama_pelapor,
@@ -933,36 +935,46 @@ def detail_barang(kode):
     if not barang:
         return render_template('user/not_found.html'), 404
 
-    # Ubah path gambar agar bisa tampil
+    # 🔑 ambil dari query string
+    kode_kehilangan = request.args.get("lost")
+
+    # simpan ke session (opsional tapi bagus)
+    if kode_kehilangan:
+        session['kode_kehilangan'] = kode_kehilangan
+
     if barang.get('gambar_barang'):
         barang['gambar_barang'] = f"/static/uploads/{barang['gambar_barang']}"
     else:
         barang['gambar_barang'] = "/static/image/no-image.png"
 
-    return render_template('user/detail_barang.html', barang=barang)
+    return render_template(
+        'user/detail_barang.html',
+        barang=barang,
+        kode_kehilangan=kode_kehilangan
+    )
 
-# Halaman form klaim barang (berdasarkan kode barang)
+
 @main.route('/form_klaim_barang')
 def form_klaim_barang():
-    kode = request.args.get('id')  # ambil kode dari URL ?id=LF-F001
+    kode = request.args.get('id')
+    kode_kehilangan = request.args.get('lost')
+
     barang = None
-
     if kode:
-        from models import get_penemuan_by_kode
         barang = get_penemuan_by_kode(kode)
-
-        # Jika tidak ditemukan
         if not barang:
             return render_template('user/not_found.html'), 404
 
-        # Pastikan path gambar bisa ditampilkan
         if barang.get('gambar_barang'):
             barang['gambar_barang'] = f"/static/uploads/{barang['gambar_barang']}"
         else:
             barang['gambar_barang'] = "/static/image/no-image.png"
 
-    # Render halaman form klaim dengan data barang
-    return render_template('user/form_klaim_barang.html', barang=barang)
+    return render_template(
+        'user/form_klaim_barang.html',
+        barang=barang,
+        kode_kehilangan=kode_kehilangan
+    )
 
 @main.route("/submit-klaim", methods=["POST"])
 def submit_klaim():
@@ -1262,41 +1274,51 @@ def update_status(kode_kehilangan):
         catatan = request.form.get("catatan") or ""
 
         db = get_db_connection()
-        cursor = db.cursor()
+        cursor = db.cursor(dictionary=True)
 
-        # Ambil status lama
-        cursor.execute("SELECT status FROM kehilangan WHERE kode_kehilangan=%s", (kode_kehilangan,))
-        old_status = cursor.fetchone()
+        cursor.execute("""
+            SELECT status, email
+            FROM kehilangan
+            WHERE kode_kehilangan = %s
+        """, (kode_kehilangan,))
+        data = cursor.fetchone()
 
-        if not old_status:
+        if not data:
             return jsonify({"success": False, "message": "Data tidak ditemukan"})
 
-        old_status = old_status[0]
+        status_lama = data["status"]
+        email_user = data["email"]
 
-        if old_status == status_baru:
-            return jsonify({"success": False, "message": "Status sama, tidak diubah"})
+        if status_lama == status_baru:
+            return jsonify({"success": False, "message": "Status tidak berubah"})
 
         cursor.execute("""
-            UPDATE kehilangan 
-            SET status=%s,
-                catatan=%s,
-                update_terakhir=NOW()
-            WHERE kode_kehilangan=%s
+            UPDATE kehilangan
+            SET status = %s,
+                catatan = %s,
+                update_terakhir = NOW()
+            WHERE kode_kehilangan = %s
         """, (status_baru, catatan, kode_kehilangan))
-
-        cursor.execute("""
-            INSERT INTO riwayat_status (kode_kehilangan, status, catatan, waktu_update)
-            VALUES (%s, %s, %s, ())
-        """, (kode_kehilangan, status_baru, catatan))
 
         db.commit()
         cursor.close()
         db.close()
 
-        return jsonify({"success": True, "message": "Status berhasil diperbarui"})
+        # =========================
+        # 📧 EMAIL VERIFIKASI
+        # =========================
+        if status_baru == "Verifikasi":
+            print("🔥 STATUS VERIFIKASI TERDETEKSI")
+            print("📧 EMAIL USER:", email_user)
+
+            kirim_email_verifikasi(email_user, kode_kehilangan)
+
+        return jsonify({"success": True})
 
     except Exception as e:
-        return jsonify({"success": False, "message": str(e)})
+        print("❌ ERROR UPDATE STATUS:", e)
+        return jsonify({"success": False})
+
 
 @main.route("/api/rekomendasi/<kode_kehilangan>")
 def rekomendasi(kode_kehilangan):
@@ -1432,3 +1454,4 @@ def rekomendasi_baru(kode_kehilangan):
     db.close()
 
     return jsonify(hasil)
+

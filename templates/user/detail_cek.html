@@ -276,18 +276,20 @@
 <script>
 document.addEventListener("DOMContentLoaded", () => {
     const kode = "{{ laporan.kode_kehilangan }}";
+    console.log("Kode kehilangan:", kode);
+
     const container = document.getElementById("barangSerupaContainer");
     if (!container) return;
 
-    loadRekomendasi(`/api/rekomendasi/${kode}`);
+    loadRekomendasi(`/api/rekomendasi/${kode}`, kode);
 
     document.getElementById("btnBukanBarangSaya")
-      .addEventListener("click", () => {
-        loadRekomendasi(`/api/rekomendasi_baru/${kode}`);
+      ?.addEventListener("click", () => {
+        loadRekomendasi(`/api/rekomendasi_baru/${kode}`, kode);
       });
 });
 
-function loadRekomendasi(url) {
+function loadRekomendasi(url, kodeKehilangan) {
     fetch(url)
       .then(res => res.json())
       .then(data => {
@@ -308,12 +310,15 @@ function loadRekomendasi(url) {
                 <p><b>Kategori:</b> ${item.kategori}</p>
                 <p><b>Lokasi:</b> ${item.lokasi}</p>
                 <p><b>Tanggal:</b> ${item.tanggal_lapor}</p>
-                <a href="/detail-barang/${item.kode_barang}"
-                   class="btn btn-primary btn-sm w-100">Lihat Detail</a>
+                <a href="/detail-barang/${item.kode_barang}?lost=${kodeKehilangan}"
+                  class="btn btn-primary btn-sm w-100">
+                  Lihat Detail
+                </a>
               </div>
             </div>`;
         });
-      });
+      })
+      .catch(err => console.error("Fetch error:", err));
 }
 </script>
 
