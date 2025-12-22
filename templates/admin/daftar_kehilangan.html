@@ -53,6 +53,17 @@
       </div>
     </div>
 
+    <!-- 🔥 EXPORT PDF & EXCEL -->
+    <div class="export-wrapper mb-3 d-flex gap-2">
+      <button id="btnExportPdf" class="btn btn-danger">
+        <i class="bi bi-file-earmark-pdf"></i> Export PDF
+      </button>
+
+      <button id="btnExportExcel" class="btn btn-success">
+        <i class="bi bi-file-earmark-excel"></i> Export Excel
+      </button>
+    </div>
+
     <div class="mb-3">
       <div class="search-filter-wrapper">
         <div class="search-box">
@@ -89,6 +100,7 @@
               <option value="Verifikasi" {% if barang.status == 'Verifikasi' %}selected{% endif %}>Verifikasi</option>
               <option value="Dalam Pencarian" {% if barang.status == 'Dalam Pencarian' %}selected{% endif %}>Dalam Pencarian</option>
               <option value="Dalam Proses" {% if barang.status == 'Dalam Proses' %}selected{% endif %}>Dalam Proses</option>
+              <option value="Barang Tidak Ditemukan" {% if barang.status == 'Barang Tidak Ditemukan' %}selected{% endif %}>Barang Tidak Ditemukan</option>
               <option value="Selesai" {% if barang.status == 'Selesai' %}selected{% endif %}>Selesai</option>
             </select>
           </td>

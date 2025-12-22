@@ -114,6 +114,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     document.getElementById("updateTerakhir").textContent = result.update_terakhir;
 
                     setTimeout(() => {
+                        if (newStatus === "Selesai" || newStatus === "Barang Tidak Ditemukan") {
+                            window.location.href = "/admin/arsip";
+                            return;
+                        }
+
                         if (fromPage === "beranda") {
                             window.location.href = "/admin/beranda_admin";
                         } else if (fromPage === "daftar") {
