@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
           }
 
-          if (newStatus === "Selesai") {
+          if (newStatus === "Selesai" || newStatus === "Barang Tidak Ditemukan") {
             Swal.fire({
               icon: "success",
               title: "Dipindahkan ke Arsip",
@@ -244,3 +244,37 @@ document.addEventListener("DOMContentLoaded", function () {
   applyFilter();
 
 });
+
+const btnPdf = document.getElementById("btnExportPdf");
+const btnExcel = document.getElementById("btnExportExcel");
+
+function getSelectedMonth() {
+  const bulan = document.getElementById("filterBulan")?.value;
+  if (!bulan || bulan === "all") {
+    Swal.fire("Pilih Bulan", "Silakan pilih bulan terlebih dahulu", "warning");
+    return null;
+  }
+  return bulan;
+}
+
+if (btnPdf) {
+  btnPdf.addEventListener("click", () => {
+    const bulan = getSelectedMonth();
+    if (!bulan) return;
+
+    window.open(
+      `/admin/kehilangan/export/pdf?bulan=${bulan}`,
+      "_blank"
+    );
+  });
+}
+
+if (btnExcel) {
+  btnExcel.addEventListener("click", () => {
+    const bulan = getSelectedMonth();
+    if (!bulan) return;
+
+    window.location.href =
+      `/admin/kehilangan/export/excel?bulan=${bulan}`;
+  });
+}

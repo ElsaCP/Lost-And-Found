@@ -213,3 +213,38 @@ if (btn.classList.contains("btn-verify")) {
   }
 
 });
+
+
+const btnPdf = document.getElementById("btnExportPdf");
+const btnExcel = document.getElementById("btnExportExcel");
+
+function getSelectedMonth() {
+  const bulan = document.getElementById("filterBulan")?.value;
+  if (!bulan || bulan === "all") {
+    Swal.fire("Pilih Bulan", "Silakan pilih bulan terlebih dahulu", "warning");
+    return null;
+  }
+  return bulan;
+}
+
+if (btnPdf) {
+  btnPdf.addEventListener("click", () => {
+    const bulan = getSelectedMonth();
+    if (!bulan) return;
+
+    window.open(
+      `/admin/penemuan/export/pdf?bulan=${bulan}`,
+      "_blank"
+    );
+  });
+}
+
+if (btnExcel) {
+  btnExcel.addEventListener("click", () => {
+    const bulan = getSelectedMonth();
+    if (!bulan) return;
+
+    window.location.href =
+      `/admin/penemuan/export/excel?bulan=${bulan}`;
+  });
+}

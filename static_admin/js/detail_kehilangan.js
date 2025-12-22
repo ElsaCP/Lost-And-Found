@@ -91,14 +91,18 @@ document.addEventListener("DOMContentLoaded", () => {
         if (result.success) {
           if (updateTerakhirEl) updateTerakhirEl.textContent = result.update_terakhir;
 
-          Swal.fire({
-            icon: "success",
-            title: "Update Status Berhasil",
-            timer: 1500,
-            showConfirmButton: false
-          }).then(() => {
+        Swal.fire({
+          icon: "success",
+          title: "Update Status Berhasil",
+          timer: 1500,
+          showConfirmButton: false
+        }).then(() => {
+          if (status === "Selesai" || status === "Barang Tidak Ditemukan") {
+            window.location.href = "/admin/arsip";
+          } else {
             window.location.href = "/admin/kehilangan/daftar";
-          });
+          }
+        });
 
         } else {
           Swal.fire("Gagal", result.message, "error");

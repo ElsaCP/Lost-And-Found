@@ -71,68 +71,77 @@
         </div>
     </div>
 
-  <div class="mb-3">
+    <div class="export-wrapper mb-3 d-flex gap-2">
+      <button id="btnExportPdf" class="btn btn-danger">
+        <i class="bi bi-file-earmark-pdf"></i> Export PDF
+      </button>
 
-  <div class="search-filter-wrapper">
-    <div class="search-box">
-      <input type="text" id="searchInput" placeholder="Cari laporan...">
+      <button id="btnExportExcel" class="btn btn-success">
+        <i class="bi bi-file-earmark-excel"></i> Export Excel
+      </button>
     </div>
-    <div class="filter-box">
-      <select id="filterBulan" class="form-select">
-      </select>
-    </div>
-  </div>
-  </div>
 
-<table id="dataTable">
-  <thead>
-    <tr>
-      <th>Kode Penemuan</th>
-      <th>Nama Barang</th>
-      <th>Jenis Laporan</th>
-      <th>Status</th>
-      <th>Aksi</th>
-    </tr>
-  </thead>
-
-  <tbody>
-    {% for barang in penemuan_list %}
-    <tr 
-     data-kode="{{ barang.kode_barang }}"  
-     data-tanggal="{{ barang['tanggal_lapor'] }}">
-      <td>{{ barang.kode_barang }}</td>
-      <td>{{ barang.nama_barang }}</td>
-      <td>{{ barang.jenis_laporan }}</td>
-      <td>
-        <select class="status-select" data-id="{{ barang.kode_barang }}">
-          <option value="Verifikasi" {% if barang.status == 'Verifikasi' %}selected{% endif %}>Verifikasi</option>
-          <option value="Selesai" {% if barang.status == 'Selesai' %}selected{% endif %}>Selesai</option>
+    <div class="mb-3">
+    <div class="search-filter-wrapper">
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Cari laporan...">
+      </div>
+      <div class="filter-box">
+        <select id="filterBulan" class="form-select">
         </select>
-      </td>
-      <td class="aksi">
-        <a href="{{ url_for('admin_bp.detail_penemuan') }}?kode={{ barang.kode_barang }}">
-          <i class="bi bi-eye"></i>
-        </a>
+      </div>
+    </div>
+    </div>
 
-        <a href="{{ url_for('admin_bp.edit_penemuan') }}?kode={{ barang.kode_barang }}" class="btn-edit">
-          <i class="bi bi-pencil"></i>
-        </a>
+    <table id="dataTable">
+      <thead>
+        <tr>
+          <th>Kode Penemuan</th>
+          <th>Nama Barang</th>
+          <th>Jenis Laporan</th>
+          <th>Status</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
 
-        <button class="btn-delete" title="Hapus" data-kode="{{ barang.kode_barang }}">
-            <i class="bi bi-trash"></i>
-        </button>
+      <tbody>
+        {% for barang in penemuan_list %}
+        <tr 
+        data-kode="{{ barang.kode_barang }}"  
+        data-tanggal="{{ barang['tanggal_lapor'] }}">
+          <td>{{ barang.kode_barang }}</td>
+          <td>{{ barang.nama_barang }}</td>
+          <td>{{ barang.jenis_laporan }}</td>
+          <td>
+            <select class="status-select" data-id="{{ barang.kode_barang }}">
+              <option value="Verifikasi" {% if barang.status == 'Verifikasi' %}selected{% endif %}>Verifikasi</option>
+              <option value="Selesai" {% if barang.status == 'Selesai' %}selected{% endif %}>Selesai</option>
+            </select>
+          </td>
+          <td class="aksi">
+            <a href="{{ url_for('admin_bp.detail_penemuan') }}?kode={{ barang.kode_barang }}">
+              <i class="bi bi-eye"></i>
+            </a>
 
-        <button class="btn-verify" data-kode="{{ barang.kode_barang }}">
-          <i class="bi bi-check-circle-fill"></i>
-        </button>
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-  
-<script>
-  const kodeKlaim = "{{ kode_klaim }}";
-</script>
+            <a href="{{ url_for('admin_bp.edit_penemuan') }}?kode={{ barang.kode_barang }}" class="btn-edit">
+              <i class="bi bi-pencil"></i>
+            </a>
+
+            <button class="btn-delete" title="Hapus" data-kode="{{ barang.kode_barang }}">
+                <i class="bi bi-trash"></i>
+            </button>
+
+            <button class="btn-verify" data-kode="{{ barang.kode_barang }}">
+              <i class="bi bi-check-circle-fill"></i>
+            </button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      
+    <script>
+      const kodeKlaim = "{{ kode_klaim }}";
+    </script>
 
 </table>
 

@@ -322,6 +322,260 @@ def export_excel():
         download_name=f"rekap_laporan_{bulan_label.replace(' ', '_').lower()}.xlsx",
         mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
+    
+@admin_bp.route('/kehilangan/export/pdf')
+def export_kehilangan_pdf():
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_bp.login_admin'))
+
+    bulan = request.args.get('bulan')
+    if not bulan:
+        return "Bulan tidak valid", 400
+
+    bulan_label = format_bulan_indonesia(bulan)
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT 
+            kode_kehilangan AS kode,
+            nama_barang,
+            status,
+            DATE_FORMAT(tanggal_submit, '%d-%m-%Y') AS tanggal
+        FROM kehilangan
+        WHERE DATE_FORMAT(tanggal_submit, '%Y-%m') = %s
+        ORDER BY tanggal_submit ASC
+    """, (bulan,))
+
+    data = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4)
+    styles = getSampleStyleSheet()
+
+    # ✅ JUDUL FIX
+    elements = [
+        Paragraph(
+            f"<b>Laporan Kehilangan Bulan {bulan_label}</b>",
+            styles['Title']
+        )
+    ]
+
+    # ✅ TAMBAH KOLOM JENIS LAPORAN
+    table_data = [["Kode", "Nama Barang", "Jenis Laporan", "Status", "Tanggal"]]
+
+    for d in data:
+        table_data.append([
+            d['kode'],
+            d['nama_barang'],
+            "Kehilangan",          # ⬅️ jenis laporan
+            d['status'],
+            d['tanggal']
+        ])
+
+    table = Table(table_data, repeatRows=1)
+    table.setStyle(TableStyle([
+        ('GRID', (0,0), (-1,-1), 1, colors.black),
+        ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
+        ('ALIGN', (0,0), (-1,-1), 'CENTER')
+    ]))
+
+    elements.append(table)
+    doc.build(elements)
+
+    buffer.seek(0)
+    return send_file(
+        buffer,
+        as_attachment=True,
+        # ✅ NAMA FILE FIX
+        download_name=f"laporan_kehilangan_{bulan_label.replace(' ', '_').lower()}.pdf",
+        mimetype="application/pdf"
+    )
+
+@admin_bp.route('/kehilangan/export/excel')
+def export_kehilangan_excel():
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_bp.login_admin'))
+
+    bulan = request.args.get('bulan')
+    if not bulan:
+        return "Bulan tidak valid", 400
+
+    bulan_label = format_bulan_indonesia(bulan)
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT 
+            kode_kehilangan AS kode,
+            nama_barang,
+            status,
+            tanggal_submit AS tanggal
+        FROM kehilangan
+        WHERE DATE_FORMAT(tanggal_submit, '%Y-%m') = %s
+        ORDER BY tanggal_submit ASC
+    """, (bulan,))
+
+    data = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Laporan Kehilangan"
+
+    # ✅ HEADER EXCEL
+    ws.append(["Kode", "Nama Barang", "Jenis Laporan", "Status", "Tanggal"])
+
+    for d in data:
+        ws.append([
+            d['kode'],
+            d['nama_barang'],
+            "Kehilangan",      # ⬅️ jenis laporan
+            d['status'],
+            d['tanggal']
+        ])
+
+    output = io.BytesIO()
+    wb.save(output)
+    output.seek(0)
+
+    return send_file(
+        output,
+        as_attachment=True,
+        # ✅ NAMA FILE FIX
+        download_name=f"laporan_kehilangan_{bulan_label.replace(' ', '_').lower()}.xlsx",
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+
+@admin_bp.route('/penemuan/export/pdf')
+def export_penemuan_pdf():
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_bp.login_admin'))
+
+    bulan = request.args.get('bulan')
+    if not bulan:
+        return "Bulan tidak valid", 400
+
+    bulan_label = format_bulan_indonesia(bulan)
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT 
+            kode_barang AS kode,
+            nama_barang,
+            status,
+            DATE_FORMAT(tanggal_lapor, '%d-%m-%Y') AS tanggal
+        FROM penemuan
+        WHERE DATE_FORMAT(tanggal_lapor, '%Y-%m') = %s
+        ORDER BY tanggal_lapor ASC
+    """, (bulan,))
+
+    data = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4)
+    styles = getSampleStyleSheet()
+
+    elements = [
+        Paragraph(
+            f"<b>Laporan Penemuan Bulan {bulan_label}</b>",
+            styles['Title']
+        )
+    ]
+
+    # ✅ KOLOM JENIS LAPORAN
+    table_data = [["Kode", "Nama Barang", "Jenis Laporan", "Status", "Tanggal"]]
+
+    for d in data:
+        table_data.append([
+            d['kode'],
+            d['nama_barang'],
+            "Penemuan",
+            d['status'],
+            d['tanggal']
+        ])
+
+    table = Table(table_data, repeatRows=1)
+    table.setStyle(TableStyle([
+        ('GRID', (0,0), (-1,-1), 1, colors.black),
+        ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
+        ('ALIGN', (0,0), (-1,-1), 'CENTER')
+    ]))
+
+    elements.append(table)
+    doc.build(elements)
+
+    buffer.seek(0)
+    return send_file(
+        buffer,
+        as_attachment=True,
+        download_name=f"laporan_penemuan_{bulan_label.replace(' ', '_').lower()}.pdf",
+        mimetype="application/pdf"
+    )
+
+@admin_bp.route('/penemuan/export/excel')
+def export_penemuan_excel():
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_bp.login_admin'))
+
+    bulan = request.args.get('bulan')
+    if not bulan:
+        return "Bulan tidak valid", 400
+
+    bulan_label = format_bulan_indonesia(bulan)
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT 
+            kode_barang AS kode,
+            nama_barang,
+            status,
+            tanggal_lapor AS tanggal
+        FROM penemuan
+        WHERE DATE_FORMAT(tanggal_lapor, '%Y-%m') = %s
+        ORDER BY tanggal_lapor ASC
+    """, (bulan,))
+
+    data = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Laporan Penemuan"
+
+    ws.append(["Kode", "Nama Barang", "Jenis Laporan", "Status", "Tanggal"])
+
+    for d in data:
+        ws.append([
+            d['kode'],
+            d['nama_barang'],
+            "Penemuan",
+            d['status'],
+            d['tanggal']
+        ])
+
+    output = io.BytesIO()
+    wb.save(output)
+    output.seek(0)
+
+    return send_file(
+        output,
+        as_attachment=True,
+        download_name=f"laporan_penemuan_{bulan_label.replace(' ', '_').lower()}.xlsx",
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
 
 @admin_bp.route('/beranda/hapus', methods=['POST'])
 def hapus_laporan():
@@ -625,47 +879,107 @@ def list_rekomendasi():
     rekomendasi_list = [row['kode_penemuan'] for row in data]
     return jsonify({"success": True, "rekomendasi": rekomendasi_list})
 
+def kirim_email_verifikasi(email_user, nama_pelapor, kode_kehilangan):
+    try:
+        print("🔥 STATUS VERIFIKASI TERDETEKSI")
+        print("📧 EMAIL USER:", email_user)
+
+        msg = Message(
+            subject="Laporan Kehilangan Anda Telah Diverifikasi",
+            recipients=[email_user]
+        )
+
+        msg.body = f"""
+Halo {nama_pelapor},
+
+Laporan kehilangan Anda dengan kode:
+{kode_kehilangan}
+
+Telah berhasil DIVERIFIKASI oleh petugas Lost & Found
+Bandara Internasional Juanda.
+
+Silakan pantau status laporan Anda secara berkala melalui website.
+
+Terima kasih,
+Admin Lost & Found Juanda
+"""
+        mail.send(msg)
+        print("✅ EMAIL VERIFIKASI TERKIRIM KE:", email_user)
+
+    except Exception as e:
+        print("❌ GAGAL KIRIM EMAIL:", e)
+
 # ======================
 # 🔄 API: Update Status Kehilangan
 # ======================
 @admin_bp.route('/api/kehilangan/update_status', methods=['POST'])
 def update_status_kehilangan():
     data = request.get_json()
-    kode = data.get('kode')
-    status = data.get('status')
-    catatan = data.get('catatan', '')  # ✅ Tambahkan catatan admin
 
-    if not kode or not status:
+    kode = data.get('kode')
+    status_baru = data.get('status')
+    catatan = data.get('catatan', '')  # ✅ CATATAN ADMIN
+
+    if not kode or not status_baru:
         return jsonify({'success': False, 'message': 'Data tidak lengkap!'}), 400
 
     conn = get_db_connection()
-    cursor = conn.cursor()
+    cursor = conn.cursor(dictionary=True)
+
+    # 1️⃣ Ambil data lama
+    cursor.execute("""
+        SELECT status, email, nama_pelapor
+        FROM kehilangan
+        WHERE kode_kehilangan = %s
+    """, (kode,))
+    lama = cursor.fetchone()
+
+    if not lama:
+        cursor.close()
+        conn.close()
+        return jsonify({'success': False, 'message': 'Data tidak ditemukan'}), 404
+
+    status_lama = lama['status']
+    email_user = lama['email']
+    nama_pelapor = lama['nama_pelapor']
 
     waktu_update = datetime.now().strftime("%Y-%m-%d %H:%M")
 
-    # Update status dan catatan di tabel kehilangan
+    # 2️⃣ UPDATE STATUS + CATATAN
     cursor.execute("""
-        UPDATE kehilangan 
-        SET status = %s, 
+        UPDATE kehilangan
+        SET status = %s,
             catatan = %s,
             update_terakhir = %s
         WHERE kode_kehilangan = %s
-    """, (status, catatan, waktu_update, kode))
+    """, (status_baru, catatan, waktu_update, kode))
+
+    # 3️⃣ SIMPAN RIWAYAT STATUS (REKOMENDED)
+    cursor.execute("""
+        INSERT INTO riwayat_status
+        (kode_kehilangan, status, catatan, waktu_update)
+        VALUES (%s, %s, %s, %s)
+    """, (kode, status_baru, catatan, waktu_update))
+
     conn.commit()
 
-    # Jika status = Selesai → pindahkan ke arsip
-    if status == "Selesai":
+    # 4️⃣ PINDAHKAN KE ARSIP JIKA SELESAI
+    if status_baru == "Selesai":
         pindahkan_ke_arsip(kode, "kehilangan")
 
     cursor.close()
     conn.close()
+
+    # 5️⃣ KIRIM EMAIL JIKA BARU VERIFIKASI
+    if status_baru == "Verifikasi" and status_lama != "Verifikasi":
+        kirim_email_verifikasi(email_user, nama_pelapor, kode)
 
     return jsonify({
         'success': True,
         'message': 'Status dan catatan berhasil diperbarui!',
         'update_terakhir': waktu_update
     })
-    
+
     # ============================
     # 🗑 API DELETE - By Kode
     # ============================
@@ -1396,6 +1710,7 @@ def auto_arsip_laporan():
     db = get_db_connection()
     cur = db.cursor(dictionary=True)
 
+    # batas 3 bulan lalu
     batas_tanggal = datetime.now() - relativedelta(months=3)
     tanggal_inactive = datetime.now().replace(second=0, microsecond=0)
 
@@ -1406,14 +1721,14 @@ def auto_arsip_laporan():
         SELECT kode_kehilangan
         FROM kehilangan
         WHERE tanggal_kehilangan < %s
-          AND status != 'Selesai'
+        OR status IN ('Selesai', 'Barang Tidak Ditemukan')
     """, (batas_tanggal,))
 
     for row in cur.fetchall():
         pindahkan_ke_arsip(
             row['kode_kehilangan'],
             'kehilangan',
-            tanggal_inactive   # 🔥 INI YANG KEMARIN KURANG
+            tanggal_inactive
         )
 
     # ======================
@@ -1489,9 +1804,7 @@ def pindahkan_ke_arsip(kode, jenis_tabel, tanggal_inactive=None):
     tanggal_asli = data.get(kolom_tanggal)
     tanggal_arsip = datetime.now().replace(second=0, microsecond=0)
 
-    # 🔥 RULE UTAMA
-    # tanggal_inactive HANYA untuk laporan NON-SELESAI
-    if data.get("status") == "Selesai":
+    if data.get("status") in ("Selesai", "Barang Tidak Ditemukan"):
         tanggal_inactive = None
     else:
         tanggal_inactive = tanggal_inactive or tanggal_arsip
