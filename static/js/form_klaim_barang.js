@@ -1,8 +1,18 @@
 document.addEventListener("DOMContentLoaded", () => {
   const params = new URLSearchParams(window.location.search);
-  const kode = params.get("id");
-  if (kode) {
-    document.getElementById("kodeBarang").value = kode;
+
+  const kodeBarang = params.get("id");     // dari detail barang
+  const kodeLost   = params.get("lost");   // dari laporan kehilangan
+
+  if (kodeBarang) {
+    document.getElementById("kodeBarang").value = kodeBarang;
+  }
+
+  if (kodeLost) {
+    const inputLost = document.getElementById("kodeKehilangan");
+    inputLost.value = kodeLost;
+    inputLost.readOnly = true;
+    inputLost.classList.add("bg-light");
   }
 });
 

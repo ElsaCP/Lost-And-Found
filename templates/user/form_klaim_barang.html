@@ -30,7 +30,7 @@
       <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
         <ul class="navbar-nav align-items-center">
           <li class="nav-item"><a class="nav-link active" href="{{ url_for('main.home') }}#hero">Beranda</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('main.home') }}#listBarang">List Barang</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('main.home') }}#statistik">Statistik</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ url_for('main.home') }}#panduan">Panduan</a></li>
           <li class="nav-item"><a class="nav-link" href="#kontak">Kontak</a></li>
           <li class="nav-item ms-lg-3">
@@ -97,7 +97,7 @@
           <input type="text" id="kodeBarang" name="kodeBarang" class="form-control bg-light" readonly>
 
           <label class="form-label mt-3">Kode Laporan Kehilangan</label>
-          <input type="text" id="kodeKehilangan" name="kodeKehilangan" class="form-control" placeholder="Jika sudah pernah melapor">
+          <input type="text" id="kodeKehilangan" name="kodeKehilangan" class="form-control" placeholder="Misalnya: LF-L999">
 
           <div class="form-check mt-3">
             <input type="checkbox" class="form-check-input" id="konfirmasi" required>
@@ -128,7 +128,6 @@
     </div>
   </div>
 
-  <!-- Modal Sukses -->
   <!-- Popup Sukses -->
   <div class="popup" id="popupSukses">
     <div class="popup-content">

@@ -1,8 +1,9 @@
 function cekRiwayat() {
-    const email = document.getElementById("emailInput").value.trim();
+    const kodeKehilangan = document.getElementById("kodeKehilangan").value.trim();
+    const kodeKlaim = document.getElementById("kodeKlaim").value.trim();
 
-    if (!email) {
-        alert("Email tidak boleh kosong!");
+    if (!kodeKehilangan || !kodeKlaim) {
+        alert("Kode kehilangan dan kode klaim wajib diisi!");
         return;
     }
 
@@ -11,31 +12,35 @@ function cekRiwayat() {
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email: email }),
+        body: JSON.stringify({
+            kode_kehilangan: kodeKehilangan,
+            kode_klaim: kodeKlaim
+        }),
     })
     .then(response => response.json())
     .then(result => {
 
-        // Jika tidak ditemukan → tampilkan modal
         if (result.status === "not_found") {
-            let myModal = new bootstrap.Modal(document.getElementById('modalEmailTidakTerdaftar'));
+            let myModal = new bootstrap.Modal(
+                document.getElementById('modalKodeTidakCocok')
+            );
             myModal.show();
             return;
         }
 
-        // Jika ditemukan → redirect ke halaman hasil riwayat
         if (result.status === "success") {
-            // simpan data ke localStorage untuk halaman berikutnya
-            localStorage.setItem("riwayat_klaim", JSON.stringify(result.data));
-
-            window.location.href = `/hasil-riwayat-klaim?email=${email}`;
+            window.location.href = `/detail-klaim/${result.kode_klaim}`;
         }
+    })
+    .catch(() => {
+        alert("Terjadi kesalahan sistem.");
     });
 }
-// Tekan Enter untuk menjalankan cekRiwayat()
-document.getElementById("emailInput").addEventListener("keypress", function(event) {
+
+// Tekan Enter → submit
+document.addEventListener("keypress", function(event) {
     if (event.key === "Enter") {
-        event.preventDefault();   // mencegah form reload
-        cekRiwayat();            // panggil fungsi
+        event.preventDefault();
+        cekRiwayat();
     }
 });

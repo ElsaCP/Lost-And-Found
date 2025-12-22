@@ -1,11 +1,11 @@
 # routes/route.py
-from flask import Blueprint, request, jsonify, render_template,redirect, url_for
+from flask import Blueprint, request, jsonify, render_template,redirect, url_for, session
 from datetime import datetime
 from werkzeug.utils import secure_filename
 from models import fetch_public_penemuan, get_penemuan_by_kode, fetch_barang_publik_terbaru
 from models import get_laporan_by_email, get_riwayat_klaim_by_email,tambah_riwayat_status, get_riwayat_status
 from config import get_db_connection
-from models import (fetch_public_penemuan, get_penemuan_by_kode, fetch_barang_publik_terbaru,
+from models import (fetch_public_penemuan, get_penemuan_by_kode,
                     get_laporan_by_email, get_riwayat_klaim_by_email,
                     tambah_riwayat_status, get_riwayat_status)
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
@@ -21,6 +21,7 @@ from extensions import db, mail
 from flask_mail import Message
 from config import Config
 from sqlalchemy import text
+from utils.email import kirim_email_verifikasi
 import os
 import mysql.connector
 import hmac
@@ -104,7 +105,7 @@ def download_surat_pengambilan(kode_laporan):
     cursor = db.cursor(dictionary=True)
 
     cursor.execute("""
-        SELECT kode_laporan, kode_barang, nama_barang,
+        SELECT kode_laporan, kode_laporan_kehilangan, kode_barang, nama_barang,
                tanggal_lapor, tgl_pilih_pengambilan
         FROM klaim_barang
         WHERE kode_laporan = %s
@@ -280,7 +281,8 @@ def pdf_pengambilan_sendiri(path, data, tgl_klaim, tgl_maks, tipe):
     tabel_barang = Table([
         ["Nama Barang", ":", data["nama_barang"]],
         ["Kode Barang", ":", data["kode_barang"]],
-        ["Kode Laporan", ":", data["kode_laporan"]],
+        ["Kode Klaim", ":", data["kode_laporan"]],
+        ["Kode Kehilangan", ":", data["kode_laporan_kehilangan"]],
         ["Tanggal Klaim", ":", tgl_klaim],
         ["Tanggal Maksimal Pengambilan", ":", tgl_maks],
     ], colWidths=[6*cm, 0.5*cm, 8*cm])
@@ -464,7 +466,7 @@ def pdf_pengambilan_wakil(path, data, tgl_klaim, tgl_maks):
     tabel_barang = Table([
         ["Nama Barang", ":", data["nama_barang"]],
         ["Kode Barang", ":", data["kode_barang"]],
-        ["Kode Laporan", ":", data["kode_laporan"]],
+        ["Kode Klaim", ":", data["kode_laporan"]],
         ["Tanggal Klaim", ":", tgl_klaim],
         ["Tanggal Maksimal Pengambilan", ":", tgl_maks],
     ], colWidths=[6*cm, 0.5*cm, 8*cm])
@@ -728,28 +730,40 @@ Silakan login admin untuk melakukan verifikasi.
 def riwayat_klaim():
     return render_template('user/riwayat_klaim.html')
 
-@main.route("/cek-riwayat", methods=["GET"])
-def cek_riwayat():
-    return render_template("user/cek_riwayat.html")
-
 
 @main.route("/api/cek-riwayat-klaim", methods=["POST"])
 def api_cek_riwayat_klaim():
     data = request.get_json()
-    email = data.get("email")
 
-    if not email:
-        return jsonify({"status": "error", "message": "Email kosong"}), 400
+    kode_kehilangan = data.get("kode_kehilangan")
+    kode_klaim = data.get("kode_klaim")
 
-    from models import get_riwayat_klaim_by_email
-    riwayat = get_riwayat_klaim_by_email(email)
+    if not kode_kehilangan or not kode_klaim:
+        return jsonify({
+            "status": "error",
+            "message": "Kode kehilangan dan kode klaim wajib diisi"
+        }), 400
 
-    if not riwayat:
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT kode_laporan
+        FROM klaim_barang
+        WHERE kode_laporan = %s
+          AND kode_laporan_kehilangan = %s
+    """, (kode_klaim, kode_kehilangan))
+
+    klaim = cursor.fetchone()
+    cursor.close()
+    db.close()
+
+    if not klaim:
         return jsonify({"status": "not_found"}), 200
 
     return jsonify({
         "status": "success",
-        "data": riwayat
+        "kode_klaim": klaim["kode_laporan"]
     }), 200
 
 @main.route("/hasil-riwayat-klaim")
@@ -800,6 +814,7 @@ def detail_klaim(kode_laporan):
     cursor.execute("""
         SELECT 
             k.kode_laporan,
+            k.kode_laporan_kehilangan,
             k.kode_barang,
             k.nama_barang,
             k.nama_pelapor,
@@ -933,36 +948,46 @@ def detail_barang(kode):
     if not barang:
         return render_template('user/not_found.html'), 404
 
-    # Ubah path gambar agar bisa tampil
+    # 🔑 ambil dari query string
+    kode_kehilangan = request.args.get("lost")
+
+    # simpan ke session (opsional tapi bagus)
+    if kode_kehilangan:
+        session['kode_kehilangan'] = kode_kehilangan
+
     if barang.get('gambar_barang'):
         barang['gambar_barang'] = f"/static/uploads/{barang['gambar_barang']}"
     else:
         barang['gambar_barang'] = "/static/image/no-image.png"
 
-    return render_template('user/detail_barang.html', barang=barang)
+    return render_template(
+        'user/detail_barang.html',
+        barang=barang,
+        kode_kehilangan=kode_kehilangan
+    )
 
-# Halaman form klaim barang (berdasarkan kode barang)
+
 @main.route('/form_klaim_barang')
 def form_klaim_barang():
-    kode = request.args.get('id')  # ambil kode dari URL ?id=LF-F001
+    kode = request.args.get('id')
+    kode_kehilangan = request.args.get('lost')
+
     barang = None
-
     if kode:
-        from models import get_penemuan_by_kode
         barang = get_penemuan_by_kode(kode)
-
-        # Jika tidak ditemukan
         if not barang:
             return render_template('user/not_found.html'), 404
 
-        # Pastikan path gambar bisa ditampilkan
         if barang.get('gambar_barang'):
             barang['gambar_barang'] = f"/static/uploads/{barang['gambar_barang']}"
         else:
             barang['gambar_barang'] = "/static/image/no-image.png"
 
-    # Render halaman form klaim dengan data barang
-    return render_template('user/form_klaim_barang.html', barang=barang)
+    return render_template(
+        'user/form_klaim_barang.html',
+        barang=barang,
+        kode_kehilangan=kode_kehilangan
+    )
 
 @main.route("/submit-klaim", methods=["POST"])
 def submit_klaim():
@@ -981,7 +1006,7 @@ def submit_klaim():
         kode_laporan_kehilangan = request.form.get("kodeKehilangan")
 
         # =========================
-        # 2️⃣ CEK STATUS BARANG
+        # 2️⃣ CEK STATUS BARANG (LOCK)
         # =========================
         cursor.execute("""
             SELECT status_barang, nama_barang
@@ -992,18 +1017,11 @@ def submit_klaim():
         barang = cursor.fetchone()
 
         if not barang:
-            cursor.close()
-            db.close()
-            return jsonify({
-                "success": False,
-                "message": "Barang tidak ditemukan."
-            })
+            return jsonify({"success": False, "message": "Barang tidak ditemukan."})
 
         status_barang, nama_barang = barang
 
         if status_barang != "Tersedia":
-            cursor.close()
-            db.close()
             return jsonify({
                 "success": False,
                 "message": "Barang sudah diklaim atau tidak tersedia."
@@ -1020,12 +1038,9 @@ def submit_klaim():
         os.makedirs(upload_dir, exist_ok=True)
 
         def simpan_file(file_obj):
-            if not file_obj or file_obj.filename == "":
+            if not file_obj or not file_obj.filename:
                 return None
-            filename = (
-                datetime.now().strftime("%Y%m%d%H%M%S_")
-                + secure_filename(file_obj.filename)
-            )
+            filename = datetime.now().strftime("%Y%m%d%H%M%S_") + secure_filename(file_obj.filename)
             file_obj.save(os.path.join(upload_dir, filename))
             return filename
 
@@ -1034,7 +1049,7 @@ def submit_klaim():
         nama_foto = simpan_file(foto_barang)
 
         # =========================
-        # 4️⃣ GENERATE KODE LAPORAN
+        # 4️⃣ GENERATE KODE KLAIM
         # =========================
         cursor.execute("SELECT kode_laporan FROM klaim_barang ORDER BY id DESC LIMIT 1")
         last = cursor.fetchone()
@@ -1046,7 +1061,7 @@ def submit_klaim():
         waktu = now.strftime("%H:%M")
 
         # =========================
-        # 5️⃣ INSERT KLAIM BARANG
+        # 5️⃣ INSERT KLAIM
         # =========================
         cursor.execute("""
             INSERT INTO klaim_barang (
@@ -1063,7 +1078,7 @@ def submit_klaim():
         ))
 
         # =========================
-        # 6️⃣ KUNCI BARANG (PALING PENTING)
+        # 6️⃣ UPDATE STATUS BARANG
         # =========================
         cursor.execute("""
             UPDATE penemuan
@@ -1076,7 +1091,7 @@ def submit_klaim():
         db.close()
 
         # =========================
-        # 7️⃣ SIMPAN RIWAYAT STATUS
+        # 7️⃣ RIWAYAT STATUS
         # =========================
         tambah_riwayat_status(
             kode_laporan,
@@ -1084,13 +1099,68 @@ def submit_klaim():
             "Menunggu verifikasi oleh admin"
         )
 
+        # =========================
+        # 📧 KIRIM EMAIL
+        # =========================
+        try:
+            # EMAIL KE USER
+            msg_user = Message(
+                subject="Konfirmasi Klaim Barang - Lost & Found Juanda",
+                recipients=[email]
+            )
+            msg_user.body = f"""
+Halo {nama},
+
+Pengajuan klaim barang Anda berhasil kami terima dan sedang menunggu verifikasi admin.
+
+Kode Klaim      : {kode_laporan}
+Kode Barang     : {kode_barang}
+Kode Kehilangan : {kode_laporan_kehilangan}
+Nama Barang     : {nama_barang}
+Tanggal Klaim   : {tanggal} {waktu}
+
+Silakan simpan kode klaim ini untuk mengecek status klaim Anda.
+
+Terima kasih,
+Lost & Found Bandara Internasional Juanda
+"""
+            mail.send(msg_user)
+
+            # EMAIL KE ADMIN
+            msg_admin = Message(
+                subject=f"[KLAIM BARU] {kode_laporan} - {nama_barang}",
+                recipients=[Config.ADMIN_EMAIL]
+            )
+            msg_admin.body = f"""
+📦 KLAIM BARANG BARU
+
+Kode Klaim      : {kode_laporan}
+Kode Barang     : {kode_barang}
+Kode Kehilangan : {kode_laporan_kehilangan}
+Nama Barang     : {nama_barang}
+Tanggal Klaim   : {tanggal} {waktu}
+
+Nama Pelapor : {nama}
+Email        : {email}
+No Telp      : {telp}
+
+Status       : Pending
+Catatan      : Menunggu verifikasi oleh admin
+
+Silakan login admin untuk memproses klaim ini.
+"""
+            mail.send(msg_admin)
+
+        except Exception as e:
+            print("❌ Gagal kirim email klaim:", e)
+
         return jsonify({
             "success": True,
             "kode_laporan": kode_laporan
         })
 
     except Exception as e:
-        print("Error klaim:", e)
+        print("❌ ERROR SUBMIT KLAIM:", e)
         return jsonify({
             "success": False,
             "message": str(e)
@@ -1262,41 +1332,51 @@ def update_status(kode_kehilangan):
         catatan = request.form.get("catatan") or ""
 
         db = get_db_connection()
-        cursor = db.cursor()
+        cursor = db.cursor(dictionary=True)
 
-        # Ambil status lama
-        cursor.execute("SELECT status FROM kehilangan WHERE kode_kehilangan=%s", (kode_kehilangan,))
-        old_status = cursor.fetchone()
+        cursor.execute("""
+            SELECT status, email
+            FROM kehilangan
+            WHERE kode_kehilangan = %s
+        """, (kode_kehilangan,))
+        data = cursor.fetchone()
 
-        if not old_status:
+        if not data:
             return jsonify({"success": False, "message": "Data tidak ditemukan"})
 
-        old_status = old_status[0]
+        status_lama = data["status"]
+        email_user = data["email"]
 
-        if old_status == status_baru:
-            return jsonify({"success": False, "message": "Status sama, tidak diubah"})
+        if status_lama == status_baru:
+            return jsonify({"success": False, "message": "Status tidak berubah"})
 
         cursor.execute("""
-            UPDATE kehilangan 
-            SET status=%s,
-                catatan=%s,
-                update_terakhir=NOW()
-            WHERE kode_kehilangan=%s
+            UPDATE kehilangan
+            SET status = %s,
+                catatan = %s,
+                update_terakhir = NOW()
+            WHERE kode_kehilangan = %s
         """, (status_baru, catatan, kode_kehilangan))
-
-        cursor.execute("""
-            INSERT INTO riwayat_status (kode_kehilangan, status, catatan, waktu_update)
-            VALUES (%s, %s, %s, ())
-        """, (kode_kehilangan, status_baru, catatan))
 
         db.commit()
         cursor.close()
         db.close()
 
-        return jsonify({"success": True, "message": "Status berhasil diperbarui"})
+        # =========================
+        # 📧 EMAIL VERIFIKASI
+        # =========================
+        if status_baru == "Verifikasi":
+            print("🔥 STATUS VERIFIKASI TERDETEKSI")
+            print("📧 EMAIL USER:", email_user)
+
+            kirim_email_verifikasi(email_user, kode_kehilangan)
+
+        return jsonify({"success": True})
 
     except Exception as e:
-        return jsonify({"success": False, "message": str(e)})
+        print("❌ ERROR UPDATE STATUS:", e)
+        return jsonify({"success": False})
+
 
 @main.route("/api/rekomendasi/<kode_kehilangan>")
 def rekomendasi(kode_kehilangan):
@@ -1432,3 +1512,4 @@ def rekomendasi_baru(kode_kehilangan):
     db.close()
 
     return jsonify(hasil)
+

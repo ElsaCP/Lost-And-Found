@@ -14,7 +14,6 @@
   <!-- Custom CSS -->
   <link rel="stylesheet" href={{ url_for('static', filename='css/indexx.css') }}>
   <link href="https://fonts.googleapis.com/css2?family=Reddit+Sans+Condensed:wght@700;800&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -113,13 +112,12 @@
     <img src={{ url_for('static', filename='/image/lsedang.png')}} alt="" class="deco-medium deco-4">
     <img src={{ url_for('static', filename='/image/lkecil.png')}} alt="" class="deco-small deco-6">
   </div>
-  <div class="container">
-  <div class="container">
+  <div class="statistik-container">
     <h2 class="section-title gradient-text text-center mb-4">
       Statistik Barang Lost & Found
     </h2>
 
-    <div class="card grafik-card">
+    <div class="statistik-card">
       <canvas id="grafikBulanan"></canvas>
     </div>
   </div>
@@ -191,5 +189,12 @@
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src={{ url_for('static', filename='js/indexx.js') }}></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+<!-- Plugin DataLabels (angka di atas bar) -->
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+
 </body>
 </html>
