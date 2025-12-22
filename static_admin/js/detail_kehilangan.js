@@ -12,8 +12,31 @@ document.addEventListener("DOMContentLoaded", () => {
   const infoCari = document.getElementById("infoCari");
   const btnSimpan = document.getElementById("btnSimpanRekomendasi");
   const kodeKehilangan = document.getElementById("kodeLaporan")?.innerText.trim() || null;
+  const catatanInput = document.getElementById("catatanAdmin"); // textarea catatan
+  const updateTerakhirEl = document.getElementById("updateTerakhir");
+  const statusSelect = document.getElementById("status");
+  const fotoSection = document.querySelector(".foto-penemuan-section");
 
   const fotoItems = document.querySelectorAll(".foto-item");
+
+  function toggleFotoSection() {
+    if (!statusSelect || !fotoSection || !btnSimpan) return;
+    if (statusSelect.value === "Pending") {
+      fotoSection.style.display = "none";
+      btnSimpan.style.display = "none"; // sembunyikan tombol simpan
+    } else {
+      fotoSection.style.display = "block";
+      btnSimpan.style.display = "inline-block"; // tampilkan tombol simpan
+    }
+  }
+
+  // panggil saat load halaman
+  toggleFotoSection();
+
+  // jika status berubah, panggil lagi
+  if (statusSelect) {
+    statusSelect.addEventListener("change", toggleFotoSection);
+  }
 
   // =========================
   // SEMBUNYIKAN SEMUA FOTO DEFAULT
@@ -31,10 +54,13 @@ document.addEventListener("DOMContentLoaded", () => {
       if (data.success && Array.isArray(data.rekomendasi)) {
         fotoItems.forEach(item => {
           if (data.rekomendasi.includes(item.dataset.id)) {
-            item.style.display = "block";        // tampilkan foto
-            item.classList.add("active");         // beri class active
+            // hanya tampilkan jika status bukan Pending
+            if (statusSelect.value !== "Pending") {
+              item.style.display = "block";
+            }        
+            item.classList.add("active");         
             const checkbox = item.querySelector(".select-foto");
-            if (checkbox) checkbox.checked = true; // centang checkbox
+            if (checkbox) checkbox.checked = true;
           }
         });
       }
@@ -43,27 +69,44 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  loadRekomendasi(); // panggil saat halaman dibuka
+  loadRekomendasi();
 
   // =========================
-  // UPDATE STATUS
+  // UPDATE STATUS + CATATAN
   // =========================
   if (btnUpdate) {
     btnUpdate.addEventListener("click", async () => {
-      const status = document.getElementById("status").value;
+      const status = statusSelect.value;
+      const catatan = catatanInput?.value || "";
+
       try {
         const res = await fetch("/admin/api/kehilangan/update_status", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ kode: kodeKehilangan, status })
+          body: JSON.stringify({ kode: kodeKehilangan, status, catatan })
         });
+
         const result = await res.json();
+
         if (result.success) {
-          Swal.fire({ icon: "success", title: "Status diperbarui", timer: 1500, showConfirmButton: false })
-            .then(() => window.location.href = "/admin/kehilangan/daftar");
+          if (updateTerakhirEl) updateTerakhirEl.textContent = result.update_terakhir;
+
+          Swal.fire({
+            icon: "success",
+            title: "Update Status Berhasil",
+            timer: 1500,
+            showConfirmButton: false
+          }).then(() => {
+            window.location.href = "/admin/kehilangan/daftar";
+          });
+
+        } else {
+          Swal.fire("Gagal", result.message, "error");
         }
-      } catch {
-        Swal.fire("Error", "Gagal update status", "error");
+
+      } catch (err) {
+        console.error(err);
+        Swal.fire("Error", "Gagal update status dan catatan", "error");
       }
     });
   }
@@ -108,10 +151,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // =========================
-  // CARI FOTO PENEMUAN
+  // CARI FOTO PENEMUAN (hanya jika status bukan Pending)
   // =========================
   if (btnCari) {
     btnCari.addEventListener("click", () => {
+      if (statusSelect.value === "Pending") return;
       const keyword = inputCari.value.toLowerCase().trim();
       if (!keyword) return Swal.fire("Masukkan kata kunci", "", "warning");
 
@@ -146,10 +190,12 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // =========================
-  // SIMPAN REKOMENDASI
+  // SIMPAN REKOMENDASI (hanya jika status bukan Pending)
   // =========================
   if (btnSimpan) {
     btnSimpan.addEventListener("click", async () => {
+      if (statusSelect.value === "Pending") return;
+
       const selected = [];
       fotoItems.forEach(item => { if (item.classList.contains("active")) selected.push(item.dataset.id); });
 
@@ -165,7 +211,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (data.success) {
           Swal.fire("Berhasil", data.message, "success");
-          loadRekomendasi(); // tampilkan rekomendasi terbaru langsung
+          loadRekomendasi();
         } else {
           Swal.fire("Gagal", data.message, "error");
         }

@@ -107,8 +107,9 @@
         <div class="data-row"><span>Jenis Laporan :</span><strong>{{ laporan.jenis_laporan }}</strong></div>
         <div class="data-row"><span>Lokasi :</span><strong>{{ laporan.lokasi }}</strong></div>
         <div class="data-row"><span>Deskripsi :</span><strong>{{ laporan.deskripsi }}</strong></div>
-        <div class="data-row"><span>Catatan :</span>
-          <strong>{{ laporan.catatan if laporan.catatan else '-' }}</strong>
+        <div class="data-row">
+          <span>Catatan :</span>
+          <textarea id="catatanAdmin" class="form-control" rows="3" placeholder="Masukkan catatan...">{{ laporan.catatan if laporan.catatan else '' }}</textarea>
         </div>
       </div>
 
@@ -136,14 +137,14 @@
             <option value="Pending" {% if laporan.status == 'Pending' %}selected{% endif %}>Pending</option>
             <option value="Verifikasi" {% if laporan.status == 'Verifikasi' %}selected{% endif %}>Verifikasi</option>
             <option value="Dalam Pencarian" {% if laporan.status == 'Dalam Pencarian' %}selected{% endif %}>Dalam Pencarian</option>
-            <option value="Barang Ditemukan" {% if laporan.status == 'Barang Ditemukan' %}selected{% endif %}>Barang Ditemukan</option>
+            <option value="Dalam Proses" {% if laporan.status == 'Dalam Proses' %}selected{% endif %}>Dalam Proses</option>
             <option value="Selesai" {% if laporan.status == 'Selesai' %}selected{% endif %}>Selesai</option>
           </select>
         </div>
       </div>
 
       <div class="foto-penemuan-section no-print">
-        <h4>Foto Penemuan (H-1, H, H+1)</h4>
+        <h4>Barang Rekomendasi (Foto Penemuan H-1, H, H+1)</h4>
 
         <div class="filter-wrapper">
           <input

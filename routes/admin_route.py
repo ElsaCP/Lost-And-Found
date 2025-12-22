@@ -628,94 +628,41 @@ def list_rekomendasi():
 # ======================
 # 🔄 API: Update Status Kehilangan
 # ======================
-def kirim_email_verifikasi(email_user, nama_pelapor, kode_kehilangan):
-    try:
-        print("🔥 STATUS VERIFIKASI TERDETEKSI")
-        print("📧 EMAIL USER:", email_user)
-
-        msg = Message(
-            subject="Laporan Kehilangan Anda Telah Diverifikasi",
-            recipients=[email_user]
-        )
-
-        msg.body = f"""
-Halo {nama_pelapor},
-
-Laporan kehilangan Anda dengan kode:
-{kode_kehilangan}
-
-Telah berhasil DIVERIFIKASI oleh petugas Lost & Found
-Bandara Internasional Juanda.
-
-Silakan pantau status laporan Anda secara berkala melalui website.
-
-Terima kasih,
-Admin Lost & Found Juanda
-"""
-
-        mail.send(msg)
-        print("✅ EMAIL VERIFIKASI TERKIRIM KE:", email_user)
-
-    except Exception as e:
-        print("❌ GAGAL KIRIM EMAIL:", e)
-  
-# ======================
-# 🔄 API: Update Status Kehilangan
-# ======================
 @admin_bp.route('/api/kehilangan/update_status', methods=['POST'])
 def update_status_kehilangan():
     data = request.get_json()
     kode = data.get('kode')
-    status_baru = data.get('status')
+    status = data.get('status')
+    catatan = data.get('catatan', '')  # ✅ Tambahkan catatan admin
 
-    if not kode or not status_baru:
+    if not kode or not status:
         return jsonify({'success': False, 'message': 'Data tidak lengkap!'}), 400
 
     conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
-
-    # 1️⃣ Ambil data lama
-    cursor.execute("""
-        SELECT status, email, nama_pelapor
-        FROM kehilangan
-        WHERE kode_kehilangan = %s
-    """, (kode,))
-    lama = cursor.fetchone()
-
-    if not lama:
-        cursor.close()
-        conn.close()
-        return jsonify({'success': False, 'message': 'Data tidak ditemukan'}), 404
-
-    status_lama = lama['status']
-    email_user = lama['email']
-    nama_pelapor = lama['nama_pelapor']
+    cursor = conn.cursor()
 
     waktu_update = datetime.now().strftime("%Y-%m-%d %H:%M")
 
-    # 2️⃣ Update status
+    # Update status dan catatan di tabel kehilangan
     cursor.execute("""
-        UPDATE kehilangan
-        SET status = %s,
+        UPDATE kehilangan 
+        SET status = %s, 
+            catatan = %s,
             update_terakhir = %s
         WHERE kode_kehilangan = %s
-    """, (status_baru, waktu_update, kode))
+    """, (status, catatan, waktu_update, kode))
     conn.commit()
 
-    # 3️⃣ Arsip (KODE LAMA TETAP ADA)
-    if status_baru == "Selesai":
+    # Jika status = Selesai → pindahkan ke arsip
+    if status == "Selesai":
         pindahkan_ke_arsip(kode, "kehilangan")
 
     cursor.close()
     conn.close()
 
-    # 4️⃣ 🔥 KIRIM EMAIL OTOMATIS
-    if status_baru == "Verifikasi" and status_lama != "Verifikasi":
-        kirim_email_verifikasi(email_user, nama_pelapor, kode)
-
     return jsonify({
         'success': True,
-        'message': 'Status berhasil diperbarui!',
+        'message': 'Status dan catatan berhasil diperbarui!',
         'update_terakhir': waktu_update
     })
     
