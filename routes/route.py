@@ -1085,6 +1085,35 @@ def submit_klaim():
             SET status_barang = 'Diklaim'
             WHERE kode_barang = %s
         """, (kode_barang,))
+        
+        # =========================
+        # 6️⃣b UPDATE STATUS LAPORAN KEHILANGAN
+        # =========================
+        cursor.execute("""
+            UPDATE kehilangan
+            SET status = %s,
+                catatan = %s,
+                update_terakhir = NOW()
+            WHERE kode_kehilangan = %s
+        """, (
+            "Dalam Proses",
+            "Barang sedang dalam proses klaim oleh pelapor",
+            kode_laporan_kehilangan
+        ))
+
+        # =========================
+        # 6️⃣c RIWAYAT STATUS KEHILANGAN
+        # =========================
+        cursor.execute("""
+            INSERT INTO riwayat_status
+            (kode_kehilangan, status, catatan, waktu_update)
+            VALUES (%s, %s, %s, NOW())
+        """, (
+            kode_laporan_kehilangan,
+            "Dalam Proses",
+            "Barang sedang dalam proses klaim oleh pelapor"
+        ))
+
 
         db.commit()
         cursor.close()
