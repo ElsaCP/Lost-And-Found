@@ -18,6 +18,42 @@
 </head>
 
 <body>
+<!-- Modal Konfirmasi Tutup Laporan -->
+<div class="modal fade" id="modalTutupLaporan" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 shadow">
+
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-bold text-primary">
+          Konfirmasi Penutupan
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body text-center">
+        <i class="bi bi-question-circle-fill text-primary fs-1 mb-3"></i>
+        <p class="fs-5">
+          Apakah Anda yakin tidak ada barang yang sesuai dengan laporan ini?
+        </p>
+      </div>
+
+      <div class="modal-footer border-0 justify-content-center">
+        <button type="button"
+                class="btn btn-outline-secondary px-4"
+                data-bs-dismiss="modal">
+          Batal
+        </button>
+
+        <button type="button"
+                class="btn btn-primary px-4"
+                onclick="prosesTutupLaporan()">
+          Ya, Tutup Laporan
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
 
 <!-- ===================== SEMANTIC ROOT ===================== -->
 <div itemscope itemtype="https://schema.org/Report">
@@ -218,11 +254,11 @@
 <div class="container mt-5">
   <h4 class="fw-bold mb-3">Rekomendasi Barang Serupa</h4>
 
-  <div id="barangSerupaContainer" class="rekom-grid"></div>
+  <div id="barangSerupaContainer" class="row g-4 rekom-grid"></div>
 
   <div class="mt-4 d-flex justify-content-between">
     <button class="btn btn-outline-secondary" id="btnBukanBarangSaya">Bukan Barang Saya</button>
-    <a href="{{ url_for('main.cari_barang') }}" class="btn btn-primary">Lihat Lainnya</a>
+    <button class="btn btn-primary" id="btnLihatLainnya" style="display:none">Lihat Lainnya</button>
   </div>
 </div>
 {% endif %}
@@ -274,53 +310,96 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
+let semuaRekomendasi = [];
+let halaman = 1;
+const perHalaman = 3;
+
 document.addEventListener("DOMContentLoaded", () => {
     const kode = "{{ laporan.kode_kehilangan }}";
-    console.log("Kode kehilangan:", kode);
 
-    const container = document.getElementById("barangSerupaContainer");
-    if (!container) return;
-
-    loadRekomendasi(`/api/rekomendasi/${kode}`, kode);
+    fetch(`/api/rekomendasi/${kode}`)
+      .then(res => res.json())
+      .then(data => {
+        semuaRekomendasi = data;
+        renderHalaman();
+        toggleBtn();
+      });
 
     document.getElementById("btnBukanBarangSaya")
+      ?.addEventListener("click", tutupLaporan);
+
+    document.getElementById("btnLihatLainnya")
       ?.addEventListener("click", () => {
-        loadRekomendasi(`/api/rekomendasi_baru/${kode}`, kode);
+        halaman++;
+        renderHalaman();
+        toggleBtn();
       });
 });
 
-function loadRekomendasi(url, kodeKehilangan) {
-    fetch(url)
-      .then(res => res.json())
-      .then(data => {
-        const container = document.getElementById("barangSerupaContainer");
-        container.innerHTML = "";
+function renderHalaman() {
+    const container = document.getElementById("barangSerupaContainer");
+    container.innerHTML = "";
 
-        if (!data || data.length === 0) {
-          container.innerHTML = "<p class='text-muted'>Tidak ada rekomendasi.</p>";
-          return;
-        }
+    const batas = halaman * perHalaman;
+    const tampil = semuaRekomendasi.slice(0, batas);
 
-        data.forEach(item => {
-          container.innerHTML += `
-            <div class="rekom-card shadow-sm">
-              <img src="${item.gambar_barang_url}" class="rekom-foto">
-              <div class="rekom-body">
-                <h6 class="fw-bold">${item.nama_barang}</h6>
-                <p><b>Kategori:</b> ${item.kategori}</p>
-                <p><b>Lokasi:</b> ${item.lokasi}</p>
-                <p><b>Tanggal:</b> ${item.tanggal_lapor}</p>
-                <a href="/detail-barang/${item.kode_barang}?lost=${kodeKehilangan}"
-                  class="btn btn-primary btn-sm w-100">
-                  Lihat Detail
-                </a>
-              </div>
-            </div>`;
-        });
-      })
-      .catch(err => console.error("Fetch error:", err));
+    if (tampil.length === 0) {
+        container.innerHTML = "<p class='text-muted'>Belum ada rekomendasi.</p>";
+        return;
+    }
+
+    tampil.forEach(item => {
+        container.innerHTML += `
+        <div class="col-4 col-md-4 mb-3">
+          <div class="rekom-card shadow-sm">
+            <img src="${item.gambar_barang_url}" class="rekom-foto">
+            <div class="rekom-body">
+              <h6 class="fw-bold">${item.nama_barang}</h6>
+              <p><b>Kategori:</b> ${item.kategori}</p>
+              <p><b>Lokasi:</b> ${item.lokasi}</p>
+              <p><b>Tanggal:</b> ${item.tanggal_lapor}</p>
+              <a href="/detail-barang/${item.kode_barang}?lost={{ laporan.kode_kehilangan }}"
+                 class="btn btn-primary btn-sm w-100">
+                Lihat Detail
+              </a>
+            </div>
+          </div>
+        </div>`;
+    });
+}
+
+function toggleBtn() {
+    const btn = document.getElementById("btnLihatLainnya");
+    if (!btn) return;
+
+    if (semuaRekomendasi.length > halaman * perHalaman) {
+        btn.style.display = "block";
+    } else {
+        btn.style.display = "none";
+    }
+}
+
+function tutupLaporan() {
+    const modal = new bootstrap.Modal(
+        document.getElementById('modalTutupLaporan')
+    );
+    modal.show();
+}
+
+function prosesTutupLaporan() {
+    fetch(`/api/tutup-laporan/{{ laporan.kode_kehilangan }}`, {
+        method: "POST"
+    })
+    .then(res => res.json())
+    .then(() => {
+        const modalEl = document.getElementById('modalTutupLaporan');
+        const modal = bootstrap.Modal.getInstance(modalEl);
+        modal.hide();
+
+        alert("Laporan berhasil ditutup.");
+        location.reload();
+    });
 }
 </script>
-
 </body>
 </html>

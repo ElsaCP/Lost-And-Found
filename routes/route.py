@@ -1332,171 +1332,64 @@ def update_status(kode_kehilangan):
         catatan = request.form.get("catatan") or ""
 
         db = get_db_connection()
-        cursor = db.cursor(dictionary=True)
+        cursor = db.cursor()
 
-        cursor.execute("""
-            SELECT status, email
-            FROM kehilangan
-            WHERE kode_kehilangan = %s
-        """, (kode_kehilangan,))
-        data = cursor.fetchone()
+        # Ambil status lama
+        cursor.execute("SELECT status FROM kehilangan WHERE kode_kehilangan=%s", (kode_kehilangan,))
+        old_status = cursor.fetchone()
 
-        if not data:
+        if not old_status:
             return jsonify({"success": False, "message": "Data tidak ditemukan"})
 
-        status_lama = data["status"]
-        email_user = data["email"]
+        old_status = old_status[0]
 
-        if status_lama == status_baru:
-            return jsonify({"success": False, "message": "Status tidak berubah"})
+        # Jika status tidak berubah, tidak perlu menambah riwayat
+        if old_status == status_baru:
+            return jsonify({"success": False, "message": "Status sama, tidak diubah"})
 
+        # Update status di tabel kehilangan
         cursor.execute("""
-            UPDATE kehilangan
-            SET status = %s,
-                catatan = %s,
-                update_terakhir = NOW()
-            WHERE kode_kehilangan = %s
+            UPDATE kehilangan 
+            SET status=%s,
+                catatan=%s,
+                update_terakhir=NOW()
+            WHERE kode_kehilangan=%s
         """, (status_baru, catatan, kode_kehilangan))
+
+        # Tambahkan ke riwayat_status
+        cursor.execute("""
+            INSERT INTO riwayat_status (kode_kehilangan, status, catatan, waktu_update)
+            VALUES (%s, %s, %s, ())
+        """, (kode_kehilangan, status_baru, catatan))
 
         db.commit()
         cursor.close()
         db.close()
 
-        # =========================
-        # 📧 EMAIL VERIFIKASI
-        # =========================
-        if status_baru == "Verifikasi":
-            print("🔥 STATUS VERIFIKASI TERDETEKSI")
-            print("📧 EMAIL USER:", email_user)
-
-            kirim_email_verifikasi(email_user, kode_kehilangan)
-
-        return jsonify({"success": True})
+        return jsonify({"success": True, "message": "Status berhasil diperbarui"})
 
     except Exception as e:
-        print("❌ ERROR UPDATE STATUS:", e)
-        return jsonify({"success": False})
-
+        return jsonify({"success": False, "message": str(e)})
 
 @main.route("/api/rekomendasi/<kode_kehilangan>")
 def rekomendasi(kode_kehilangan):
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
-    cursor.execute("SELECT * FROM kehilangan WHERE kode_kehilangan = %s", (kode_kehilangan,))
-    lost = cursor.fetchone()
-
-    if not lost:
-        return jsonify([])
-
-    nama_lost = lost["nama_barang"].lower()
-    kategori = lost["kategori"]
-    tanggal_hilang = lost["tanggal_kehilangan"]
-    lokasi_lost = lost["lokasi"].lower()
-
-    terminal = ""
-    if "terminal 1" in lokasi_lost:
-        terminal = "terminal 1"
-    elif "terminal 2" in lokasi_lost:
-        terminal = "terminal 2"
-    elif "terminal 3" in lokasi_lost:
-        terminal = "terminal 3"
-
-    sql = """
+    cursor.execute("""
         SELECT 
-            kode_barang, 
-            nama_barang, 
-            kategori, 
-            lokasi, 
-            tanggal_lapor, 
-            gambar_barang
-        FROM penemuan
-        WHERE kategori = %s
-          AND LOWER(lokasi) LIKE %s
-          AND (
-                LOWER(nama_barang) LIKE %s OR
-                LOWER(nama_barang) LIKE %s OR
-                LOWER(nama_barang) LIKE %s
-              )
-          AND DATEDIFF(%s, tanggal_lapor) BETWEEN -30 AND 30
-        ORDER BY tanggal_lapor DESC
-        LIMIT 6
-    """
+            p.kode_barang,
+            p.nama_barang,
+            p.kategori,
+            p.lokasi,
+            p.tanggal_lapor,
+            p.gambar_barang
+        FROM rekomendasi_penemuan r
+        JOIN penemuan p ON r.kode_penemuan = p.kode_barang
+        WHERE r.kode_kehilangan = %s
+          AND p.status_barang = 'Tersedia'
+    """, (kode_kehilangan,))
 
-    keyword1 = f"%{nama_lost}%"
-    keyword2 = f"%{nama_lost.split()[0]}%" if len(nama_lost.split()) > 0 else f"%{nama_lost}%"
-    keyword3 = f"%{nama_lost.replace(' ', '')}%"
-
-    params = [
-        kategori,
-        f"%{terminal}%",
-        keyword1, keyword2, keyword3,
-        tanggal_hilang
-    ]
-
-    cursor.execute(sql, params)
-    hasil = cursor.fetchall()
-
-    for h in hasil:
-        if h.get("tanggal_lapor"):
-            try:
-                h["tanggal_lapor"] = h["tanggal_lapor"].strftime("%d-%m-%Y")
-            except:
-                pass
-
-        if h.get("gambar_barang"):
-            h["gambar_barang_url"] = f"/static/uploads/{h['gambar_barang']}"
-        else:
-            h["gambar_barang_url"] = "/static/image/no-image.png"
-
-    cursor.close()
-    db.close()
-
-    return jsonify(hasil)
-
-
-@main.route("/api/rekomendasi_baru/<kode_kehilangan>")
-def rekomendasi_baru(kode_kehilangan):
-    db = get_db_connection()
-    cursor = db.cursor(dictionary=True)
-
-    cursor.execute("SELECT nama_barang, kategori, tanggal_kehilangan FROM kehilangan WHERE kode_kehilangan = %s", 
-                   (kode_kehilangan,))
-    lost = cursor.fetchone()
-
-    if not lost:
-        return jsonify([])
-
-    nama_lost = lost["nama_barang"].lower()
-    kategori = lost["kategori"]
-    tanggal_hilang = lost["tanggal_kehilangan"]
-
-    keywords = [k for k in nama_lost.split() if len(k) >= 3]
-
-    if len(keywords) == 0:
-        keywords = [nama_lost]
-
-    like_conditions = " OR ".join(["LOWER(nama_barang) LIKE %s" for _ in keywords])
-    like_params = [f"%{k}%" for k in keywords]
-
-    sql = f"""
-        SELECT 
-            kode_barang, 
-            nama_barang, 
-            kategori, 
-            lokasi, 
-            tanggal_lapor, 
-            gambar_barang
-        FROM penemuan
-        WHERE kategori = %s
-          AND ({like_conditions})
-          AND DATEDIFF(%s, tanggal_lapor) BETWEEN -30 AND 30
-        ORDER BY tanggal_lapor DESC
-        LIMIT 6
-    """
-
-    params = [kategori] + like_params + [tanggal_hilang]
-    cursor.execute(sql, params)
     hasil = cursor.fetchall()
 
     for h in hasil:
@@ -1512,4 +1405,33 @@ def rekomendasi_baru(kode_kehilangan):
     db.close()
 
     return jsonify(hasil)
+
+@main.route("/api/tutup-laporan/<kode_kehilangan>", methods=["POST"])
+def tutup_laporan(kode_kehilangan):
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    cursor.execute("""
+        UPDATE kehilangan
+        SET status = 'Barang Tidak Ditemukan',
+            catatan = 'Tidak ada barang yang sesuai',
+            update_terakhir = NOW()
+        WHERE kode_kehilangan = %s
+    """, (kode_kehilangan,))
+
+    cursor.execute("""
+        INSERT INTO riwayat_status
+        (kode_kehilangan, status, catatan, waktu_update)
+        VALUES (%s, %s, %s, NOW())
+    """, (
+        kode_kehilangan,
+        "Barang Tidak Ditemukan",
+        "User menyatakan bukan barang miliknya"
+    ))
+
+    db.commit()
+    cursor.close()
+    db.close()
+
+    return jsonify({"success": True})
 

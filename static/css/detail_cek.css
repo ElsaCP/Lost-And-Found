@@ -321,29 +321,6 @@ body {
     color: #0056a6;
 }
 
-/* ---------- Grid & card setup (pastikan ini setelah rule lama) ---------- */
-.rekom-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  /* penting: buat semua baris memiliki track yang fleksibel sehingga setiap item bisa menyesuaikan dan stretch */
-  grid-auto-rows: 1fr;
-  align-items: stretch; /* pastikan item ikut membentang secara vertikal */
-}
-
-/* Card sebagai flex column agar tombol bisa 'jatuh' ke bawah */
-.rekom-card {
-  display: flex;
-  flex-direction: column;
-  height: 100%;              /* isi penuh slot grid */
-  border-radius: 12px;
-  overflow: hidden;
-  width: 100%;
-  padding: 10px;
-  background: #fff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  transition: transform .18s ease;
-}
 
 /* Foto: tetap proporsional dan tidak mengubah tinggi total card terlalu banyak */
 .rekom-foto {
@@ -558,5 +535,109 @@ footer {
     font-size: 1.15rem !important;
     font-weight: 300 !important;
     color: #000 !important;
+  }
+}
+
+/* ===================== REKOMENDASI ===================== */
+
+.rekom-grid {
+  margin-top: 15px;
+}
+
+.rekom-card {
+  position: relative;            /* WAJIB untuk badge */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #eaeaea;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: all .25s ease;
+}
+
+.rekom-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.15);
+}
+
+/* FOTO */
+.rekom-foto {
+  width: 100%;
+  height: 330px;
+  object-fit: cover;
+  background: #f4f6f8;
+}
+
+/* BODY */
+.rekom-body {
+  padding: 18px;
+}
+
+.rekom-body h6 {
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+  color: #0056a6;
+}
+
+.rekom-body p {
+  margin-bottom: 6px;
+  font-size: 0.95rem;
+  color: #444;
+}
+
+/* BADGE ADMIN */
+.rekom-card::before {
+  content: "Rekomendasi Admin";
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  background: #0056a6;
+  color: #fff;
+  font-size: 0.75rem;
+  padding: 6px 10px;
+  border-radius: 20px;
+  z-index: 2;
+}
+
+/* BUTTON */
+.rekom-body .btn {
+  margin-top: 12px;
+  font-weight: 600;
+}
+
+/* ===================== RESPONSIVE ===================== */
+
+/* HP */
+@media (max-width: 576px) {
+  .rekom-foto {
+    height: 300px;
+  }
+
+  .rekom-body h6 {
+    font-size: 1.05rem;
+  }
+}
+
+/* Tablet */
+@media (min-width: 577px) and (max-width: 991px) {
+  .rekom-foto {
+    height: 220px;
+  }
+}
+.modal-content {
+  animation: pop .25s ease;
+}
+
+@keyframes pop {
+  from {
+    transform: scale(.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
   }
 }
