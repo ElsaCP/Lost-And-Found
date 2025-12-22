@@ -13,6 +13,8 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
 from openpyxl import Workbook
+from flask_mail import Message
+from extensions import mail
 import io
 
 
@@ -626,34 +628,90 @@ def list_rekomendasi():
 # ======================
 # 🔄 API: Update Status Kehilangan
 # ======================
+def kirim_email_verifikasi(email_user, nama_pelapor, kode_kehilangan):
+    try:
+        print("🔥 STATUS VERIFIKASI TERDETEKSI")
+        print("📧 EMAIL USER:", email_user)
+
+        msg = Message(
+            subject="Laporan Kehilangan Anda Telah Diverifikasi",
+            recipients=[email_user]
+        )
+
+        msg.body = f"""
+Halo {nama_pelapor},
+
+Laporan kehilangan Anda dengan kode:
+{kode_kehilangan}
+
+Telah berhasil DIVERIFIKASI oleh petugas Lost & Found
+Bandara Internasional Juanda.
+
+Silakan pantau status laporan Anda secara berkala melalui website.
+
+Terima kasih,
+Admin Lost & Found Juanda
+"""
+
+        mail.send(msg)
+        print("✅ EMAIL VERIFIKASI TERKIRIM KE:", email_user)
+
+    except Exception as e:
+        print("❌ GAGAL KIRIM EMAIL:", e)
+  
+# ======================
+# 🔄 API: Update Status Kehilangan
+# ======================
 @admin_bp.route('/api/kehilangan/update_status', methods=['POST'])
 def update_status_kehilangan():
     data = request.get_json()
     kode = data.get('kode')
-    status = data.get('status')
+    status_baru = data.get('status')
 
-    if not kode or not status:
+    if not kode or not status_baru:
         return jsonify({'success': False, 'message': 'Data tidak lengkap!'}), 400
 
     conn = get_db_connection()
-    cursor = conn.cursor()
+    cursor = conn.cursor(dictionary=True)
+
+    # 1️⃣ Ambil data lama
+    cursor.execute("""
+        SELECT status, email, nama_pelapor
+        FROM kehilangan
+        WHERE kode_kehilangan = %s
+    """, (kode,))
+    lama = cursor.fetchone()
+
+    if not lama:
+        cursor.close()
+        conn.close()
+        return jsonify({'success': False, 'message': 'Data tidak ditemukan'}), 404
+
+    status_lama = lama['status']
+    email_user = lama['email']
+    nama_pelapor = lama['nama_pelapor']
 
     waktu_update = datetime.now().strftime("%Y-%m-%d %H:%M")
 
-    # Update status di tabel kehilangan
+    # 2️⃣ Update status
     cursor.execute("""
-        UPDATE kehilangan 
-        SET status = %s, update_terakhir = %s
+        UPDATE kehilangan
+        SET status = %s,
+            update_terakhir = %s
         WHERE kode_kehilangan = %s
-    """, (status, waktu_update, kode))
+    """, (status_baru, waktu_update, kode))
     conn.commit()
 
-    # Jika status = Selesai → pindahkan ke arsip
-    if status == "Selesai":
+    # 3️⃣ Arsip (KODE LAMA TETAP ADA)
+    if status_baru == "Selesai":
         pindahkan_ke_arsip(kode, "kehilangan")
 
     cursor.close()
     conn.close()
+
+    # 4️⃣ 🔥 KIRIM EMAIL OTOMATIS
+    if status_baru == "Verifikasi" and status_lama != "Verifikasi":
+        kirim_email_verifikasi(email_user, nama_pelapor, kode)
 
     return jsonify({
         'success': True,
