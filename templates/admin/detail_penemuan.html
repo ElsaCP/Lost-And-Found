@@ -88,8 +88,19 @@
         <div class="data-row"><span>Update Terakhir :</span><strong id="updateTerakhir">{{ laporan.update_terakhir.strftime('%Y-%m-%d %H:%M') if laporan.update_terakhir else '-' }}</strong></div>
 
         <div class="data-row">
-          <span>Status :</span>
-          <select id="status" class="status-select">
+          <td>
+          <span>Status Barang:</span>
+            <select id="status_barang" class="status-barang">
+              <option value="Tersedia" {% if laporan.status_barang == 'Tersedia' %}selected{% endif %}>Tersedia</option>
+              <option value="Diklaim" {% if laporan.status_barang == 'Diklaim' %}selected{% endif %}>Diklaim</option>
+              <option value="Selesai" {% if laporan.status_barang == 'Selesai' %}selected{% endif %}>Selesai</option>
+            </select>
+          </td>
+        </div>
+
+          <div class="data-row">
+          <span>Status Laporan:</span>
+          <select id="status_laporan" class="status-select">
             <option value="Verifikasi" {% if laporan.status == 'Verifikasi' %}selected{% endif %}>Verifikasi</option>
             <option value="Selesai" {% if laporan.status == 'Selesai' %}selected{% endif %}>Selesai</option>
           </select>
@@ -101,16 +112,16 @@
           Kembali
         </button>
 
-        <button id="btnKlaim" 
-          class="btn btn-warning"
-          data-kode="{{ laporan.kode_barang }}">
-          Klaim Barang
-        </button>
-
         <button id="btnUpdate" 
           class="btn btn-primary" 
           data-kode="{{ laporan.kode_barang }}">
           Update Status
+        </button>
+
+        <button id="btnKlaim" 
+          class="btn btn-warning"
+          data-kode="{{ laporan.kode_barang }}">
+          Klaim Barang
         </button>
 
         <button id="btnExportPdf" class="btn btn-success">

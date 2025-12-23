@@ -176,8 +176,17 @@
         <strong>{{ laporan.update_terakhir.strftime("%Y-%m-%d %H:%M") if laporan.update_terakhir else "" }}</strong>
       </div>
 
-        <div class="data-row">
-          <span>Status :</span>
+      <div class="data-row">
+        <span>Status Barang:</span>
+        <select id="status_barang" name="status_barang" class="status-barang">
+          <option value="Tersedia" {% if laporan.status_barang == 'Tersedia' %}selected{% endif %}>Tersedia</option>
+          <option value="Diklaim" {% if laporan.status_barang == 'Diklaim' %}selected{% endif %}>Diklaim</option>
+          <option value="Selesai" {% if laporan.status_barang == 'Selesai' %}selected{% endif %}>Selesai</option>
+        </select>
+      </div>
+
+          <div class="data-row">
+          <span>Status Laporan:</span>
           <select id="status" name="status" class="status-select">
             <option value="Verifikasi" {% if laporan.status == 'Verifikasi' %}selected{% endif %}>Verifikasi</option>
             <option value="Selesai" {% if laporan.status == 'Selesai' %}selected{% endif %}>Selesai</option>

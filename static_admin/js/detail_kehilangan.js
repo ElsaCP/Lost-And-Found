@@ -21,7 +21,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function toggleFotoSection() {
     if (!statusSelect || !fotoSection || !btnSimpan) return;
-    if (statusSelect.value === "Pending") {
+    const hideStatus = ["Pending", "Barang Tidak Ditemukan", "Selesai"];
+    
+    if (hideStatus.includes(statusSelect.value)) {
       fotoSection.style.display = "none";
       btnSimpan.style.display = "none"; // sembunyikan tombol simpan
     } else {

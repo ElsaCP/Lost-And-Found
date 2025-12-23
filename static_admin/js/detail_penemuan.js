@@ -1,45 +1,61 @@
 document.addEventListener("DOMContentLoaded", () => {
   const btnUpdate = document.getElementById("btnUpdate");
 
-  if (btnUpdate) {
-    btnUpdate.addEventListener("click", async () => {
+  if (!btnUpdate) return;
 
-      const kode = btnUpdate.dataset.kode;
-      const newStatus = document.getElementById("status").value;
-      const jenis = btnUpdate.dataset.jenis || "penemuan";
+  btnUpdate.addEventListener("click", async () => {
+    const kode = btnUpdate.dataset.kode;
+    const jenis = btnUpdate.dataset.jenis || "penemuan";
 
-      let apiUrl = "";
+    const statusLaporanEl = document.getElementById("status_laporan");
+    const statusBarangEl = document.getElementById("status_barang");
 
-      if (jenis === "penemuan") {
-        apiUrl = "/admin/api/penemuan/update_status";
-      } else if (jenis === "klaim") {
-        apiUrl = "/admin/penemuan/klaim/update_status";
-      }
+    const payload = {
+      kode: kode,
+      status: statusLaporanEl ? statusLaporanEl.value : null,
+      status_barang: statusBarangEl ? statusBarangEl.value : null
+    };
 
+    let apiUrl =
+      jenis === "penemuan"
+        ? "/admin/api/penemuan/update_status"
+        : "/admin/penemuan/klaim/update_status";
+
+    try {
       const response = await fetch(apiUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ kode, status: newStatus })
+        body: JSON.stringify(payload)
       });
 
       const result = await response.json();
 
-      if (result.success) {
-        Swal.fire({
-          icon: "success",
-          title: "Status diperbarui",
-          timer: 1500,
-          showConfirmButton: false
-        }).then(() => {
-          const from = new URLSearchParams(window.location.search).get("from");
-          window.location.href = from === "beranda"
+      if (!response.ok) {
+        throw new Error(result.message || "Update gagal");
+      }
+
+      Swal.fire({
+        icon: "success",
+        title: "Status berhasil diperbarui",
+        timer: 1500,
+        showConfirmButton: false
+      }).then(() => {
+        const from = new URLSearchParams(window.location.search).get("from");
+        window.location.href =
+          from === "beranda"
             ? "/admin/beranda"
             : "/admin/penemuan/daftar";
-        });
-      }
-    });
-  }
+      });
 
+    } catch (err) {
+      console.error(err);
+      Swal.fire("Gagal", err.message, "error");
+    }
+  });
+
+  // ==========================
+  // KLAIM BARANG (TETAP)
+  // ==========================
   const btnKlaim = document.getElementById("btnKlaim");
   if (btnKlaim) {
     btnKlaim.addEventListener("click", () => {
@@ -51,23 +67,30 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // ==========================
+  // KEMBALI
+  // ==========================
   const btnKembali = document.getElementById("btnKembali");
   if (btnKembali) {
     btnKembali.addEventListener("click", () => {
       const from = new URLSearchParams(window.location.search).get("from");
-      window.location.href = from === "beranda"
-        ? "/admin/beranda"
-        : "/admin/penemuan/daftar";
+      window.location.href =
+        from === "beranda"
+          ? "/admin/beranda"
+          : "/admin/penemuan/daftar";
     });
   }
 
+  // ==========================
+  // EXPORT PDF (TIDAK DIUBAH)
+  // ==========================
   const btnExport = document.getElementById("btnExportPdf");
 
   if (btnExport) {
     btnExport.addEventListener("click", async () => {
       const { jsPDF } = window.jspdf;
       const element = document.querySelector(".detail-container");
-      const hideElements = document.querySelectorAll(".no-print"); // ✅ TAMBAHAN
+      const hideElements = document.querySelectorAll(".no-print");
 
       Swal.fire({
         title: "Membuat PDF...",
@@ -101,5 +124,4 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
-  
 });

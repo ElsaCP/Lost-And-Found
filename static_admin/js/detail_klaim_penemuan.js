@@ -98,7 +98,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             if (!result.isConfirmed) return;
 
-            const res = await fetch("/admin/penemuan/klaim/update", {
+            const res = await fetch("/admin/penemuan/klaim/update_status", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
