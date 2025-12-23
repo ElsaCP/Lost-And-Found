@@ -30,7 +30,7 @@
       <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
         <ul class="navbar-nav align-items-center">
           <li class="nav-item"><a class="nav-link active" href="{{ url_for('main.home') }}#hero">Beranda</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('main.home') }}#listBarang">List Barang</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('main.home') }}#statistik">Statistik</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ url_for('main.home') }}#panduan">Panduan</a></li>
           <li class="nav-item"><a class="nav-link" href="#kontak">Kontak</a></li>
           <li class="nav-item ms-lg-3">
@@ -44,7 +44,7 @@
   <!-- HEADER -->
   <div class="header-riwayat container-fluid">
     <div class="d-flex align-items-center gap-3">
-      <a href="javascript:history.back()" class="back-arrow-header">
+      <a href="{{ url_for('main.riwayat_klaim') }}" class="back-arrow-header">
         <i class="fa-solid fa-arrow-left"></i>
       </a>
       <h2 class="title-riwayat">Riwayat Klaim Barang</h2>
@@ -91,8 +91,8 @@
               <time itemprop="dateCreated">{{ data.tanggal_lapor }}</time>
             </p>
             <p>
-              <strong>Lokasi Kehilangan :</strong>
-              <time itemprop="dateCreated">{{ data.tanggal_lapor }}</time>
+              <strong>Lokasi Penemuan :</strong>
+              <time itemprop="dateCreated">{{ data.lokasi }}</time>
             </p>
 
             <p>
@@ -154,7 +154,7 @@
           </table>
         </div>
                 <!-- NOTIFIKASI SIAP DIAMBIL -->
-        {% if data.status == 'Verifikasi','Siap Diambil' %}
+        {% if data.status == 'Verifikasi' %}
         <div class="alert alert-success shadow-sm mt-4">
           <h5 class="fw-bold mb-2">
             <i class="bi bi-check-circle-fill"></i>
@@ -186,7 +186,106 @@
           </small>
         </div>
         {% endif %}
+        {% if data.status == 'Verifikasi' and not data.surat_pengambilan %}
+        <div class="card shadow-sm mt-4">
+          <div class="card-body">
+            <h5 class="fw-bold text-primary">
+              Upload Surat Pengambilan
+            </h5>
 
+            <p class="text-muted">
+              Silakan upload surat pengambilan yang sudah diisi dan ditandatangani.
+            </p>
+
+            <form
+              id="formUploadSurat"
+              action="/upload-surat/{{ data.kode_laporan }}"
+              method="POST"
+              enctype="multipart/form-data"
+            >
+              <div class="mb-3">
+                <input type="file"
+                      class="form-control"
+                      name="surat"
+                      accept=".pdf,.jpg,.jpeg,.png"
+                      required>
+              </div>
+
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-upload"></i> Kirim Surat
+              </button>
+            </form>
+          </div>
+        </div>
+        {% endif %}
+        {% if data.status == 'Siap Diambil' %}
+        <div class="alert alert-success shadow-sm mt-4">
+          <h5 class="fw-bold mb-2">
+            <i class="bi bi-check-circle-fill"></i>
+            Data sudah dikonfirmasi
+          </h5>
+
+          <p class="mb-3">
+            Silakan ambil barang Anda maksimal sesuai dengan tanggal pengambilan yang telah ditentukan.
+          </p>
+
+          <hr>
+
+          <small class="text-muted">
+            <strong>NB:</strong><br>
+            • Ambil sendiri → membawa fotokopi KTP<br>
+            • Diwakilkan → membawa fotokopi KTP kedua belah pihak
+          </small>
+        </div>
+        {% endif %}
+        {% if data.status == 'Ditolak' %}
+        <div class="alert alert-danger shadow-sm mt-4">
+          <h5 class="fw-bold mb-2">
+            <i class="bi bi-x-circle-fill"></i>
+            Klaim Ditolak
+          </h5>
+
+          <p class="mb-2">
+            Maaf, data klaim Anda <strong>tidak dapat diproses</strong>. Silakan hubungi petugas Lost & Found untuk informasi lebih lanjut.
+          </p>
+          {% if data.catatan_admin %}
+          <p class="mb-0">
+            <strong>Catatan Admin:</strong><br>
+            {{ data.catatan_admin }}
+          </p>
+          {% endif %}
+        </div>
+        {% endif %}
+        {% if data.surat_pengambilan and data.status in ['Verifikasi', 'Siap Diambil', 'Selesai'] %}
+          <div class="card mt-4 shadow-sm">
+            <div class="card-body">
+              <h6 class="fw-bold mb-2">
+                <i class="bi bi-file-earmark-pdf-fill text-danger"></i>
+                Surat Pengambilan
+              </h6>
+
+              <p class="mb-2">
+                Nama file:
+                <strong>{{ data.surat_pengambilan }}</strong>
+              </p>
+
+              <!-- Tombol buka di tab baru -->
+              <a href="{{ url_for('static', filename='uploads/surat/' ~ data.surat_pengambilan) }}"
+                target="_blank"
+                class="btn btn-sm btn-outline-primary mb-3">
+                <i class="bi bi-eye"></i> Buka di Tab Baru
+              </a>
+
+              <!-- PREVIEW PDF DI HALAMAN -->
+              <iframe
+                src="{{ url_for('static', filename='uploads/surat/' ~ data.surat_pengambilan) }}"
+                width="100%"
+                height="600px"
+                style="border:1px solid #ddd; border-radius:8px;">
+              </iframe>
+            </div>
+          </div>
+        {% endif %}
       </div>
 
     </div>

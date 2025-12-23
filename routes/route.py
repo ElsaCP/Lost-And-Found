@@ -537,7 +537,65 @@ def pdf_pengambilan_wakil(path, data, tgl_klaim, tgl_maks):
 
     # ================= BUILD =================
     doc.build(el)
-    
+
+import os
+from werkzeug.utils import secure_filename
+
+UPLOAD_SURAT = "static/uploads/surat"
+os.makedirs(UPLOAD_SURAT, exist_ok=True)
+
+
+@main.route("/upload-surat/<kode_laporan>", methods=["POST"])
+def upload_surat_pengambilan(kode_laporan):
+    if "surat" not in request.files:
+        return redirect(f"/detail-klaim/{kode_laporan}")
+
+    file = request.files["surat"]
+    if file.filename == "":
+        return redirect(f"/detail-klaim/{kode_laporan}")
+
+    filename = secure_filename(file.filename)
+
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    # 🔒 CEGAH JIKA STATUS DITOLAK
+    cursor.execute("""
+        SELECT status
+        FROM klaim_barang
+        WHERE kode_laporan = %s
+    """, (kode_laporan,))
+    klaim = cursor.fetchone()
+
+    if not klaim or klaim["status"] == "Ditolak":
+        cursor.close()
+        db.close()
+        return redirect(f"/detail-klaim/{kode_laporan}")
+
+    path = os.path.join(UPLOAD_SURAT, filename)
+    file.save(path)
+
+    cursor.execute("""
+        UPDATE klaim_barang
+        SET surat_pengambilan = %s
+        WHERE kode_laporan = %s
+    """, (filename, kode_laporan))
+
+    db.commit()
+    cursor.close()
+    db.close()
+
+    return redirect(f"/detail-klaim/{kode_laporan}")
+from flask import send_from_directory, abort
+
+@main.route("/surat/<filename>")
+def lihat_surat(filename):
+    folder = os.path.join("static", "uploads", "surat")
+    try:
+        return send_from_directory(folder, filename)
+    except FileNotFoundError:
+        abort(404)
+
 @main.route('/login')
 def login():
     return render_template('admin/index.html')
@@ -824,6 +882,7 @@ def detail_klaim(kode_laporan):
             k.foto_barang,
             k.tanggal_lapor,
             k.waktu_lapor,
+            k.surat_pengambilan,
 
             -- Status & catatan admin untuk detail laporan terkini
             k.status,
