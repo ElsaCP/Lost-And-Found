@@ -1641,10 +1641,10 @@ def update_status_klaim():
 
     try:
         # =====================
-        # AMBIL KODE BARANG
+        # AMBIL DATA KLAIM
         # =====================
         cursor.execute("""
-            SELECT kode_barang
+            SELECT kode_barang, kode_laporan_kehilangan
             FROM klaim_barang
             WHERE kode_laporan = %s
         """, (kode,))
@@ -1654,6 +1654,7 @@ def update_status_klaim():
             return jsonify({"success": False, "message": "Klaim tidak ditemukan"}), 404
 
         kode_barang = klaim["kode_barang"]
+        kode_kehilangan = klaim["kode_laporan_kehilangan"]
 
         # =====================
         # UPDATE STATUS KLAIM
@@ -1667,25 +1668,35 @@ def update_status_klaim():
         """, (status_baru, catatan, kode))
 
         # =====================
-        # UPDATE STATUS_BARANG DI PENEMUAN
+        # LOGIKA STATUS
         # =====================
-        if status_baru.lower() == "pending" or status_baru.lower() == "ditolak":
-            status_barang = "Tersedia"
-        elif status_baru.lower() in ["verifikasi", "siap diambil"]:
-            status_barang = "Diklaim"
-        else:
-            status_barang = None  # status lain tidak diubah
+        if status_baru == "Ditolak":
 
-        if status_barang:
+            # Penemuan kembali tersedia
             cursor.execute("""
                 UPDATE penemuan
-                SET status_barang = %s,
+                SET status_barang = 'Tersedia',
                     update_terakhir = NOW()
                 WHERE kode_barang = %s
-            """, (status_barang, kode_barang))
+            """, (kode_barang,))
 
-        if status_baru == "Selesai":
-            # update penemuan + pindahkan penemuan ke arsip
+            # Kehilangan tetap aktif
+            if kode_kehilangan:
+                cursor.execute("""
+                    UPDATE kehilangan
+                    SET status = 'Aktif',
+                        update_terakhir = NOW()
+                    WHERE kode_kehilangan = %s
+                """, (kode_kehilangan,))
+
+            conn.commit()
+
+            # Arsip klaim saja
+            pindahkan_ke_arsip(kode, "klaim_barang")
+
+        elif status_baru == "Selesai":
+
+            # Penemuan selesai
             cursor.execute("""
                 UPDATE penemuan
                 SET status = 'Selesai',
@@ -1693,21 +1704,50 @@ def update_status_klaim():
                     update_terakhir = NOW()
                 WHERE kode_barang = %s
             """, (kode_barang,))
-            conn.commit()
-            try:
-                pindahkan_ke_arsip(kode_barang, "penemuan")
-            except Exception as e:
-                print("❌ Error arsip penemuan:", e)
 
-        if status_baru == "Ditolak":
-            # pindahkan klaim ke arsip saja, penemuan tetap
+            # Kehilangan selesai
+            if kode_kehilangan:
+                cursor.execute("""
+                    UPDATE kehilangan
+                    SET status = 'Selesai',
+                        update_terakhir = NOW()
+                    WHERE kode_kehilangan = %s
+                """, (kode_kehilangan,))
+
             conn.commit()
-            try:
-                pindahkan_ke_arsip(kode, "klaim_barang")
-            except Exception as e:
-                print("❌ Error arsip klaim:", e)
+
+            # Arsip SEMUA
+            pindahkan_ke_arsip(kode_barang, "penemuan")
+            if kode_kehilangan:
+                pindahkan_ke_arsip(kode_kehilangan, "kehilangan")
+            pindahkan_ke_arsip(kode, "klaim_barang")
 
         else:
+            # =====================
+            # STATUS ANTARA
+            # =====================
+            if status_baru in ["Verifikasi", "Siap Diambil"]:
+                status_barang = "Diklaim"
+            else:
+                status_barang = "Tersedia"
+
+            # UPDATE PENEMUAN
+            cursor.execute("""
+                UPDATE penemuan
+                SET status_barang = %s,
+                    update_terakhir = NOW()
+                WHERE kode_barang = %s
+            """, (status_barang, kode_barang))
+
+            # 🔥 JIKA SIAP DIAMBIL → KEHILANGAN DALAM PROSES
+            if status_baru == "Siap Diambil" and kode_kehilangan:
+                cursor.execute("""
+                    UPDATE kehilangan
+                    SET status = 'Dalam Proses',
+                        update_terakhir = NOW()
+                    WHERE kode_kehilangan = %s
+                """, (kode_kehilangan,))
+
             conn.commit()
 
         return jsonify({"success": True})
@@ -1727,7 +1767,6 @@ def update_status_klaim():
 def detail_klaim_penemuan(kode_klaim):
     return render_template("admin/detail_klaim_penemuan.html", kode_klaim=kode_klaim)
 
-
 @admin_bp.route('/penemuan/klaim/api')
 def detail_klaim_penemuan_api():
     kode = request.args.get("kode")
@@ -1736,29 +1775,45 @@ def detail_klaim_penemuan_api():
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
+
     cursor.execute("""
         SELECT 
-            k.*,
+            k.kode_laporan,
+            k.kode_barang,
             k.kode_laporan_kehilangan,
+            k.nama_pelapor,
+            k.no_telp,
+            k.email,
+            k.deskripsi_khusus,
+            k.tanggal_lapor,
+            k.waktu_lapor,
+            k.status,
+            k.catatan_admin,
+            k.update_terakhir,
+
             k.foto_barang AS foto_barang_klaim,
             k.bukti_laporan,
+            k.identitas_diri,
+            k.surat_pengambilan,
+
             p.nama_barang,
             p.kategori,
             p.lokasi,
             p.gambar_barang AS foto_barang_penemuan
+
         FROM klaim_barang k
         LEFT JOIN penemuan p ON k.kode_barang = p.kode_barang
         WHERE k.kode_laporan = %s
         LIMIT 1
     """, (kode,))
-    
+
     data = cursor.fetchone()
     cursor.close()
     conn.close()
 
     if not data:
         return jsonify({"success": False, "message": "Data tidak ditemukan"}), 404
-    
+
     if data.get("update_terakhir"):
         data["update_terakhir"] = data["update_terakhir"].strftime("%Y-%m-%d %H:%M")
 

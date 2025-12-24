@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(res => res.json())
         .then(() => {
 
-          if (newStatus === "Selesai") {
+          if (newStatus === "Selesai" || newStatus === "Ditolak") {
             Swal.fire({
               icon: "success",
               title: "Dipindahkan ke Arsip",
