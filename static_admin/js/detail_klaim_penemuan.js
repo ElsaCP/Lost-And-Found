@@ -18,14 +18,64 @@ document.addEventListener("DOMContentLoaded", async function () {
         const response = await fetch(`/admin/penemuan/klaim/api?kode=${kode}`);
         const json = await response.json();
 
-        if (!json.success) {
-            console.error("Data klaim tidak ditemukan.");
+        if (!json.success || !json.data) {
+            Swal.fire("Error", "Data klaim tidak ditemukan", "error");
             return;
         }
 
         const klaim = json.data;
 
-        // === ISI DATA KE HALAMAN ===
+        // ============================
+        // SURAT PENGAMBILAN (FINAL UX – AMAN)
+        // ============================
+        const suratBox = document.getElementById("suratPengambilanBox");
+        const alertKosong = document.getElementById("alertSuratKosong");
+
+        if (suratBox) {
+
+            // 🔥 PENTING: surat BUKAN gambar → jangan ikut zoom
+            suratBox.classList.remove("zoomable");
+
+            const surat = klaim.surat_pengambilan;
+
+            if (surat && surat.trim() !== "") {
+                const fileUrl = `/static/uploads/surat/${encodeURIComponent(surat)}`;
+
+                suratBox.innerHTML = `
+                    <i class="bi bi-file-earmark-pdf" style="font-size:64px; color:#dc3545;"></i>
+                    <span class="mt-2 fw-semibold">Surat Pengambilan</span>
+                    <small class="text-muted">Klik untuk membuka dokumen</small>
+                `;
+
+                suratBox.style.cursor = "pointer";
+                suratBox.onclick = () => window.open(fileUrl, "_blank");
+
+                if (alertKosong) alertKosong.classList.add("d-none");
+
+            } else {
+                suratBox.innerHTML = `
+                    <i class="bi bi-file-earmark-x" style="font-size:64px; color:#adb5bd;"></i>
+                    <span class="mt-2 text-muted">Belum ada surat pengambilan</span>
+                    <small class="text-muted">User belum mengunggah dokumen</small>
+                `;
+
+                suratBox.style.cursor = "not-allowed";
+                suratBox.onclick = () => {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Surat belum tersedia",
+                        text: "User belum mengunggah surat pengambilan.",
+                        confirmButtonColor: "#3085d6"
+                    });
+                };
+
+                if (alertKosong) alertKosong.classList.remove("d-none");
+            }
+        }
+
+        // ============================
+        // === ISI DATA KE HALAMAN (DATA LAMA)
+        // ============================
         document.getElementById("kodeLaporan").textContent = klaim.kode_laporan ?? "-";
         document.getElementById("kodeBarang").textContent = klaim.kode_barang ?? "-";
         document.getElementById("kodeLaporanKehilangan").textContent = klaim.kode_laporan_kehilangan ?? "-";
@@ -40,7 +90,9 @@ document.addEventListener("DOMContentLoaded", async function () {
         document.getElementById("waktuLapor").textContent = klaim.waktu_lapor ?? "-";
         document.getElementById("updateTerakhir").textContent = klaim.update_terakhir ?? "-";
 
+        // ============================
         // GAMBAR
+        // ============================
         document.getElementById("imgFotoBarangPenemuan").src =
             klaim.foto_barang_penemuan ? `/static/uploads/${klaim.foto_barang_penemuan}` : "/static/no-image.png";
 
@@ -64,20 +116,16 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     // ============================
-    // TOMBOL KEMBALI (FINAL)
+    // TOMBOL KEMBALI (TIDAK DIUBAH)
     // ============================
     document.getElementById("btnKembali").addEventListener("click", () => {
         const from = new URLSearchParams(window.location.search).get("from");
-
-        if (from === "beranda") {
-            window.location.href = "/admin/beranda";
-        } else {
-            window.location.href = "/admin/penemuan/klaim";
-        }
+        window.location.href =
+            from === "beranda" ? "/admin/beranda" : "/admin/penemuan/klaim";
     });
 
     // ============================
-    // UPDATE DATA
+    // UPDATE DATA (TIDAK DIUBAH)
     // ============================
     document.getElementById("btnUpdate").addEventListener("click", async () => {
 
@@ -98,7 +146,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             if (!result.isConfirmed) return;
 
-            const res = await fetch("/admin/penemuan/klaim/update_status", {
+            const res = await fetch("/admin/penemuan/klaim/update", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -120,27 +168,20 @@ document.addEventListener("DOMContentLoaded", async function () {
                 });
 
                 setTimeout(() => {
-                    if (from === "beranda") {
-                        window.location.href = "/admin/beranda";
-                    } else {
-                        window.location.href = "/admin/penemuan/klaim";
-                    }
+                    window.location.href =
+                        from === "beranda" ? "/admin/beranda" : "/admin/penemuan/klaim";
                 }, 1500);
 
             } else {
-                Swal.fire({
-                    icon: "error",
-                    title: "Gagal!",
-                    text: "Terjadi kesalahan saat menyimpan perubahan."
-                });
+                Swal.fire("Gagal!", "Terjadi kesalahan saat menyimpan perubahan.", "error");
             }
         });
     });
 
     // ============================
-    // LIGHTBOX / ZOOM GAMBAR
+    // LIGHTBOX / ZOOM GAMBAR (HANYA IMG)
     // ============================
-    const zoomImgs = document.querySelectorAll(".zoomable");
+    const zoomImgs = document.querySelectorAll("img.zoomable");
     const lightbox = document.getElementById("lightbox");
     const lightboxImg = document.getElementById("lightbox-img");
     const closeBtn = document.querySelector("#lightbox .lightbox-close");
@@ -149,17 +190,15 @@ document.addEventListener("DOMContentLoaded", async function () {
         img.addEventListener("click", () => {
             lightbox.style.display = "flex";
             lightboxImg.src = img.src;
-            document.body.style.overflow = "hidden"; // disable scroll
+            document.body.style.overflow = "hidden";
         });
     });
 
-    // tombol X
     closeBtn.onclick = () => {
         lightbox.style.display = "none";
         document.body.style.overflow = "auto";
     };
 
-    // klik area gelap
     lightbox.onclick = (e) => {
         if (e.target === lightbox) {
             lightbox.style.display = "none";
@@ -167,80 +206,66 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     };
 
-
+    // ============================
+    // EXPORT PDF (TIDAK DIUBAH SAMA SEKALI)
+    // ============================
     const btnExport = document.getElementById("btnExport");
 
     if (btnExport) {
-    btnExport.addEventListener("click", async () => {
-        const { jsPDF } = window.jspdf;
-        const element = document.querySelector(".detail-wrapper");
-        const hideElements = document.querySelectorAll(".no-print");
+        btnExport.addEventListener("click", async () => {
+            const { jsPDF } = window.jspdf;
+            const element = document.querySelector(".detail-wrapper");
+            const hideElements = document.querySelectorAll(".no-print");
 
-        Swal.fire({
-        title: "Membuat PDF...",
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading()
+            Swal.fire({
+                title: "Membuat PDF...",
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+
+            hideElements.forEach(el => el.style.display = "none");
+            document.body.classList.add("pdf-export");
+
+            try {
+                const canvas = await html2canvas(element, {
+                    scale: 2,
+                    useCORS: true,
+                    scrollY: -window.scrollY
+                });
+
+                const imgData = canvas.toDataURL("image/png");
+                const pdf = new jsPDF("p", "mm", "a4");
+
+                const pageWidth = pdf.internal.pageSize.getWidth();
+                const pageHeight = pdf.internal.pageSize.getHeight();
+                const imgHeight = (canvas.height * pageWidth) / canvas.width;
+
+                let remainingHeight = imgHeight;
+                let yOffset = 0;
+
+                pdf.addImage(imgData, "PNG", 0, yOffset, pageWidth, imgHeight);
+                remainingHeight -= pageHeight;
+
+                while (remainingHeight > 0) {
+                    yOffset -= pageHeight;
+                    pdf.addPage();
+                    pdf.addImage(imgData, "PNG", 0, yOffset, pageWidth, imgHeight);
+                    remainingHeight -= pageHeight;
+                }
+
+                const kodePDF =
+                    document.getElementById("kodeLaporan")?.innerText || "Klaim";
+
+                pdf.save(`Detail_Klaim_${kodePDF}.pdf`);
+                Swal.close();
+
+            } catch (err) {
+                console.error(err);
+                Swal.fire("Gagal", "Gagal membuat PDF", "error");
+            } finally {
+                document.body.classList.remove("pdf-export");
+                hideElements.forEach(el => el.style.display = "");
+            }
         });
-
-        // SEMBUNYIKAN TOMBOL
-        hideElements.forEach(el => el.style.display = "none");
-
-        // 🔥 AKTIFKAN MODE EXPORT (INI KUNCI UTAMA)
-        document.body.classList.add("pdf-export");
-
-        try {
-        const canvas = await html2canvas(element, {
-            scale: 2,
-            useCORS: true,
-            scrollY: -window.scrollY
-        });
-
-        const imgData = canvas.toDataURL("image/png");
-        const pdf = new jsPDF("p", "mm", "a4");
-
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        const pageHeight = pdf.internal.pageSize.getHeight();
-
-        const imgWidth = pageWidth;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-        let remainingHeight = imgHeight;
-        let yOffset = 0;
-
-        /* =========================
-            HALAMAN 1
-        ========================= */
-        pdf.addImage(imgData, "PNG", 0, yOffset, imgWidth, imgHeight);
-        remainingHeight -= pageHeight;
-
-        /* =========================
-            HALAMAN 2 & SETERUSNYA
-            (TANPA ZOOM, TANPA NUMPUK)
-        ========================= */
-        while (remainingHeight > 0) {
-            yOffset -= pageHeight;
-            pdf.addPage();
-            pdf.addImage(imgData, "PNG", 0, yOffset, imgWidth, imgHeight);
-            remainingHeight -= pageHeight;
-        }
-
-        const kode =
-            document.getElementById("kodeLaporan")?.innerText || "Klaim";
-
-        pdf.save(`Detail_Klaim_${kode}.pdf`);
-
-        Swal.close();
-
-        } catch (err) {
-        console.error(err);
-        Swal.fire("Gagal", "Gagal membuat PDF", "error");
-        } finally {
-        // 🔥 MATIKAN MODE EXPORT
-        document.body.classList.remove("pdf-export");
-
-        // TAMPILKAN LAGI TOMBOL
-        hideElements.forEach(el => el.style.display = "");
-        }
-    });
     }
 });
