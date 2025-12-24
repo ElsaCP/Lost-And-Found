@@ -88,6 +88,7 @@ def beranda_admin():
                 update_terakhir,
                 'kehilangan' AS jenis_laporan
             FROM kehilangan
+            WHERE is_arsip = 0
         )
 
         UNION ALL
@@ -106,6 +107,7 @@ def beranda_admin():
                 update_terakhir,
                 'penemuan' AS jenis_laporan
             FROM penemuan
+            WHERE is_arsip = 0
         )
 
         UNION ALL
@@ -124,6 +126,7 @@ def beranda_admin():
                 update_terakhir,
                 'klaim' AS jenis_laporan
             FROM klaim_barang
+            WHERE is_arsip = 0
         )
 
         ORDER BY update_terakhir DESC
@@ -1624,6 +1627,7 @@ def daftar_klaim_penemuan():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
+    # Hanya tampilkan klaim yang statusnya bukan "Selesai" atau "Ditolak"
     cursor.execute("""
         SELECT 
             k.id,
@@ -1632,9 +1636,10 @@ def daftar_klaim_penemuan():
             k.nama_pelapor,
             p.nama_barang,
             k.status,
-            k.tanggal_lapor   -- 🔥 INI KUNCINYA
+            k.tanggal_lapor
         FROM klaim_barang k
         LEFT JOIN penemuan p ON k.kode_barang = p.kode_barang
+        WHERE k.status NOT IN ('Selesai', 'Ditolak')
         ORDER BY k.tanggal_lapor DESC
     """)
 

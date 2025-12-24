@@ -55,16 +55,29 @@ document.addEventListener("DOMContentLoaded", function () {
 
           this.dataset.prevIndex = this.selectedIndex;
 
-          if (newStatus === "Selesai") {
+          const rowShouldMove = 
+            (jenis === "kehilangan" && ["Selesai","Barang Tidak Ditemukan"].includes(newStatus)) ||
+            (jenis === "penemuan" && newStatus === "Selesai") ||
+            (jenis === "klaim" && ["Ditolak","Selesai"].includes(newStatus));
+
+          if (rowShouldMove) {
+            // Tampilkan Swal sukses
             Swal.fire({
               icon: "success",
               title: "Dipindahkan ke Arsip",
               timer: 1200,
               showConfirmButton: false
-            }).then(() => location.href = "/admin/arsip");
+            }).then(() => {
+              // Hapus row dari tabel beranda
+              row.remove();
+
+              // Redirect ke halaman arsip
+              window.location.href = "/admin/arsip";
+            });
             return;
           }
 
+          // Kalau bukan status yang masuk arsip, tetap tampilkan Swal update status
           Swal.fire({
             icon: "success",
             title: "Status Diperbarui",

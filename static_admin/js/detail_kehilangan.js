@@ -117,14 +117,25 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // =========================
-  // KEMBALI
-  // =========================
-  if (btnKembali) {
-    btnKembali.addEventListener("click", () => {
+// =========================
+// KEMBALI
+// =========================
+if (btnKembali) {
+  btnKembali.addEventListener("click", () => {
+    // Ambil parameter 'from' dari URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const from = urlParams.get("from");
+
+    if (from === "beranda") {
+      window.location.href = "/admin/beranda";
+    } else if (from === "kehilangan") {
       window.location.href = "/admin/kehilangan/daftar";
-    });
-  }
+    } else {
+      // default fallback
+      window.location.href = "/admin/kehilangan/daftar";
+    }
+  });
+}
 
   // =========================
   // EXPORT PDF
