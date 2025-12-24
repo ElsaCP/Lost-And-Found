@@ -629,7 +629,11 @@ def daftar_kehilangan():
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM kehilangan ORDER BY tanggal_submit DESC, waktu_submit DESC")
+    cursor.execute("""
+        SELECT * FROM kehilangan
+        WHERE is_arsip = 0
+        ORDER BY tanggal_submit DESC, waktu_submit DESC
+    """)
     kehilangan_list = cursor.fetchall()
     conn.close()
 
@@ -771,7 +775,7 @@ def detail_kehilangan():
     # Ambil data kehilangan
     # =========================
     cursor.execute(
-        "SELECT * FROM kehilangan WHERE kode_kehilangan = %s",
+        "SELECT * FROM kehilangan WHERE kode_kehilangan = %s AND is_arsip = 0",
         (kode_kehilangan,)
     )
     laporan = cursor.fetchone()
@@ -954,12 +958,22 @@ def update_status_kehilangan():
         WHERE kode_kehilangan = %s
     """, (status_baru, catatan, waktu_update, kode))
 
-    # 3️⃣ SIMPAN RIWAYAT STATUS (REKOMENDED)
+    # 3️⃣ SIMPAN RIWAYAT STATUS (hanya jika berbeda)
     cursor.execute("""
-        INSERT INTO riwayat_status
-        (kode_kehilangan, status, catatan, waktu_update)
-        VALUES (%s, %s, %s, %s)
-    """, (kode, status_baru, catatan, waktu_update))
+        SELECT status, catatan
+        FROM riwayat_status
+        WHERE kode_kehilangan = %s
+        ORDER BY waktu_update DESC
+        LIMIT 1
+    """, (kode,))
+    last = cursor.fetchone()
+
+    if not last or last['status'] != status_baru or last['catatan'] != catatan:
+        cursor.execute("""
+            INSERT INTO riwayat_status
+            (kode_kehilangan, status, catatan, waktu_update)
+            VALUES (%s, %s, %s, %s)
+        """, (kode, status_baru, catatan, waktu_update))
 
     conn.commit()
 
@@ -1147,7 +1161,11 @@ def daftar_penemuan():
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM penemuan ORDER BY tanggal_lapor DESC, update_terakhir DESC")
+    cursor.execute("""
+        SELECT * FROM penemuan
+        WHERE is_arsip = 0
+        ORDER BY tanggal_lapor DESC, update_terakhir DESC
+    """)
     penemuan_list = cursor.fetchall()
     conn.close()
 
@@ -1250,7 +1268,10 @@ def detail_penemuan():
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM penemuan WHERE kode_barang=%s", (kode,))
+    cursor.execute(
+        "SELECT * FROM penemuan WHERE kode_barang=%s AND is_arsip = 0",
+        (kode,)
+    )
     laporan = cursor.fetchone()
     conn.close()
 
@@ -1345,7 +1366,10 @@ def tambah_klaim_penemuan():
         if not kode_barang:
             return "Kode barang tidak ditemukan", 400
 
-        cursor.execute("SELECT * FROM penemuan WHERE kode_barang = %s", (kode_barang,))
+        cursor.execute(
+            "SELECT * FROM penemuan WHERE kode_barang = %s AND is_arsip = 0",
+            (kode_barang,)
+        )
         laporan = cursor.fetchone()
 
         cursor.close()
@@ -1641,10 +1665,10 @@ def update_status_klaim():
 
     try:
         # =====================
-        # AMBIL DATA KLAIM
+        # AMBIL KODE BARANG
         # =====================
         cursor.execute("""
-            SELECT kode_barang, kode_laporan_kehilangan
+            SELECT kode_barang
             FROM klaim_barang
             WHERE kode_laporan = %s
         """, (kode,))
@@ -1654,7 +1678,6 @@ def update_status_klaim():
             return jsonify({"success": False, "message": "Klaim tidak ditemukan"}), 404
 
         kode_barang = klaim["kode_barang"]
-        kode_kehilangan = klaim["kode_laporan_kehilangan"]
 
         # =====================
         # UPDATE STATUS KLAIM
@@ -1668,70 +1691,16 @@ def update_status_klaim():
         """, (status_baru, catatan, kode))
 
         # =====================
-        # LOGIKA STATUS
+        # UPDATE STATUS_BARANG DI PENEMUAN
         # =====================
-        if status_baru == "Ditolak":
-
-            # Penemuan kembali tersedia
-            cursor.execute("""
-                UPDATE penemuan
-                SET status_barang = 'Tersedia',
-                    update_terakhir = NOW()
-                WHERE kode_barang = %s
-            """, (kode_barang,))
-
-            # Kehilangan tetap aktif
-            if kode_kehilangan:
-                cursor.execute("""
-                    UPDATE kehilangan
-                    SET status = 'Aktif',
-                        update_terakhir = NOW()
-                    WHERE kode_kehilangan = %s
-                """, (kode_kehilangan,))
-
-            conn.commit()
-
-            # Arsip klaim saja
-            pindahkan_ke_arsip(kode, "klaim_barang")
-
-        elif status_baru == "Selesai":
-
-            # Penemuan selesai
-            cursor.execute("""
-                UPDATE penemuan
-                SET status = 'Selesai',
-                    status_barang = 'Selesai',
-                    update_terakhir = NOW()
-                WHERE kode_barang = %s
-            """, (kode_barang,))
-
-            # Kehilangan selesai
-            if kode_kehilangan:
-                cursor.execute("""
-                    UPDATE kehilangan
-                    SET status = 'Selesai',
-                        update_terakhir = NOW()
-                    WHERE kode_kehilangan = %s
-                """, (kode_kehilangan,))
-
-            conn.commit()
-
-            # Arsip SEMUA
-            pindahkan_ke_arsip(kode_barang, "penemuan")
-            if kode_kehilangan:
-                pindahkan_ke_arsip(kode_kehilangan, "kehilangan")
-            pindahkan_ke_arsip(kode, "klaim_barang")
-
+        if status_baru.lower() == "pending" or status_baru.lower() == "ditolak":
+            status_barang = "Tersedia"
+        elif status_baru.lower() in ["verifikasi", "siap diambil"]:
+            status_barang = "Diklaim"
         else:
-            # =====================
-            # STATUS ANTARA
-            # =====================
-            if status_baru in ["Verifikasi", "Siap Diambil"]:
-                status_barang = "Diklaim"
-            else:
-                status_barang = "Tersedia"
+            status_barang = None  # status lain tidak diubah
 
-            # UPDATE PENEMUAN
+        if status_barang:
             cursor.execute("""
                 UPDATE penemuan
                 SET status_barang = %s,
@@ -1739,15 +1708,30 @@ def update_status_klaim():
                 WHERE kode_barang = %s
             """, (status_barang, kode_barang))
 
-            # 🔥 JIKA SIAP DIAMBIL → KEHILANGAN DALAM PROSES
-            if status_baru == "Siap Diambil" and kode_kehilangan:
-                cursor.execute("""
-                    UPDATE kehilangan
-                    SET status = 'Dalam Proses',
-                        update_terakhir = NOW()
-                    WHERE kode_kehilangan = %s
-                """, (kode_kehilangan,))
+        if status_baru == "Selesai":
+            # update penemuan + pindahkan penemuan ke arsip
+            cursor.execute("""
+                UPDATE penemuan
+                SET status = 'Selesai',
+                    status_barang = 'Selesai',
+                    update_terakhir = NOW()
+                WHERE kode_barang = %s
+            """, (kode_barang,))
+            conn.commit()
+            try:
+                pindahkan_ke_arsip(kode_barang, "penemuan")
+            except Exception as e:
+                print("❌ Error arsip penemuan:", e)
 
+        if status_baru == "Ditolak":
+            # pindahkan klaim ke arsip saja, penemuan tetap
+            conn.commit()
+            try:
+                pindahkan_ke_arsip(kode, "klaim_barang")
+            except Exception as e:
+                print("❌ Error arsip klaim:", e)
+
+        else:
             conn.commit()
 
         return jsonify({"success": True})
@@ -1767,6 +1751,7 @@ def update_status_klaim():
 def detail_klaim_penemuan(kode_klaim):
     return render_template("admin/detail_klaim_penemuan.html", kode_klaim=kode_klaim)
 
+
 @admin_bp.route('/penemuan/klaim/api')
 def detail_klaim_penemuan_api():
     kode = request.args.get("kode")
@@ -1775,45 +1760,29 @@ def detail_klaim_penemuan_api():
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-
     cursor.execute("""
         SELECT 
-            k.kode_laporan,
-            k.kode_barang,
+            k.*,
             k.kode_laporan_kehilangan,
-            k.nama_pelapor,
-            k.no_telp,
-            k.email,
-            k.deskripsi_khusus,
-            k.tanggal_lapor,
-            k.waktu_lapor,
-            k.status,
-            k.catatan_admin,
-            k.update_terakhir,
-
             k.foto_barang AS foto_barang_klaim,
             k.bukti_laporan,
-            k.identitas_diri,
-            k.surat_pengambilan,
-
             p.nama_barang,
             p.kategori,
             p.lokasi,
             p.gambar_barang AS foto_barang_penemuan
-
         FROM klaim_barang k
         LEFT JOIN penemuan p ON k.kode_barang = p.kode_barang
         WHERE k.kode_laporan = %s
         LIMIT 1
     """, (kode,))
-
+    
     data = cursor.fetchone()
     cursor.close()
     conn.close()
 
     if not data:
         return jsonify({"success": False, "message": "Data tidak ditemukan"}), 404
-
+    
     if data.get("update_terakhir"):
         data["update_terakhir"] = data["update_terakhir"].strftime("%Y-%m-%d %H:%M")
 
@@ -1847,14 +1816,14 @@ def update_klaim_penemuan():
     return jsonify({"success": True})
 
 # ======================
-# 📁 ARSIP 
+# 📁 ARSIP
 # ======================
 @admin_bp.route('/arsip')
 def arsip():
     if not session.get('admin_logged_in'):
         return redirect(url_for('admin_bp.login_admin'))
 
-    auto_arsip_laporan()   # 🔥 TAMBAHKAN INI
+    auto_arsip_laporan()
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True, buffered=True)
@@ -1873,7 +1842,6 @@ def auto_arsip_laporan():
     db = get_db_connection()
     cur = db.cursor(dictionary=True)
 
-    # batas 3 bulan lalu
     batas_tanggal = datetime.now() - relativedelta(months=3)
     tanggal_inactive = datetime.now().replace(second=0, microsecond=0)
 
@@ -1883,16 +1851,15 @@ def auto_arsip_laporan():
     cur.execute("""
         SELECT kode_kehilangan
         FROM kehilangan
-        WHERE tanggal_kehilangan < %s
-        OR status IN ('Selesai', 'Barang Tidak Ditemukan')
+        WHERE is_arsip = 0
+          AND (
+              tanggal_kehilangan < %s
+              OR status IN ('Selesai', 'Barang Tidak Ditemukan')
+          )
     """, (batas_tanggal,))
 
     for row in cur.fetchall():
-        pindahkan_ke_arsip(
-            row['kode_kehilangan'],
-            'kehilangan',
-            tanggal_inactive
-        )
+        pindahkan_ke_arsip(row['kode_kehilangan'], 'kehilangan', tanggal_inactive)
 
     # ======================
     # PENEMUAN
@@ -1900,16 +1867,12 @@ def auto_arsip_laporan():
     cur.execute("""
         SELECT kode_barang
         FROM penemuan
-        WHERE tanggal_lapor < %s
-          AND status != 'Selesai'
+        WHERE is_arsip = 0
+          AND tanggal_lapor < %s
     """, (batas_tanggal,))
 
     for row in cur.fetchall():
-        pindahkan_ke_arsip(
-            row['kode_barang'],
-            'penemuan',
-            tanggal_inactive
-        )
+        pindahkan_ke_arsip(row['kode_barang'], 'penemuan', tanggal_inactive)
 
     cur.close()
     db.close()
@@ -1918,18 +1881,18 @@ def pindahkan_ke_arsip(kode, jenis_tabel, tanggal_inactive=None):
     db = get_db_connection()
     cur = db.cursor(dictionary=True)
 
-    # ============================
-    # CEK SUDAH DI ARSIP / BELUM
-    # ============================
+    # ======================
+    # CEK SUDAH ADA DI ARSIP
+    # ======================
     cur.execute("SELECT 1 FROM arsip WHERE kode=%s", (kode,))
     if cur.fetchone():
         cur.close()
         db.close()
         return False
 
-    # ============================
-    # AMBIL DATA BERDASARKAN JENIS
-    # ============================
+    # ======================
+    # AMBIL DATA
+    # ======================
     if jenis_tabel == "kehilangan":
         cur.execute("SELECT * FROM kehilangan WHERE kode_kehilangan=%s", (kode,))
         kolom_tanggal = "tanggal_kehilangan"
@@ -1939,12 +1902,8 @@ def pindahkan_ke_arsip(kode, jenis_tabel, tanggal_inactive=None):
         kolom_tanggal = "tanggal_lapor"
 
     elif jenis_tabel in ("klaim", "klaim_barang"):
-        # Ambil klaim + data penemuan terkait berdasarkan kode_barang
         cur.execute("""
-            SELECT k.*, p.nama_barang AS nama_barang_penemuan, 
-                   p.kategori AS kategori_penemuan, 
-                   p.lokasi AS lokasi_penemuan, 
-                   p.gambar_barang AS foto_penemuan
+            SELECT k.*, p.nama_barang, p.kategori, p.lokasi, p.gambar_barang
             FROM klaim_barang k
             LEFT JOIN penemuan p ON k.kode_barang = p.kode_barang
             WHERE k.kode_laporan=%s
@@ -1956,85 +1915,65 @@ def pindahkan_ke_arsip(kode, jenis_tabel, tanggal_inactive=None):
         db.close()
         return False
 
-    # ============================
-    # AMBIL DATA
-    # ============================
     data = cur.fetchone()
     if not data:
         cur.close()
         db.close()
         return False
 
-    # ============================
-    # TANGGAL
-    # ============================
     tanggal_asli = data.get(kolom_tanggal)
     tanggal_arsip = datetime.now().replace(second=0, microsecond=0)
-    
-    if jenis_tabel in ("klaim", "klaim_barang"):
-        tanggal_inactive = None  # Klaim selesai tetap None
-    else:
-        tanggal_inactive = tanggal_inactive or tanggal_arsip
-        if data.get("status") in ("Selesai", "Barang Tidak Ditemukan"):
-            tanggal_inactive = None
 
-    # ============================
+    if jenis_tabel in ("klaim", "klaim_barang"):
+        tanggal_inactive = None
+    else:
+        tanggal_inactive = None if data.get("status") in (
+            "Selesai", "Barang Tidak Ditemukan"
+        ) else tanggal_inactive
+
+    # ======================
     # INSERT KE ARSIP
-    # ============================
-    if jenis_tabel in ("klaim", "klaim_barang"):
-        cur.execute("""
-            INSERT INTO arsip (
-                kode, nama_barang, jenis, kategori, lokasi,
-                tanggal, foto, nama_pelapor, no_telp, email,
-                status, tanggal_arsip, tanggal_inactive
-            ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-        """, (
-            kode,
-            data.get("nama_barang") or "-",   # Nama barang dari penemuan
-            "klaim",
-            data.get("kategori_penemuan") or "-", # Kategori dari penemuan
-            data.get("lokasi_penemuan") or "-",        # Lokasi dari penemuan
-            tanggal_asli,
-            data.get("foto_penemuan") or "-",          # Foto dari penemuan
-            data.get("nama_pelapor") or data.get("nama_pengklaim") or "-",
-            data.get("no_telp") or "-",
-            data.get("email") or "-",
-            data.get("status"),
-            tanggal_arsip,
-            tanggal_inactive
-        ))
-    else:
-        cur.execute("""
-            INSERT INTO arsip (
-                kode, nama_barang, jenis, kategori, lokasi,
-                tanggal, foto, nama_pelapor, no_telp, email,
-                status, tanggal_arsip, tanggal_inactive
-            ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-        """, (
-            kode,
-            data.get("nama_barang"),
-            jenis_tabel,
-            data.get("kategori") or "-",
-            data.get("lokasi") or data.get("lokasi_kehilangan"),
-            tanggal_asli,
-            data.get("foto") or data.get("gambar_barang"),
-            data.get("nama_pelapor"),
-            data.get("no_telp"),
-            data.get("email"),
-            data.get("status"),
-            tanggal_arsip,
-            tanggal_inactive
-        ))
+    # ======================
+    cur.execute("""
+        INSERT INTO arsip (
+            kode, nama_barang, jenis, kategori, lokasi,
+            tanggal, foto, nama_pelapor, no_telp, email,
+            status, tanggal_arsip, tanggal_inactive
+        ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+    """, (
+        kode,
+        data.get("nama_barang") or "-",
+        "klaim" if jenis_tabel in ("klaim", "klaim_barang") else jenis_tabel,
+        data.get("kategori") or "-",
+        data.get("lokasi") or data.get("lokasi_kehilangan") or "-",
+        tanggal_asli,
+        data.get("gambar_barang") or data.get("foto") or "-",
+        data.get("nama_pelapor") or data.get("nama_pengklaim") or "-",
+        data.get("no_telp") or "-",
+        data.get("email") or "-",
+        data.get("status"),
+        tanggal_arsip,
+        tanggal_inactive
+    ))
 
-    # ============================
-    # HAPUS DARI TABEL ASAL
-    # ============================
+    # ======================
+    # TANDAI SEBAGAI ARSIP
+    # ======================
     if jenis_tabel == "kehilangan":
-        cur.execute("DELETE FROM kehilangan WHERE kode_kehilangan=%s", (kode,))
+        cur.execute(
+            "UPDATE kehilangan SET is_arsip=1 WHERE kode_kehilangan=%s",
+            (kode,)
+        )
     elif jenis_tabel == "penemuan":
-        cur.execute("DELETE FROM penemuan WHERE kode_barang=%s", (kode,))
+        cur.execute(
+            "UPDATE penemuan SET is_arsip=1 WHERE kode_barang=%s",
+            (kode,)
+        )
     else:
-        cur.execute("DELETE FROM klaim_barang WHERE kode_laporan=%s", (kode,))
+        cur.execute(
+            "UPDATE klaim_barang SET is_arsip=1 WHERE kode_laporan=%s",
+            (kode,)
+        )
 
     db.commit()
     cur.close()
