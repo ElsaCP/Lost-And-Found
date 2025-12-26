@@ -21,11 +21,18 @@ from extensions import db, mail
 from flask_mail import Message
 from config import Config
 from sqlalchemy import text
-from utils.email import kirim_email_verifikasi
+from PIL import Image
+import io
 import os
 import mysql.connector
 import hmac
 import hashlib
+
+MAX_SIZE_MB = 5
+MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024
+
+ALLOWED_IMAGE_EXT = {"jpg", "jpeg", "png", "webp"}
+ALLOWED_PDF_EXT = {"pdf"}
 
 
 main = Blueprint('main', __name__)
@@ -38,6 +45,72 @@ def get_db_connection():
         database="lostfound"
     )
 SIGN_SECRET = Config.SIGN_SECRET
+
+def compress_image(file_storage, output_path):
+    img = Image.open(file_storage)
+
+    # Convert ke RGB (wajib untuk JPEG)
+    if img.mode in ("RGBA", "P"):
+        img = img.convert("RGB")
+
+    quality = 85
+    buffer = io.BytesIO()
+
+    while True:
+        buffer.seek(0)
+        buffer.truncate(0)
+
+        img.save(
+            buffer,
+            format="JPEG",
+            quality=quality,
+            optimize=True
+        )
+
+        if buffer.tell() <= MAX_SIZE_BYTES or quality <= 30:
+            break
+
+        quality -= 5
+
+    with open(output_path, "wb") as f:
+        f.write(buffer.getvalue())
+def simpan_foto_atau_pdf(file_obj):
+    if not file_obj or not file_obj.filename:
+        return None
+
+    ext = file_obj.filename.rsplit(".", 1)[-1].lower()
+
+    filename = datetime.now().strftime("%Y%m%d%H%M%S_") + secure_filename(file_obj.filename)
+    upload_dir = os.path.join("static", "uploads")
+    os.makedirs(upload_dir, exist_ok=True)
+    path = os.path.join(upload_dir, filename)
+
+    # 🔒 Cek ukuran awal (anti file ekstrem)
+    file_obj.seek(0, os.SEEK_END)
+    size_awal = file_obj.tell()
+    file_obj.seek(0)
+
+    if size_awal > 10 * 1024 * 1024:
+        raise Exception("Ukuran file terlalu besar (maks 10 MB sebelum diproses)")
+
+    # =====================
+    # 📷 FOTO → KOMPRES
+    # =====================
+    if ext in ALLOWED_IMAGE_EXT:
+        compress_image(file_obj, path)
+
+    # =====================
+    # 📄 PDF → SIMPAN
+    # =====================
+    elif ext in ALLOWED_PDF_EXT:
+        if size_awal > MAX_SIZE_BYTES:
+            raise Exception("Ukuran PDF maksimal 5 MB")
+        file_obj.save(path)
+
+    else:
+        raise Exception("Format file harus JPG / PNG / WEBP / PDF")
+
+    return filename
 
 @main.route('/')
 def home():
@@ -659,16 +732,18 @@ def submit_kehilangan():
         if tempat == "Lainnya" and lokasi_lain:
             lokasi = f"{terminal} - {lokasi_lain}"
         else:
-            lokasi = f"{terminal} - {tempat}"
-
-        # === Simpan foto ===
+            lokasi = f"{terminal} - {tempat}" # === Simpan foto kehilangan (AUTO KOMPRES ≤ 5 MB) ===
         foto = request.files.get("foto")
         foto_filename = None
+
         if foto and foto.filename:
-            foto_filename = datetime.now().strftime("%Y%m%d%H%M%S_") + foto.filename
-            upload_path = os.path.join("static", "uploads", foto_filename)
-            os.makedirs(os.path.dirname(upload_path), exist_ok=True)
-            foto.save(upload_path)
+            try:
+                foto_filename = simpan_foto_atau_pdf(foto)
+            except Exception as e:
+                return jsonify({
+                    "success": False,
+                    "message": str(e)
+                }), 400
 
         # === Format tanggal & waktu ===
         now = datetime.now()
@@ -1093,19 +1168,9 @@ def submit_klaim():
         bukti = request.files.get("fileLaporan")
         foto_barang = request.files.get("fotoBarang")
 
-        upload_dir = os.path.join("static", "uploads")
-        os.makedirs(upload_dir, exist_ok=True)
-
-        def simpan_file(file_obj):
-            if not file_obj or not file_obj.filename:
-                return None
-            filename = datetime.now().strftime("%Y%m%d%H%M%S_") + secure_filename(file_obj.filename)
-            file_obj.save(os.path.join(upload_dir, filename))
-            return filename
-
-        nama_identitas = simpan_file(identitas)
-        nama_bukti = simpan_file(bukti)
-        nama_foto = simpan_file(foto_barang)
+        nama_identitas = simpan_foto_atau_pdf(identitas)
+        nama_bukti = simpan_foto_atau_pdf(bukti)
+        nama_foto = simpan_foto_atau_pdf(foto_barang)
 
         # =========================
         # 4️⃣ GENERATE KODE KLAIM
@@ -1159,20 +1224,6 @@ def submit_klaim():
             "Barang sedang dalam proses klaim oleh pelapor",
             kode_laporan_kehilangan
         ))
-
-        # =========================
-        # 6️⃣c RIWAYAT STATUS KEHILANGAN
-        # =========================
-        cursor.execute("""
-            INSERT INTO riwayat_status
-            (kode_kehilangan, status, catatan, waktu_update)
-            VALUES (%s, %s, %s, NOW())
-        """, (
-            kode_laporan_kehilangan,
-            "Dalam Proses",
-            "Barang sedang dalam proses klaim oleh pelapor"
-        ))
-
 
         db.commit()
         cursor.close()
@@ -1502,20 +1553,10 @@ def tutup_laporan(kode_kehilangan):
     cursor.execute("""
         UPDATE kehilangan
         SET status = 'Barang Tidak Ditemukan',
-            catatan = 'Tidak ada barang yang sesuai',
+            catatan = 'Tidak ada barang yang sesuai. Laporan telah selesai',
             update_terakhir = NOW()
         WHERE kode_kehilangan = %s
     """, (kode_kehilangan,))
-
-    cursor.execute("""
-        INSERT INTO riwayat_status
-        (kode_kehilangan, status, catatan, waktu_update)
-        VALUES (%s, %s, %s, NOW())
-    """, (
-        kode_kehilangan,
-        "Barang Tidak Ditemukan",
-        "User menyatakan bukan barang miliknya"
-    ))
 
     db.commit()
     cursor.close()

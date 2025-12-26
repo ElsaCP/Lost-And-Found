@@ -69,12 +69,19 @@ function tutupPopup() {
 function kirimData() {
   popupKonfirmasi.style.display = "none";
 
+  // 🔵 TAMPILKAN LOADING
+  const loading = document.getElementById("loadingOverlay");
+  loading.style.display = "flex";
+
   fetch("/submit-kehilangan", {
     method: "POST",
     body: formDataGlobal
   })
     .then(response => response.json())
     .then(result => {
+      // 🔴 SEMBUNYIKAN LOADING
+      loading.style.display = "none";
+
       if (result.success) {
         kodeKehilanganEl.textContent = result.kode_kehilangan;
         popupSukses.style.display = "flex";
@@ -83,6 +90,7 @@ function kirimData() {
       }
     })
     .catch(err => {
+      loading.style.display = "none";
       console.error(err);
       alert("Terjadi kesalahan saat mengirim laporan!");
     });

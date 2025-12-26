@@ -41,6 +41,13 @@ document.getElementById("confirmKirim").addEventListener("click", async () => {
   const modal = bootstrap.Modal.getInstance(document.getElementById("konfirmasiModal"));
   modal.hide();
 
+  // === TAMPILKAN LOADING ===
+  const loading = document.getElementById("loadingOverlay");
+  loading.style.display = "flex";
+
+  // disable tombol supaya tidak double submit
+  document.getElementById("kirimBtn").disabled = true;
+
   const formData = new FormData();
   formData.append("nama", document.getElementById("nama").value);
   formData.append("telp", document.getElementById("telp").value);
@@ -55,20 +62,29 @@ document.getElementById("confirmKirim").addEventListener("click", async () => {
   formData.append("fotoBarang", fileInputs[2].files[0]);
 
   try {
-    const res = await fetch("/submit-klaim", { method: "POST", body: formData });
+    const res = await fetch("/submit-klaim", {
+      method: "POST",
+      body: formData
+    });
+
     const data = await res.json();
 
+    // === SEMBUNYIKAN LOADING ===
+    loading.style.display = "none";
+
     if (data.success) {
-      // === tampilkan popup sukses kustom ===
       document.getElementById("kodeLaporanText").innerText = data.kode_laporan;
-      const popup = document.getElementById("popupSukses");
-      popup.style.display = "flex";
+      document.getElementById("popupSukses").style.display = "flex";
     } else {
       alert("❌ Gagal mengirim klaim: " + data.message);
+      document.getElementById("kirimBtn").disabled = false;
     }
+
   } catch (err) {
     console.error(err);
+    loading.style.display = "none";
     alert("Terjadi kesalahan koneksi ke server.");
+    document.getElementById("kirimBtn").disabled = false;
   }
 });
 
