@@ -102,12 +102,10 @@
   </h3>
 </div>
 
-<!-- ===================== DETAIL CARD ===================== -->
 <div class="container detail-card">
 
   <div class="row">
 
-    <!-- BARANG -->
     <div class="col-md-4 text-center"
          itemprop="about"
          itemscope
@@ -122,7 +120,6 @@
       <meta itemprop="category" content="{{ laporan.kategori }}">
     </div>
 
-    <!-- INFO UTAMA -->
     <div class="col-md-8">
 
       <h4 class="fw-bold nama-barang" style="color:#0056a6;"
@@ -249,7 +246,6 @@
   {% endif %}
 </div>
 
-<!-- ===================== REKOMENDASI ===================== -->
 {% if status_laporan == 'Dalam Pencarian' %}
 <div class="container mt-5">
   <h4 class="fw-bold mb-3">Rekomendasi Barang Serupa</h4>
@@ -263,18 +259,14 @@
 </div>
 {% endif %}
 
-<!-- ===================== FOOTER ===================== -->
-  <!-- Footer -->
   <section class="footer" id="kontak">
     <footer class="footer text-white" id="kontak">
       <div class="footer-container">
         <div class="footer-top">
-          <!-- Logo di pojok kiri -->
           <div class="footer-logo">
             <img src={{ url_for('static', filename='image/logo putih.png')}} alt="InJourney Airports">
           </div>
-
-          <!-- Alamat -->
+          
           <div class="footer-address">
             <p>Jl. Juanda, Segoro Tambak, Kec. Sedati,<br>
             Kabupaten Sidoarjo, Jawa Timur 61253 - Indonesia</p>

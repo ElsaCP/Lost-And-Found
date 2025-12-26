@@ -18,7 +18,6 @@
 </head>
 
 <body>
-  <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
     <div class="container-fluid">
       <a class="navbar-brand" href="#">
@@ -30,7 +29,7 @@
       <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
         <ul class="navbar-nav align-items-center">
           <li class="nav-item"><a class="nav-link active" href="{{ url_for('main.home') }}#hero">Beranda</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('main.home') }}#listBarang">List Barang</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('main.home') }}#statistik">Statistik</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ url_for('main.home') }}#panduan">Panduan</a></li>
           <li class="nav-item"><a class="nav-link" href="#kontak">Kontak</a></li>
           <li class="nav-item ms-lg-3">
@@ -41,7 +40,6 @@
     </div>
   </nav>
 
-  <!-- Panah kiri dan logo kanan atas -->
   <div class="top-header-icons">
     <a href="javascript:history.back()" class="arrow-left">
       <i class="fa-solid fa-arrow-left"></i>
@@ -49,30 +47,24 @@
     <img src={{ url_for('static', filename='image/logo juanda 2.png')}} alt="Logo Juanda 2" class="logo-juanda2">
   </div>
 
-  <!-- Konten -->
   <section class="container page-content">
     <h2 class="text-center mb-4">Hasil Riwayat Klaim Barang</h2>
     <div id="listKlaim" class="row g-4">
-      <!-- Data klaim akan dimuat lewat JS -->
     </div>
   </section>
 
-  <!-- Footer -->
     <footer class="footer text-white" id="kontak">
       <div class="footer-container">
         <div class="footer-top">
-          <!-- Logo di pojok kiri -->
           <div class="footer-logo">
             <img src={{ url_for('static', filename='image/logo putih.png')}} alt="InJourney Airports">
           </div>
 
-          <!-- Alamat -->
           <div class="footer-address">
             <p>Jl. Juanda, Segoro Tambak, Kec. Sedati,<br>
             Kabupaten Sidoarjo, Jawa Timur 61253 - Indonesia</p>
           </div>
 
-          <!-- Kontak Center -->
           <div class="footer-contact">
             <p><strong>Contact Center :</strong> @ccinjourneyairports</p>
             <p>📞 172 &nbsp; | &nbsp; 📧 cc172@injourneyairports.id</p>

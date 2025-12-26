@@ -220,20 +220,11 @@ def download_surat_pengambilan(kode_laporan):
     cursor.close()
     db.close()
 
-    # =========================
-    # HITUNG TANGGAL MAKS
-    # =========================
     tanggal_maks = datetime.combine(tgl_pilih, datetime.min.time()) + timedelta(days=7)
 
-    # =========================
-    # FORMAT TANGGAL
-    # =========================
     tgl_klaim_str = f"{tanggal_klaim.day} {BULAN_ID[tanggal_klaim.month]} {tanggal_klaim.year}"
     tgl_maks_str = f"{tanggal_maks.day} {BULAN_ID[tanggal_maks.month]} {tanggal_maks.year}"
 
-    # =========================
-    # BUAT PDF
-    # =========================
     filename = f"surat_{tipe}_{kode_laporan}.pdf"
     path = os.path.join("static", "temp", filename)
     os.makedirs("static/temp", exist_ok=True)
@@ -270,7 +261,7 @@ def pdf_pengambilan_sendiri(path, data, tgl_klaim, tgl_maks, tipe):
     styles.add(ParagraphStyle(
         name="Isi",
         fontSize=10,
-        leading=14,          # ⬅️ antar baris lebih lega
+        leading=14,        
         spaceAfter=4
     ))
 
@@ -301,7 +292,6 @@ def pdf_pengambilan_sendiri(path, data, tgl_klaim, tgl_maks, tipe):
         leading=14
     ))
 
-    # ================= DOCUMENT =================
     doc = SimpleDocTemplate(
         path,
         pagesize=A4,
@@ -313,7 +303,6 @@ def pdf_pengambilan_sendiri(path, data, tgl_klaim, tgl_maks, tipe):
 
     el = []
 
-    # ================= HEADER =================
     el.append(Paragraph(
         "<b>PT ANGKASA PURA BANDARA INTERNASIONAL JUANDA</b>",
         styles["Judul"]
@@ -432,19 +421,18 @@ def pdf_pengambilan_sendiri(path, data, tgl_klaim, tgl_maks, tipe):
 def pdf_pengambilan_wakil(path, data, tgl_klaim, tgl_maks):
     styles = getSampleStyleSheet()
 
-    # ================= STYLES (LEGA TAPI AMAN) =================
     styles.add(ParagraphStyle(
         name="Judul",
         fontSize=10,
         alignment=TA_CENTER,
-        leading=13,      # ⬅️ agak lega
+        leading=13,     
         spaceAfter=3
     ))
 
     styles.add(ParagraphStyle(
         name="Isi",
         fontSize=10,
-        leading=13       # ⬅️ INI KUNCI: tidak mepet
+        leading=13      
     ))
 
     styles.add(ParagraphStyle(
@@ -463,10 +451,9 @@ def pdf_pengambilan_wakil(path, data, tgl_klaim, tgl_maks):
     styles.add(ParagraphStyle(
         name="NB",
         fontSize=9,
-        leading=12       # ⬅️ NB tetap nyaman dibaca
+        leading=12     
     ))
 
-    # ================= DOCUMENT =================
     doc = SimpleDocTemplate(
         path,
         pagesize=A4,
@@ -478,7 +465,6 @@ def pdf_pengambilan_wakil(path, data, tgl_klaim, tgl_maks):
 
     el = []
 
-    # ================= HEADER =================
     el.append(Paragraph(
         "<b>PT ANGKASA PURA BANDARA INTERNASIONAL JUANDA</b>",
         styles["Judul"]
@@ -489,7 +475,6 @@ def pdf_pengambilan_wakil(path, data, tgl_klaim, tgl_maks):
     ))
     el.append(Spacer(1, 5))
 
-    # ================= DATA PEMBERI KUASA =================
     el.append(Paragraph("Yang bertanda tangan di bawah ini:", styles["Isi"]))
     el.append(Spacer(1, 3))
 
@@ -714,7 +699,6 @@ def form_kehilangan():
 @main.route("/submit-kehilangan", methods=["POST"])
 def submit_kehilangan():
     try:
-        # === Ambil data dari form ===
         nama_pelapor = request.form.get("nama_pelapor")
         email = request.form.get("email")
         no_telp = request.form.get("no_telp")
@@ -732,7 +716,7 @@ def submit_kehilangan():
         if tempat == "Lainnya" and lokasi_lain:
             lokasi = f"{terminal} - {lokasi_lain}"
         else:
-            lokasi = f"{terminal} - {tempat}" # === Simpan foto kehilangan (AUTO KOMPRES ≤ 5 MB) ===
+            lokasi = f"{terminal} - {tempat}"
         foto = request.files.get("foto")
         foto_filename = None
 
@@ -745,17 +729,14 @@ def submit_kehilangan():
                     "message": str(e)
                 }), 400
 
-        # === Format tanggal & waktu ===
         now = datetime.now()
         tanggal_submit = now.date()
         waktu_submit = now.strftime("%H:%M")
         update_terakhir = now
 
-        # === Koneksi database ===
         db = get_db_connection()
         cursor = db.cursor()
 
-        # === Generate kode kehilangan ===
         cursor.execute("SELECT kode_kehilangan FROM kehilangan ORDER BY id DESC LIMIT 1")
         last_record = cursor.fetchone()
 
@@ -766,7 +747,6 @@ def submit_kehilangan():
 
         kode_kehilangan = f"LF-L{last_number:03d}"
 
-        # === Simpan ke database ===
         cursor.execute("""
             INSERT INTO kehilangan (
                 kode_kehilangan, nama_pelapor, email, no_telp, asal_negara, kota,
@@ -782,7 +762,6 @@ def submit_kehilangan():
         ))
         db.commit()
 
-        # === Simpan riwayat status ===
         cursor.execute("""
             INSERT INTO riwayat_status (kode_kehilangan, status, catatan, waktu_update)
             VALUES (%s, %s, %s, NOW())
@@ -796,11 +775,7 @@ def submit_kehilangan():
         cursor.close()
         db.close()
 
-        # =========================
-        # 📧 KIRIM EMAIL
-        # =========================
         try:
-            # Email ke USER
             msg_user = Message(
                 subject="Konfirmasi Laporan Kehilangan - Lost & Found Juanda",
                 recipients=[email]
@@ -991,16 +966,13 @@ def detail_klaim(kode_laporan):
 
 @main.route("/admin/update-status", methods=["POST"])
 def admin_update_status():
-    kode_laporan = request.form.get("kode_laporan")   # LF-Cxxx
-    status = request.form.get("status")               # Pending / Ditolak / Disetujui
+    kode_laporan = request.form.get("kode_laporan")  
+    status = request.form.get("status")            
     catatan = request.form.get("catatan") or ""
 
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
-    # =========================
-    # 1️⃣ Ambil kode_barang dari klaim
-    # =========================
     cursor.execute("""
         SELECT kode_barang
         FROM klaim_barang
@@ -1015,9 +987,6 @@ def admin_update_status():
 
     kode_barang = klaim["kode_barang"]
 
-    # =========================
-    # 2️⃣ Update status klaim
-    # =========================
     cursor.execute("""
         UPDATE klaim_barang
         SET status = %s,
@@ -1026,9 +995,6 @@ def admin_update_status():
         WHERE kode_laporan = %s
     """, (status, catatan, kode_laporan))
 
-    # =========================
-    # 3️⃣ UPDATE STATUS BARANG
-    # =========================
     if status == "Ditolak":
         cursor.execute("""
             UPDATE penemuan
@@ -1045,9 +1011,6 @@ def admin_update_status():
             WHERE kode_barang = %s
         """, (kode_barang,))
 
-    # =========================
-    # 4️⃣ Simpan riwayat
-    # =========================
     tambah_riwayat_status(kode_laporan, status, catatan)
 
     db.commit()
@@ -1400,7 +1363,6 @@ def detail_cek(kode_kehilangan):
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
-    # ====== AMBIL DATA LAPORAN KEHILANGAN ======
     cursor.execute("""
         SELECT *
         FROM kehilangan
@@ -1414,22 +1376,18 @@ def detail_cek(kode_kehilangan):
         db.close()
         return render_template("user/not_found.html"), 404
 
-    # ====== FORMAT FOTO ======
     if laporan.get("foto"):
         laporan["foto_url"] = f"/static/uploads/{laporan['foto']}"
     else:
         laporan["foto_url"] = "/static/image/no-image.png"
 
-    # ====== FORMAT TANGGAL SUBMIT (dd/mm/yyyy) ======
     try:
         laporan["tanggal_submit_fmt"] = laporan["tanggal_submit"].strftime("%d %B %Y")
     except:
         laporan["tanggal_submit_fmt"] = laporan["tanggal_submit"]
 
-    # ====== FORMAT WAKTU SUBMIT ======
     laporan["waktu_submit_fmt"] = laporan["waktu_submit"]
 
-    # ====== FORMAT UPDATE TERAKHIR ======
     try:
         laporan["update_terakhir_fmt"] = datetime.strptime(
             laporan["update_terakhir"], "%Y-%m-%d %H:%M"
@@ -1437,7 +1395,6 @@ def detail_cek(kode_kehilangan):
     except:
         laporan["update_terakhir_fmt"] = laporan["update_terakhir"]
 
-    # ====== AMBIL RIWAYAT STATUS ======
     cursor.execute("""
         SELECT status, catatan, waktu_update
         FROM riwayat_status
@@ -1464,6 +1421,7 @@ def detail_cek(kode_kehilangan):
         riwayat=riwayat,
         status_laporan=laporan["status"]
     )
+    
 @main.route("/update-status/<kode_kehilangan>", methods=["POST"])
 def update_status(kode_kehilangan):
     try:

@@ -103,10 +103,7 @@
         </div>
       </div>
 
-      <!-- KOLOM KANAN -->
       <div class="col-md-8">
-
-        <!-- Detail laporan terkini -->
         <div class="p-3 bg-light-blue rounded shadow-sm mb-3"
             itemscope
             itemtype="https://schema.org/Claim">
@@ -140,7 +137,6 @@
           </p>
         </div>
 
-        <!-- Tabel Riwayat -->
         <div class="card shadow-sm">
           <table class="table table-bordered text-center align-middle mb-0">
             <thead class="table-header-blue">
@@ -153,7 +149,7 @@
             <tbody id="tabelStatus"></tbody>
           </table>
         </div>
-                <!-- NOTIFIKASI SIAP DIAMBIL -->
+        
         {% if data.status == 'Verifikasi' %}
         <div class="alert alert-success shadow-sm mt-4">
           <h5 class="fw-bold mb-2">

@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         data.forEach(k => {
             const statusClass = (k.status_klaim || "")
                 .toLowerCase()
-                .replace(/ /g, "_");  // ubah spasi jadi underscore
+                .replace(/ /g, "_");
 
 
             const card = document.createElement("div");
