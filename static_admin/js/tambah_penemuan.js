@@ -113,15 +113,19 @@ document.addEventListener("DOMContentLoaded", () => {
     // SUBMIT
     Swal.fire({
       icon: "success",
-      title: "Menyimpan...",
+      title: "Data berhasil disimpan",
+      text: "Laporan penemuan telah ditambahkan",
       showConfirmButton: false,
-      timer: 800
+      timer: 1200
+    }).then(() => {
+      form.submit();
     });
-
-    form.submit();
   });
 
-    btnCancel.addEventListener("click", () => {
+  // =========================
+  // CANCEL
+  // =========================
+  btnCancel.addEventListener("click", () => {
     Swal.fire({
       icon: "question",
       title: "Batalkan?",
@@ -135,4 +139,5 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   });
+
 });
