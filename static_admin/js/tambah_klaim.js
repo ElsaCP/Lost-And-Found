@@ -1,19 +1,13 @@
 document.addEventListener("DOMContentLoaded", () => {
   const params = new URLSearchParams(window.location.search);
   const kode = params.get("kode_barang");
-  const fromPage = params.get("from");   // "beranda" atau null / undefined
+  const fromPage = params.get("from");  
 
-  // ==========================================
-  // SET KODE BARANG OTOMATIS KE INPUT
-  // ==========================================
   if (kode) {
     const el = document.getElementById("kodeBarang");
     if (el) el.value = kode;
   }
 
-  // ==========================================
-  // GENERATE TIMESTAMP
-  // ==========================================
   function generateTimestamp() {
     const now = new Date();
     const tgl = now.toISOString().split("T")[0];
@@ -29,10 +23,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   generateTimestamp();
 
-
-  // =====================================================
-  // 🔥 FINAL FIX — BUTTON BATAL
-  // =====================================================
   const btnBatal = document.getElementById("btnKembali");
   if (btnBatal) {
     btnBatal.addEventListener("click", () => {
@@ -48,13 +38,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (result.isConfirmed) {
 
-          // JIKA DARI MENU BERANDA
           if (fromPage === "beranda") {
             window.location.href = "/admin/beranda";
             return;
           }
 
-          // JIKA DARI PENEMUAN
           window.location.href = "/admin/penemuan/daftar";
         }
 
@@ -62,10 +50,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-
-  // =====================================================
-  // 🔥 KIRIM FORM KLAIM
-  // =====================================================
   const kirimBtn = document.getElementById("kirimBtn");
   const form = document.getElementById("klaimForm");
 
@@ -81,7 +65,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const fileIdentitas = document.querySelector('input[name="foto_identitas"]')?.files.length || 0;
       const fotoBarang = document.querySelector('input[name="foto_barang"]')?.files.length || 0;
 
-      // VALIDASI
       if (!nama || !telp || !email || !deskripsi || !kodeBarang || !fileIdentitas || !fotoBarang) {
         Swal.fire({
           icon: "warning",
@@ -102,7 +85,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (result.isConfirmed) {
 
-          // Tambahkan input hidden 'from'
           let inputFrom = document.querySelector('input[name="from"]');
           if (!inputFrom) {
             inputFrom = document.createElement("input");
@@ -111,7 +93,6 @@ document.addEventListener("DOMContentLoaded", () => {
             form.appendChild(inputFrom);
           }
 
-          // isi nilai from
           inputFrom.value = fromPage || "";
 
           form.submit();

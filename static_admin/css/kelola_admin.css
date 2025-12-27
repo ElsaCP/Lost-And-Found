@@ -1,4 +1,3 @@
-/* RESET GLOBAL */
 * {
   margin: 0;
   padding: 0;
@@ -11,9 +10,6 @@ body {
   background: #f8f8f8;
 }
 
-/* ======================
-   SIDEBAR (FULL FIX)
-   ====================== */
 .sidebar {
   position: fixed;
   top: 0;
@@ -30,7 +26,6 @@ body {
   z-index: 9999;
 }
 
-/* Logo sidebar */
 .logo-wrapper {
   position: relative;
   display: flex;
@@ -53,11 +48,10 @@ body {
   width: 100px;
 }
 
-/* Nav */
 .sidebar nav {
   display: flex;
   flex-direction: column;
-  margin-top: 40px !important; /* diperbaiki */
+  margin-top: 40px !important; 
 }
 
 .sidebar nav a {
@@ -80,7 +74,6 @@ body {
   font-weight: 600;
 }
 
-/* Submenu */
 .submenu {
   margin-left: 20px;
   margin-top: -5px;
@@ -110,7 +103,6 @@ body {
   font-weight: 700;
 }
 
-/* Logout */
 .sidebar .logout {
   margin-top: auto;
   background: #004a93;
@@ -130,10 +122,10 @@ body {
 }
 
 .header {
-  position: fixed;          /* stay */
-  top: 20px;                /* kunci supaya tidak naik melebihi desain */
-  left: 193px;              /* geser supaya sejajar sidebar */
-  right: 40px;              /* mengikuti margin sisi kananmu */
+  position: fixed;         
+  top: 20px;               
+  left: 193px;              
+  right: 40px;          
 
   z-index: 9998;
   background: #0056a6;
@@ -144,12 +136,11 @@ body {
   justify-content: space-between;
 
   padding: 0px 20px;
-  margin: -20px -40px 20px -40px; /* BIARKAN */
+  margin: -20px -40px 20px -40px; 
 
   border-radius: 0;
 }
 
-/* Logo header */
 .header .logo-wrapper {
   position: relative;
   display: flex;
@@ -170,7 +161,6 @@ body {
   width: auto;
 }
 
-/* Title tengah */
 .header h2 {
   position: absolute;
   left: 50%;
@@ -179,7 +169,7 @@ body {
   color: white;
   font-weight: 600;
 }
-/* Profil kanan */
+
 .profile-icon {
   width: 45px;
   height: 45px;
@@ -198,7 +188,6 @@ body {
   object-fit: cover;
 }
 
-/* ================= CONTENT ================= */
 .content {
   flex: 1;
   margin-left: 193px;
@@ -206,7 +195,6 @@ body {
   padding: 40px 50px;
 }
 
-/* Title + Tambah Admin */
 .top-action {
   display: flex;
   justify-content: space-between;
@@ -238,7 +226,6 @@ body {
   background: #003c7a;
 }
 
-/* ================= TABLE ================= */
 .table-wrapper {
   background: #fff;
   border-radius: 12px;
@@ -270,7 +257,6 @@ body {
   background: #f2f2f2;
 }
 
-/* Chip role */
 .chip {
   padding: 6px 14px;
   border-radius: 20px;
@@ -283,7 +269,6 @@ body {
 .chip.admin { background: #007bff; }
 .chip.super { background: #d9534f; }
 
-/* Aksi */
 .aksi {
   display: flex;
   justify-content: center;
@@ -298,7 +283,6 @@ body {
   transform: scale(1.15);
 }
 
-/* Hilangkan kotak pada ikon delete */
 .btn-delete {
   background: none !important;
   border: none !important;

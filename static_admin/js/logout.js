@@ -1,9 +1,4 @@
-// ===============================
-// === logout.js GLOBAL =========
-// ===============================
-
 document.addEventListener("DOMContentLoaded", function () {
-  // tunggu DOM siap
   const logoutLink = document.querySelector(".logout");
 
   if (!logoutLink) {
@@ -12,9 +7,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   logoutLink.addEventListener("click", function (event) {
-    event.preventDefault(); // cegah langsung ke link
-
-    // 🔹 Konfirmasi logout
+    event.preventDefault(); 
     Swal.fire({
       title: "Keluar dari Sistem?",
       text: "Apakah kamu yakin ingin logout sekarang?",
@@ -28,7 +21,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }).then((result) => {
       if (!result.isConfirmed) return;
 
-      // 🔹 Notifikasi sukses
       Swal.fire({
         icon: "success",
         title: "Berhasil Keluar!",
@@ -37,8 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
         timer: 1200,
         didOpen: () => Swal.showLoading(),
         willClose: () => {
-          // 🔹 arahkan ke route logout
-          window.location.href = "/admin/logout"; // hardcode route logout
+          window.location.href = "/admin/logout"; 
         }
       });
     });

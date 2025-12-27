@@ -502,19 +502,12 @@ input[readonly] {
   word-break: break-word;
 }
 
-/* ===============================
-   FIX ALIGNMENT LOKASI & DESKRIPSI
-   (tanpa ubah layout lain)
-   =============================== */
-
-/* Paksa semua baris data top-aligned */
 .data-row,
 .form-row,
 #lokasiLainContainer {
   align-items: flex-start !important;
 }
 
-/* Samakan kolom label (kiri) */
 .data-row span,
 .data-row label,
 #lokasiLainContainer label {
@@ -523,7 +516,6 @@ input[readonly] {
   line-height: 1.4;
 }
 
-/* Samakan kolom isi (kanan) */
 .data-row strong,
 .data-row input,
 .data-row textarea,
@@ -533,7 +525,6 @@ input[readonly] {
   max-width: 520px;
 }
 
-/* Khusus deskripsi: pastikan selalu rapi walau teks panjang */
 .data-row.deskripsi {
   align-items: flex-start;
 }
@@ -544,7 +535,6 @@ input[readonly] {
   word-break: break-word;
 }
 
-/* Biar textarea / input tinggi tidak tarik baris lain */
 .data-row textarea {
   resize: vertical;
   min-height: 60px;

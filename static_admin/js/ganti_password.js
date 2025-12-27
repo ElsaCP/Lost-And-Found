@@ -3,13 +3,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (form) {
     form.addEventListener("submit", async (e) => {
-      e.preventDefault(); // cegah reload halaman
+      e.preventDefault(); 
 
       const oldPassword = document.getElementById("oldPassword").value.trim();
       const newPassword = document.getElementById("newPassword").value.trim();
       const confirmPassword = document.getElementById("confirmPassword").value.trim();
 
-      // Validasi sederhana
       if (!oldPassword || !newPassword || !confirmPassword) {
         Swal.fire("Error", "Semua kolom harus diisi!", "error");
         return;
@@ -25,7 +24,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      // Kirim POST via fetch
       try {
         const response = await fetch(form.action, {
           method: "POST",
@@ -41,7 +39,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (response.ok && data.status === "success") {
           Swal.fire("Berhasil", data.message, "success").then(() => {
-            // Redirect ke halaman pengaturan setelah klik OK
             window.location.href = "/admin/pengaturan";
           });
           form.reset();
@@ -56,7 +53,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Tombol batal
   const btnCancel = document.querySelector(".btn-cancel");
   if (btnCancel) {
     btnCancel.addEventListener("click", () => {

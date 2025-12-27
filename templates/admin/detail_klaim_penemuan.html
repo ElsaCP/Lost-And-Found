@@ -60,15 +60,11 @@
         </div>
     </div>
 
-<!-- ======================= WRAPPER DETAIL ======================= -->
 <div class="detail-wrapper detail-container">
   <div class="detail-flex">
 
-    <!-- BAGIAN KIRI -->
     <div class="detail-right">
 
-        <!-- FOTO BARANG HASIL PENEMUAN -->
-        <div class="pdf-page pdf-page-1">
         <div class="data-section">
             <h3>Foto Barang (Hasil Penemuan)</h3>
             <img id="imgFotoBarangPenemuan" class="foto-barang zoomable" style="width:230px; border:1px solid #000;">
@@ -76,7 +72,6 @@
 
         <div class="kode-barang-label" id="kodeBarang"></div>
 
-        <!-- DATA PENGKLAIM -->
         <div class="data-section">
             <h3>Data Pengklaim</h3>
 
@@ -96,7 +91,6 @@
             </div>
         </div>
 
-        <!-- INFORMASI KLAIM -->
         <div class="data-section">
             <h3>Informasi Klaim</h3>
 
@@ -121,27 +115,23 @@
             </div>
         </div>
 
-        <!-- IDENTITAS DIRI -->
         <div class="data-section">
             <h3>Identitas Diri</h3>
             <img id="imgIdentitas" class="foto-barang zoomable" style="width:230px; border:1px solid #000;">
         </div>
         </div>
 
-        <!-- BUKTI LAPORAN -->
         <div class="pdf-page pdf-page-2">
         <div class="data-section">
             <h3>Bukti Laporan Kehilangan</h3>
             <img id="imgBukti" class="foto-barang zoomable" style="width:230px; border:1px solid #000;">
         </div>
 
-        <!-- FOTO BARANG SEBELUM HILANG -->
         <div class="data-section">
             <h3>Foto Barang Sebelum Hilang</h3>
             <img id="imgFotoBarangSebelum" class="foto-barang zoomable" style="width:230px; border:1px solid #000;">
         </div>
 
-        <!-- WAKTU & STATUS -->
         <div class="data-section">
             <h3>Waktu & Status</h3>
 
@@ -176,7 +166,6 @@
                 <textarea id="catatanAdmin" style="height:90px;"></textarea>
             </div>
 
-           <!-- SURAT PENGAMBILAN -->
           <div class="data-section">
             <h3>Surat Pengambilan</h3>
 
@@ -189,7 +178,6 @@
             </div>
           </div>
 
-        <!-- BUTTON -->
         <div class="button-group no-print">
             <button onclick="window.location.href='{{ url_for('admin_bp.beranda_admin') if request.args.get('from') == 'beranda' else url_for('admin_bp.daftar_klaim_penemuan') }}'" 
                     id="btnKembali" 
@@ -203,12 +191,11 @@
             </button>
         </div>
 
-    </div> <!-- end detail-right -->
+    </div> 
 
-  </div> <!-- end detail-flex -->
-</div> <!-- end wrapper -->
+  </div> 
+</div> 
 
-<!-- LIGHTBOX -->
 <div id="lightbox">
     <span class="lightbox-close">&times;</span>
     <img id="lightbox-img" class="lightbox-img">

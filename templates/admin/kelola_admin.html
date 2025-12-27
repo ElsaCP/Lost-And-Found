@@ -11,8 +11,6 @@
 </head>
 
 <body class="page-pengaturan">
-
-<!-- ================= SIDEBAR ================= -->
 <aside class="sidebar short-sidebar">
   <div class="logo-wrapper">
     <img src="{{ url_for('admin_bp.static', filename='image/rectangle.png')}}" class="rectangle-bg">
@@ -95,7 +93,6 @@
                 <i class="bi bi-pencil"></i></a>
 
               {% if a.role != 'super_admin' %}
-              <!-- FORM DELETE ADMIN -->
               <form onsubmit="return hapusAdmin(event, this)" 
                     action="{{ url_for('admin_bp.delete_admin', id=a.id) }}" 
                     method="post" style="display:inline">
@@ -117,7 +114,7 @@
 
 <script>
 async function hapusAdmin(event, form) {
-    event.preventDefault(); // hentikan submit default
+    event.preventDefault(); 
 
     Swal.fire({
         title: "Hapus Admin?",
@@ -151,6 +148,7 @@ async function hapusAdmin(event, form) {
 
     return false;
 }
+/*jsnya blm dipisah*/
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

@@ -1,8 +1,5 @@
 document.addEventListener("DOMContentLoaded", async function () {
 
-    // ============================
-    // AMBIL KODE KLAIM DARI URL
-    // ============================
     const pathParts = window.location.pathname.split("/");
     const kode = pathParts[pathParts.length - 1];
 
@@ -11,9 +8,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         return;
     }
 
-    // ============================
-    // FETCH DATA DARI API
-    // ============================
     try {
         const response = await fetch(`/admin/penemuan/klaim/api?kode=${kode}`);
         const json = await response.json();
@@ -24,16 +18,11 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
         const klaim = json.data;
-
-        // ============================
-        // SURAT PENGAMBILAN (FINAL UX – AMAN)
-        // ============================
         const suratBox = document.getElementById("suratPengambilanBox");
         const alertKosong = document.getElementById("alertSuratKosong");
 
         if (suratBox) {
 
-            // 🔥 PENTING: surat BUKAN gambar → jangan ikut zoom
             suratBox.classList.remove("zoomable");
 
             const surat = klaim.surat_pengambilan;
@@ -73,9 +62,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
         }
 
-        // ============================
-        // === ISI DATA KE HALAMAN (DATA LAMA)
-        // ============================
         document.getElementById("kodeLaporan").textContent = klaim.kode_laporan ?? "-";
         document.getElementById("kodeBarang").textContent = klaim.kode_barang ?? "-";
         document.getElementById("kodeLaporanKehilangan").textContent = klaim.kode_laporan_kehilangan ?? "-";
@@ -90,9 +76,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         document.getElementById("waktuLapor").textContent = klaim.waktu_lapor ?? "-";
         document.getElementById("updateTerakhir").textContent = klaim.update_terakhir ?? "-";
 
-        // ============================
-        // GAMBAR
-        // ============================
         document.getElementById("imgFotoBarangPenemuan").src =
             klaim.foto_barang_penemuan ? `/static/uploads/${klaim.foto_barang_penemuan}` : "/static/no-image.png";
 
@@ -105,28 +88,20 @@ document.addEventListener("DOMContentLoaded", async function () {
         document.getElementById("imgIdentitas").src =
             klaim.identitas_diri ? `/static/uploads/${klaim.identitas_diri}` : "/static/no-image.png";
 
-        // STATUS
         document.getElementById("statusSelect").value = klaim.status ?? "Pending";
 
-        // CATATAN
         document.getElementById("catatanAdmin").value = klaim.catatan_admin ?? "";
 
     } catch (error) {
         console.error("Gagal memuat data klaim:", error);
     }
 
-    // ============================
-    // TOMBOL KEMBALI (TIDAK DIUBAH)
-    // ============================
     document.getElementById("btnKembali").addEventListener("click", () => {
         const from = new URLSearchParams(window.location.search).get("from");
         window.location.href =
             from === "beranda" ? "/admin/beranda" : "/admin/penemuan/klaim";
     });
 
-    // ============================
-    // UPDATE DATA (TIDAK DIUBAH)
-    // ============================
     document.getElementById("btnUpdate").addEventListener("click", async () => {
 
         const status = document.getElementById("statusSelect").value;
@@ -178,9 +153,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         });
     });
 
-    // ============================
-    // LIGHTBOX / ZOOM GAMBAR (HANYA IMG)
-    // ============================
     const zoomImgs = document.querySelectorAll("img.zoomable");
     const lightbox = document.getElementById("lightbox");
     const lightboxImg = document.getElementById("lightbox-img");
@@ -206,9 +178,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     };
 
-    // ============================
-    // EXPORT PDF (TIDAK DIUBAH SAMA SEKALI)
-    // ============================
     const btnExport = document.getElementById("btnExport");
 
     if (btnExport) {

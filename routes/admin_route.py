@@ -54,7 +54,6 @@ def login_admin():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    # 🔥 AMBIL BERDASARKAN EMAIL SAJA
     cursor.execute("""
         SELECT id, full_name, email, phone, role, password
         FROM admin
@@ -65,7 +64,6 @@ def login_admin():
     cursor.close()
     conn.close()
 
-    # 🔐 CEK PASSWORD HASH
     if admin and check_password_hash(admin['password'], password):
         session['admin_logged_in'] = True
         session['admin_email'] = admin['email']
@@ -169,11 +167,9 @@ def format_bulan_indonesia(bulan_str):
 def compress_image(file, output_path, max_size=(1280, 1280), quality=70):
     image = Image.open(file)
 
-    # PNG / RGBA → RGB
     if image.mode in ("RGBA", "P"):
         image = image.convert("RGB")
 
-    # resize proporsional
     image.thumbnail(max_size)
 
     image.save(output_path, format="JPEG", quality=quality, optimize=True)
@@ -183,11 +179,10 @@ def export_pdf():
     if not session.get('admin_logged_in'):
         return redirect(url_for('admin_bp.login_admin'))
 
-    bulan = request.args.get('bulan')  # format: YYYY-MM
+    bulan = request.args.get('bulan')  
     if not bulan:
         return "Bulan tidak valid", 400
 
-    # 🔧 FORMAT BULAN UNTUK JUDUL & FILE
     bulan_label = format_bulan_indonesia(bulan)
 
     conn = get_db_connection()
@@ -238,7 +233,6 @@ def export_pdf():
     doc = SimpleDocTemplate(buffer, pagesize=A4)
     styles = getSampleStyleSheet()
 
-    # 🔧 JUDUL PDF (SUDAH RAPI)
     elements = [
         Paragraph(f"<b>Rekapan Laporan Bulan {bulan_label}</b>", styles['Title'])
     ]
@@ -268,7 +262,6 @@ def export_pdf():
     return send_file(
         buffer,
         as_attachment=True,
-        # 🔧 NAMA FILE PDF
         download_name=f"rekap_laporan_{bulan_label.replace(' ', '_').lower()}.pdf",
         mimetype="application/pdf"
     )
@@ -387,7 +380,6 @@ def export_kehilangan_pdf():
     doc = SimpleDocTemplate(buffer, pagesize=A4)
     styles = getSampleStyleSheet()
 
-    # ✅ JUDUL FIX
     elements = [
         Paragraph(
             f"<b>Laporan Kehilangan Bulan {bulan_label}</b>",
@@ -395,14 +387,13 @@ def export_kehilangan_pdf():
         )
     ]
 
-    # ✅ TAMBAH KOLOM JENIS LAPORAN
     table_data = [["Kode", "Nama Barang", "Jenis Laporan", "Status", "Tanggal"]]
 
     for d in data:
         table_data.append([
             d['kode'],
             d['nama_barang'],
-            "Kehilangan",          # ⬅️ jenis laporan
+            "Kehilangan",         
             d['status'],
             d['tanggal']
         ])
@@ -421,7 +412,6 @@ def export_kehilangan_pdf():
     return send_file(
         buffer,
         as_attachment=True,
-        # ✅ NAMA FILE FIX
         download_name=f"laporan_kehilangan_{bulan_label.replace(' ', '_').lower()}.pdf",
         mimetype="application/pdf"
     )
@@ -459,14 +449,13 @@ def export_kehilangan_excel():
     ws = wb.active
     ws.title = "Laporan Kehilangan"
 
-    # ✅ HEADER EXCEL
     ws.append(["Kode", "Nama Barang", "Jenis Laporan", "Status", "Tanggal"])
 
     for d in data:
         ws.append([
             d['kode'],
             d['nama_barang'],
-            "Kehilangan",      # ⬅️ jenis laporan
+            "Kehilangan",      
             d['status'],
             d['tanggal']
         ])
@@ -478,7 +467,6 @@ def export_kehilangan_excel():
     return send_file(
         output,
         as_attachment=True,
-        # ✅ NAMA FILE FIX
         download_name=f"laporan_kehilangan_{bulan_label.replace(' ', '_').lower()}.xlsx",
         mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
@@ -523,7 +511,6 @@ def export_penemuan_pdf():
         )
     ]
 
-    # ✅ KOLOM JENIS LAPORAN
     table_data = [["Kode", "Nama Barang", "Jenis Laporan", "Status", "Tanggal"]]
 
     for d in data:
@@ -627,7 +614,6 @@ def hapus_laporan():
         if jenis == "kehilangan":
             cursor.execute("DELETE FROM kehilangan WHERE kode_kehilangan=%s", (kode,))
         elif jenis == "penemuan":
-            # Hapus foto terkait jika ada
             cursor.execute("SELECT gambar_barang FROM penemuan WHERE kode_barang=%s", (kode,))
             result = cursor.fetchone()
             if result and result[0]:
@@ -693,9 +679,6 @@ def tambah_kehilangan():
             kode_baru=kode_baru
         )
 
-    # =========================
-    # AMBIL DATA FORM
-    # =========================
     kode_kehilangan = request.form.get('kode_kehilangan')
     nama_pelapor = request.form.get('nama_pelapor', '').strip()
     email = request.form.get('email', '').strip()
@@ -722,9 +705,6 @@ def tambah_kehilangan():
         conn.close()
         return "Error: Semua field wajib diisi.", 400
 
-    # =========================
-    # UPLOAD + COMPRESS FOTO
-    # =========================
     foto = request.files.get('foto')
     foto_filename = None
     MAX_MB = 5
@@ -742,14 +722,10 @@ def tambah_kehilangan():
         save_path = os.path.join(upload_folder, foto_filename)
 
         if file_size > MAX_MB * 1024 * 1024:
-            # 🔥 kompres otomatis
             compress_image(foto, save_path)
         else:
             foto.save(save_path)
 
-    # =========================
-    # SIMPAN KE DATABASE
-    # =========================
     now = datetime.now()
     tanggal_submit = now.strftime("%Y-%m-%d")
     waktu_submit = now.strftime("%H:%M")
@@ -823,9 +799,6 @@ def detail_kehilangan():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    # =========================
-    # Ambil data kehilangan
-    # =========================
     cursor.execute(
         "SELECT * FROM kehilangan WHERE kode_kehilangan = %s AND is_arsip = 0",
         (kode_kehilangan,)
@@ -837,16 +810,10 @@ def detail_kehilangan():
         conn.close()
         return "Data tidak ditemukan", 404
 
-    # =========================
-    # Filter H-1, H, H+1
-    # =========================
     tanggal = laporan['tanggal_kehilangan']
     h_min_1 = tanggal - timedelta(days=1)
     h_plus_1 = tanggal + timedelta(days=1)
 
-    # =========================
-    # Ambil penemuan SERUPA
-    # =========================
     cursor.execute("""
         SELECT 
             id,
@@ -861,9 +828,6 @@ def detail_kehilangan():
     """, (h_min_1, h_plus_1))
     foto_penemuan = cursor.fetchall()
 
-    # =========================
-    # Ambil rekomendasi yang sudah ada
-    # =========================
     cursor.execute("""
         SELECT kode_penemuan
         FROM rekomendasi_penemuan
@@ -965,16 +929,13 @@ Admin Lost & Found Juanda
     except Exception as e:
         print("❌ GAGAL KIRIM EMAIL:", e)
 
-# ======================
-# 🔄 API: Update Status Kehilangan
-# ======================
 @admin_bp.route('/api/kehilangan/update_status', methods=['POST'])
 def update_status_kehilangan():
     data = request.get_json()
 
     kode = data.get('kode')
     status_baru = data.get('status')
-    catatan = data.get('catatan', '')  # ✅ CATATAN ADMIN
+    catatan = data.get('catatan', '')  
 
     if not kode or not status_baru:
         return jsonify({'success': False, 'message': 'Data tidak lengkap!'}), 400
@@ -982,7 +943,6 @@ def update_status_kehilangan():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    # 1️⃣ Ambil data lama
     cursor.execute("""
         SELECT status, email, nama_pelapor
         FROM kehilangan
@@ -1001,7 +961,6 @@ def update_status_kehilangan():
 
     waktu_update = datetime.now().strftime("%Y-%m-%d %H:%M")
 
-    # 2️⃣ UPDATE STATUS + CATATAN
     cursor.execute("""
         UPDATE kehilangan
         SET status = %s,
@@ -1010,7 +969,6 @@ def update_status_kehilangan():
         WHERE kode_kehilangan = %s
     """, (status_baru, catatan, waktu_update, kode))
 
-    # 3️⃣ SIMPAN RIWAYAT STATUS (hanya jika berbeda)
     cursor.execute("""
         SELECT status, catatan
         FROM riwayat_status
@@ -1029,14 +987,12 @@ def update_status_kehilangan():
 
     conn.commit()
 
-    # 4️⃣ PINDAHKAN KE ARSIP JIKA SELESAI
     if status_baru == "Selesai":
         pindahkan_ke_arsip(kode, "kehilangan")
 
     cursor.close()
     conn.close()
 
-    # 5️⃣ KIRIM EMAIL JIKA BARU VERIFIKASI
     if status_baru == "Verifikasi" and status_lama != "Verifikasi":
         kirim_email_verifikasi(email_user, nama_pelapor, kode)
 
@@ -1046,9 +1002,6 @@ def update_status_kehilangan():
         'update_terakhir': waktu_update
     })
 
-    # ============================
-    # 🗑 API DELETE - By Kode
-    # ============================
 @admin_bp.route('/api/kehilangan/delete', methods=['POST'])
 def api_hapus_kehilangan():
     data = request.get_json()
@@ -1074,7 +1027,7 @@ def edit_kehilangan():
         return redirect(url_for('admin_bp.login_admin'))
 
     kode_kehilangan = request.args.get('kode')
-    from_page = request.args.get('from', '')   # ⬅⬅ AMBIL ASAL HALAMAN SELALU
+    from_page = request.args.get('from', '')   
 
     if not kode_kehilangan:
         return "Kode kehilangan tidak ditemukan", 400
@@ -1169,16 +1122,12 @@ def edit_kehilangan():
             print("❌ Error saat update kehilangan:", e)
             return f"Terjadi kesalahan: {e}", 500
 
-# ======================
-# 🗑️ ROUTE: Hapus Data Kehilangan
-# ======================
 @admin_bp.route('/kehilangan/hapus/<int:id>', methods=['GET'])
 def hapus_kehilangan(id):
     conn = get_db_connection()
     cursor = conn.cursor()
 
     try:
-        # Hapus data berdasarkan ID
         cursor.execute("DELETE FROM kehilangan WHERE id = %s", (id,))
         conn.commit()
         print(f"✅ Data kehilangan dengan ID {id} berhasil dihapus.")
@@ -1188,7 +1137,6 @@ def hapus_kehilangan(id):
         cursor.close()
         conn.close()
 
-    # Kembali ke daftar kehilangan setelah hapus
     return redirect(url_for('admin_bp.daftar_kehilangan'))
 
 
@@ -1221,18 +1169,12 @@ def tambah_penemuan():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True, buffered=True)
 
-    # =========================
-    # GET
-    # =========================
     if request.method == 'GET':
         kode_baru = generate_kode_penemuan(cursor)
         cursor.close()
         conn.close()
         return render_template('tambah_penemuan.html', kode_baru=kode_baru)
 
-    # =========================
-    # POST
-    # =========================
     nama_pelapor   = request.form.get('nama_pelapor', '').strip()
     no_telp        = request.form.get('no_telp', '').strip()
     email          = request.form.get('email', '').strip()
@@ -1248,17 +1190,11 @@ def tambah_penemuan():
     status_barang  = request.form.get('status_barang', 'Tersedia')
     jenis_barang   = request.form.get('jenis_barang', 'Publik')
 
-    # =========================
-    # VALIDASI WAJIB
-    # =========================
     if not all([kode_barang, nama_pelapor, nama_barang, kategori, lokasi, tanggal_lapor]):
         cursor.close()
         conn.close()
         return "Data wajib tidak boleh kosong!", 400
 
-    # =========================
-    # UPLOAD + COMPRESS FOTO
-    # =========================
     foto = request.files.get('foto')
     foto_filename = None
     MAX_MB = 5
@@ -1276,14 +1212,10 @@ def tambah_penemuan():
         save_path = os.path.join(upload_folder, foto_filename)
 
         if file_size > MAX_MB * 1024 * 1024:
-            # 🔥 kompres otomatis
             compress_image(foto, save_path)
         else:
             foto.save(save_path)
 
-    # =========================
-    # INSERT DATABASE
-    # =========================
     try:
         cursor.execute("""
             INSERT INTO penemuan (
@@ -1341,8 +1273,8 @@ def update_status_penemuan():
     data = request.get_json()
 
     kode = data.get('kode')
-    status_baru = data.get('status')            # boleh None
-    status_barang = data.get('status_barang')   # boleh None
+    status_baru = data.get('status')            
+    status_barang = data.get('status_barang')  
 
     if not kode:
         return jsonify({
@@ -1382,9 +1314,6 @@ def update_status_penemuan():
                 "message": "Kode tidak ditemukan"
             }), 404
 
-        # ================================
-        # PINDAHKAN KE ARSIP OTOMATIS
-        # ================================
         if status_baru == "Selesai":
             pindahkan_ke_arsip(kode, "penemuan")
 
@@ -1411,9 +1340,6 @@ def tambah_klaim_penemuan():
 
     MAX_MB = 5
 
-    # =====================================================
-    # GET
-    # =====================================================
     if request.method == "GET":
         kode_barang = request.args.get("kode_barang")
         from_page = request.args.get("from")
@@ -1436,9 +1362,6 @@ def tambah_klaim_penemuan():
             from_page=from_page
         )
 
-    # =====================================================
-    # POST
-    # =====================================================
     nama_pelapor = request.form.get("nama", "").strip()
     no_telp = request.form.get("telp", "").strip()
     email = request.form.get("email", "").strip()
@@ -1456,9 +1379,6 @@ def tambah_klaim_penemuan():
 
     kode_baru = generate_kode_klaim(cursor)
 
-    # =====================================================
-    # UPLOAD + COMPRESS (static/uploads)
-    # =====================================================
     def allowed_file(filename):
         return filename.lower().endswith(('.jpg', '.jpeg', '.png'))
 
@@ -1491,18 +1411,12 @@ def tambah_klaim_penemuan():
     path_foto = simpan_file(request.files.get("foto_barang"))
     path_bukti = simpan_file(request.files.get("bukti_laporan"))
 
-    # =====================================================
-    # VALIDASI
-    # =====================================================
     if not all([nama_pelapor, no_telp, email, deskripsi_khusus, kode_barang, path_identitas, path_foto]):
         flash("Data belum lengkap atau file tidak valid.", "warning")
         cursor.close()
         conn.close()
         return redirect(request.url)
 
-    # =====================================================
-    # INSERT DB
-    # =====================================================
     try:
         cursor.execute("""
             INSERT INTO klaim_barang (
@@ -1546,9 +1460,6 @@ def edit_penemuan():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    # =========================
-    # GET
-    # =========================
     if request.method == 'GET':
         cursor.execute("SELECT * FROM penemuan WHERE kode_barang=%s", (kode,))
         laporan = cursor.fetchone()
@@ -1564,9 +1475,6 @@ def edit_penemuan():
             from_page=from_page
         )
 
-    # =========================
-    # POST
-    # =========================
     nama_pelapor = request.form['nama_pelapor']
     no_telp = request.form['no_telp']
     email = request.form['email']
@@ -1574,8 +1482,8 @@ def edit_penemuan():
     kategori = request.form['kategori']
     lokasi = request.form['lokasi']
     deskripsi = request.form['deskripsi']
-    status = request.form['status']                  # status laporan
-    status_barang = request.form['status_barang']    # ✅ BARU
+    status = request.form['status']                 
+    status_barang = request.form['status_barang']
     jenis_barang = request.form['jenis_barang']
 
     update_terakhir = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -1609,7 +1517,6 @@ def edit_penemuan():
 
     return redirect(url_for('admin_bp.daftar_penemuan'))
 
-# ================== HAPUS PENEMUAN ===================
 @admin_bp.route('/penemuan/hapus', methods=['POST'])
 def hapus_penemuan():
     if not session.get('admin_logged_in'):
@@ -1625,7 +1532,6 @@ def hapus_penemuan():
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # Hapus foto jika ada
         cursor.execute("SELECT gambar_barang FROM penemuan WHERE kode_barang=%s", (kode,))
         result = cursor.fetchone()
         if result and result[0]:
@@ -1633,7 +1539,6 @@ def hapus_penemuan():
             if os.path.exists(foto_path):
                 os.remove(foto_path)
 
-        # Hapus dari database
         cursor.execute("DELETE FROM penemuan WHERE kode_barang=%s", (kode,))
         conn.commit()
 
@@ -1684,16 +1589,12 @@ def verify_barang():
             conn.close()
         except:
             pass
-  
-# ======================
-# LIST KLAIM
-# ======================
+
 @admin_bp.route('/penemuan/klaim')
 def daftar_klaim_penemuan():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    # Hanya tampilkan klaim yang statusnya bukan "Selesai" atau "Ditolak"
     cursor.execute("""
         SELECT 
             k.id,
@@ -1735,9 +1636,6 @@ def update_status_klaim():
     cursor = conn.cursor(dictionary=True)
 
     try:
-        # =====================
-        # AMBIL DATA KLAIM
-        # =====================
         cursor.execute("""
             SELECT kode_barang, kode_laporan_kehilangan
             FROM klaim_barang
@@ -1751,9 +1649,6 @@ def update_status_klaim():
         kode_barang = klaim["kode_barang"]
         kode_kehilangan = klaim["kode_laporan_kehilangan"]
 
-        # =====================
-        # UPDATE STATUS KLAIM
-        # =====================
         cursor.execute("""
             UPDATE klaim_barang
             SET status = %s,
@@ -1762,9 +1657,6 @@ def update_status_klaim():
             WHERE kode_laporan = %s
         """, (status_baru, catatan, kode))
 
-        # =====================
-        # UPDATE STATUS BARANG DI PENEMUAN
-        # =====================
         if status_baru.lower() in ["pending", "ditolak"]:
             status_barang = "Tersedia"
         elif status_baru.lower() in ["verifikasi", "siap diambil"]:
@@ -1780,11 +1672,7 @@ def update_status_klaim():
                 WHERE kode_barang = %s
             """, (status_barang, kode_barang))
 
-            # =====================
-            # UPDATE STATUS KEHILANGAN (INI TAMBAHAN UTAMA)
-            # =====================
             if status_baru.lower() == "ditolak":
-                # Update semua kehilangan yang terkait barang yang sama
                 cursor.execute("""
                     UPDATE kehilangan k
                     JOIN klaim_barang c ON k.kode_kehilangan = c.kode_laporan_kehilangan
@@ -1796,7 +1684,6 @@ def update_status_klaim():
 
                 conn.commit()
 
-                # Arsip semua kehilangan terkait
                 try:
                     cursor.execute("""
                         SELECT DISTINCT k.kode_kehilangan
@@ -1810,14 +1697,12 @@ def update_status_klaim():
                 except Exception as e:
                     print("❌ Error arsip kehilangan:", e)
 
-                # Arsip klaim itu sendiri
                 try:
                     pindahkan_ke_arsip(kode, "klaim_barang")
                 except Exception as e:
                     print("❌ Error arsip klaim:", e)
 
             elif kode_kehilangan:
-                # Status lain tetap seperti semula tanpa menambah catatan
                 if status_baru.lower() == "selesai":
                     cursor.execute("""
                         UPDATE kehilangan
@@ -1833,7 +1718,6 @@ def update_status_klaim():
                         print("❌ Error arsip kehilangan:", e)
 
                 else:
-                    # Pending / Verifikasi / Siap Diambil
                     cursor.execute("""
                         UPDATE kehilangan
                         SET status = 'Dalam Proses',
@@ -1841,35 +1725,32 @@ def update_status_klaim():
                         WHERE kode_kehilangan = %s
                     """, (kode_kehilangan,))
 
-        # =====================
-        # SELESAI / DITOLAK (ARSIP TAMBAHAN)
-        # =====================
-        if status_baru == "Selesai":
-            cursor.execute("""
-                UPDATE penemuan
-                SET status = 'Selesai',
-                    status_barang = 'Selesai',
-                    update_terakhir = NOW()
-                WHERE kode_barang = %s
-            """, (kode_barang,))
+                if status_baru == "Selesai":
+                    cursor.execute("""
+                        UPDATE penemuan
+                        SET status = 'Selesai',
+                            status_barang = 'Selesai',
+                            update_terakhir = NOW()
+                        WHERE kode_barang = %s
+                    """, (kode_barang,))
 
-            conn.commit()
-            try:
-                pindahkan_ke_arsip(kode_barang, "penemuan")
-            except Exception as e:
-                print("❌ Error arsip penemuan:", e)
+                    conn.commit()
+                    try:
+                        pindahkan_ke_arsip(kode_barang, "penemuan")
+                    except Exception as e:
+                        print("❌ Error arsip penemuan:", e)
 
-        elif status_baru == "Ditolak":
-            conn.commit()
-            try:
-                pindahkan_ke_arsip(kode, "klaim_barang")
-            except Exception as e:
-                print("❌ Error arsip klaim:", e)
+                elif status_baru == "Ditolak":
+                    conn.commit()
+                    try:
+                        pindahkan_ke_arsip(kode, "klaim_barang")
+                    except Exception as e:
+                        print("❌ Error arsip klaim:", e)
 
-        else:
-            conn.commit()
+                else:
+                    conn.commit()
 
-        return jsonify({"success": True})
+                return jsonify({"success": True})
 
     except Exception as e:
         conn.rollback()
@@ -1879,9 +1760,6 @@ def update_status_klaim():
         cursor.close()
         conn.close()
 
-# ======================
-# HALAMAN HTML DETAIL (TANPA JSON)
-# ======================
 @admin_bp.route('/penemuan/klaim/detail/<kode_klaim>')
 def detail_klaim_penemuan(kode_klaim):
     return render_template("admin/detail_klaim_penemuan.html", kode_klaim=kode_klaim)
@@ -1923,9 +1801,6 @@ def detail_klaim_penemuan_api():
 
     return jsonify({"success": True, "data": data})
 
-# ======================
-# UPDATE KLAIM
-# ======================
 @admin_bp.route('/penemuan/klaim/update', methods=['POST'])
 def update_klaim_penemuan():
     data = request.get_json()
@@ -1950,9 +1825,6 @@ def update_klaim_penemuan():
 
     return jsonify({"success": True})
 
-# ======================
-# 📁 ARSIP
-# ======================
 @admin_bp.route('/arsip')
 def arsip():
     if not session.get('admin_logged_in'):
@@ -1980,9 +1852,6 @@ def auto_arsip_laporan():
     batas_tanggal = datetime.now() - relativedelta(months=3)
     tanggal_inactive = datetime.now().replace(second=0, microsecond=0)
 
-    # ======================
-    # KEHILANGAN
-    # ======================
     cur.execute("""
         SELECT kode_kehilangan
         FROM kehilangan
@@ -2283,15 +2152,9 @@ def inject_admin_profile():
 
     return {"global_admin": admin_data}
 
-# ============================
-# 🔐 SUPER ADMIN CHECK
-# ============================
 def is_super_admin():
     return session.get('role') == 'super_admin'
 
-# ============================
-# 📌 KELOLA ADMIN (Super Admin Only)
-# ============================
 @admin_bp.route('/kelola_admin')
 def kelola_admin():
     if not session.get('admin_logged_in'):
@@ -2310,13 +2173,9 @@ def kelola_admin():
     return render_template(
         'kelola_admin.html',
         admins=admins,
-        role=session.get('role')   # 🔥 penting untuk sidebar
+        role=session.get('role')   
     )
 
-
-# ============================
-# ➕ TAMBAH ADMIN
-# ============================
 @admin_bp.route('/kelola_admin/tambah', methods=['GET', 'POST'])
 def tambah_admin():
     if not is_super_admin():
@@ -2354,7 +2213,6 @@ def edit_admin(id):
     is_super = is_super_admin()
     is_self  = session.get('admin_id') == id
 
-    # admin biasa hanya boleh edit diri sendiri
     if not is_super and not is_self:
         return "Anda tidak memiliki akses!", 403
 
@@ -2369,9 +2227,6 @@ def edit_admin(id):
         conn.close()
         return "Admin tidak ditemukan", 404
 
-    # =========================
-    # GET
-    # =========================
     if request.method == 'GET':
         cursor.close()
         conn.close()
@@ -2381,9 +2236,6 @@ def edit_admin(id):
             role=session.get('role')
         )
 
-    # =========================
-    # POST
-    # =========================
     full_name = request.form['full_name']
     email     = request.form['email']
     phone     = request.form.get('phone')
@@ -2391,9 +2243,6 @@ def edit_admin(id):
 
     requested_role = request.form.get('role') if is_super else target_admin['role']
 
-    # =========================
-    # PROTEK SUPER ADMIN TERAKHIR
-    # =========================
     if is_super and target_admin['role'] == "super_admin" and requested_role != "super_admin":
         cursor.execute("SELECT COUNT(*) AS total FROM admin WHERE role='super_admin'")
         total_super = cursor.fetchone()['total']
@@ -2411,7 +2260,6 @@ def edit_admin(id):
 
     try:
         if password:
-            # 🔥 HASH PASSWORD
             hashed_pw = generate_password_hash(password)
 
             cursor.execute("""
@@ -2445,18 +2293,12 @@ def edit_admin(id):
 
 @admin_bp.route('/pengaturan/ganti-password', methods=['GET', 'POST'])
 def ganti_password():
-    # =========================
-    # CEK LOGIN
-    # =========================
     if not session.get('admin_logged_in'):
         return jsonify({
             "status": "error",
             "message": "Silakan login terlebih dahulu"
         }), 401
 
-    # =========================
-    # POST (AJAX)
-    # =========================
     if request.method == 'POST':
         admin_id = session.get('admin_id')
 
@@ -2464,7 +2306,6 @@ def ganti_password():
         new_pw = request.form.get('new_password', '').strip()
         confirm_pw = request.form.get('confirm_password', '').strip()
 
-        # ===== VALIDASI =====
         if not old_pw or not new_pw or not confirm_pw:
             return jsonify({
                 "status": "error",
@@ -2486,7 +2327,6 @@ def ganti_password():
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True, buffered=True)
 
-        # ===== AMBIL PASSWORD LAMA =====
         cursor.execute(
             "SELECT password FROM admin WHERE id=%s",
             (admin_id,)
@@ -2501,7 +2341,6 @@ def ganti_password():
                 "message": "Data admin tidak ditemukan"
             }), 400
 
-        # ===== CEK PASSWORD LAMA =====
         if not check_password_hash(admin['password'], old_pw):
             cursor.close()
             conn.close()
@@ -2510,7 +2349,6 @@ def ganti_password():
                 "message": "Password lama salah"
             }), 400
 
-        # ===== UPDATE PASSWORD =====
         hashed_pw = generate_password_hash(new_pw)
 
         cursor.execute(
@@ -2527,9 +2365,6 @@ def ganti_password():
             "message": "Password berhasil diperbarui"
         }), 200
 
-    # =========================
-    # GET (RENDER HALAMAN)
-    # =========================
     return render_template(
         'ganti_password.html',
         role=session.get('role')
@@ -2552,10 +2387,6 @@ def delete_admin(id):
 
     return {"success": True}
 
-
-# ======================
-# 🚪 LOGOUT
-# ======================
 @admin_bp.route('/logout')
 def logout_admin():
     session.clear()

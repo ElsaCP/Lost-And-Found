@@ -1,8 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
 
-  // =====================================================
-  // 🔄 FITUR UBAH STATUS KLAIM
-  // =====================================================
   document.querySelectorAll(".status-select").forEach(select => {
     select.dataset.prev = select.value;
 
@@ -81,7 +78,6 @@ for (let i = 0; i < 3; i++) {
   });
 }
 
-// === ISI DROPDOWN ===
 filterBulan.innerHTML = `<option value="all">Semua Data</option>`;
 bulanList.forEach(b => {
   filterBulan.insertAdjacentHTML(
@@ -90,13 +86,12 @@ bulanList.forEach(b => {
   );
 });
 
-// === FILTER ===
 function applyFilter() {
   const keyword = searchInput.value.toLowerCase();
   const selectedMonth = filterBulan.value;
 
   rows.forEach(row => {
-    const bulanRow = row.dataset.bulan; // ← SUDAH YYYY-MM
+    const bulanRow = row.dataset.bulan; 
     const cocokBulan =
       selectedMonth === "all" || bulanRow === selectedMonth;
 
@@ -107,11 +102,9 @@ function applyFilter() {
   });
 }
 
-// === EVENT ===
 searchInput.addEventListener("keyup", applyFilter);
 filterBulan.addEventListener("change", applyFilter);
 
-// === LOAD AWAL ===
 applyFilter();
 });
 

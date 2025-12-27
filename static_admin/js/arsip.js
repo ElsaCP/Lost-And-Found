@@ -11,21 +11,16 @@ document.addEventListener("DOMContentLoaded", () => {
     "Juli","Agustus","September","Oktober","November","Desember"
   ];
 
-  // ===============================
-  // AMBIL BULAN + TAHUN VALID SAJA
-  // ===============================
   const bulanMap = new Map();
 
   rows.forEach(row => {
     const tanggalStr = row.dataset.tanggal;
 
-    // 🔴 SKIP ROW TANPA TANGGAL
     if (!tanggalStr || tanggalStr === "None") return;
 
-    const clean = tanggalStr.split(" ")[0]; // YYYY-MM-DD
+    const clean = tanggalStr.split(" ")[0]; 
     const parts = clean.split("-");
 
-    // 🔴 VALIDASI FORMAT
     if (parts.length !== 3) return;
 
     const year = parts[0];
@@ -42,16 +37,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // ===============================
-  // SORT TERBARU → TERLAMA
-  // ===============================
   const bulanList = Array.from(bulanMap.values()).sort((a, b) =>
     b.key.localeCompare(a.key)
   );
 
-  // ===============================
-  // ISI DROPDOWN
-  // ===============================
   filterBulan.innerHTML = `<option value="all">Semua Arsip</option>`;
 
   bulanList.forEach(b => {
@@ -63,9 +52,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // ===============================
-  // FILTER + SEARCH
-  // ===============================
   function applyFilter() {
     const keyword = searchInput.value.toLowerCase();
     const selectedMonth = filterBulan.value;
@@ -73,7 +59,6 @@ document.addEventListener("DOMContentLoaded", () => {
     rows.forEach(row => {
       const tanggalStr = row.dataset.tanggal || "";
 
-      // ROW TANPA TANGGAL → TETAP MUNCUL JIKA SEARCH KOSONG
       if (!tanggalStr || tanggalStr === "None") {
         row.style.display =
           keyword ? row.textContent.toLowerCase().includes(keyword) ? "" : "none" : "";

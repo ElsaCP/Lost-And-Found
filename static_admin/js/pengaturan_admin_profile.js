@@ -1,19 +1,13 @@
-/* ============================
-   UPLOAD & PREVIEW FOTO PROFIL
-   ============================ */
-
 const avatarWrapper = document.querySelector(".avatar-wrapper");
 const avatarFile = document.getElementById("avatarFile");
 const pvAvatar = document.getElementById("pvAvatar");
 const profileHeaderImg = document.querySelector(".profile-header-img");
 const toast = document.getElementById("toast");
 
-// Klik pada foto → buka file picker
 avatarWrapper?.addEventListener("click", () => {
     avatarFile.click();
 });
 
-// Ketika file dipilih
 avatarFile?.addEventListener("change", (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -21,11 +15,9 @@ avatarFile?.addEventListener("change", (e) => {
     const reader = new FileReader();
 
     reader.onload = () => {
-        // Preview langsung
         pvAvatar.src = reader.result;
         if (profileHeaderImg) profileHeaderImg.src = reader.result;
 
-        // Upload ke backend
         const formData = new FormData();
         formData.append("photo", file);
 
@@ -49,11 +41,6 @@ avatarFile?.addEventListener("change", (e) => {
     reader.readAsDataURL(file);
 });
 
-
-/* ============================
-   MODAL OPEN & CLOSE
-   ============================ */
-
 const btnEdit = document.getElementById("btnEditProfile");
 const modal = document.getElementById("modalEdit");
 const closeBtn = document.getElementById("closeModal");
@@ -71,17 +58,11 @@ cancelBtn?.addEventListener("click", () => {
     modal.classList.add("hidden");
 });
 
-// Klik area luar modal → close
 window.addEventListener("click", (e) => {
     if (e.target === modal) {
         modal.classList.add("hidden");
     }
 });
-
-
-/* ============================
-   NOTIFIKASI UPDATE BERHASIL
-   ============================ */
 
 document.addEventListener("DOMContentLoaded", () => {
     const urlParams = new URLSearchParams(window.location.search);

@@ -1,6 +1,3 @@
-/* =============================================
-   RESET & BODY
-   ============================================= */
 * {
   margin: 0;
   padding: 0;
@@ -13,12 +10,8 @@ body {
   background: #f8f8f8;
 }
 
-/* =============================================
-   SIDEBAR – FIXED, STAY, LOGOUT DI BAWAH
-   ============================================= */
 .sidebar {
-  position: fixed;       /* biar stay tidak bisa digeser */
-  top: 0;
+  position: fixed;    
   left: 0;
   height: 100vh;
   width: 193px;
@@ -26,7 +19,7 @@ body {
   color: #fff;
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* nav di atas, logout di bawah */
+  justify-content: space-between; 
   padding: 7px 15px;
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
   z-index: 9999;       
@@ -34,45 +27,38 @@ body {
   clip-path: inset(0 0 0 0px);
 }
 
-/* =============================================
-   SIDEBAR – LOGO DAN RECTANGLE DIATAS
-   ============================================= */
 .logo-wrapper {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: flex-start;
   gap: 10px;
-  margin-top: 0; /* tarik ke atas */
+  margin-top: 0; 
 }
 
-/* Rectangle background */
 .sidebar .rectangle-bg {
   width: 178px;
   opacity: 1;
   filter: brightness(1);
   display: block;
-  margin-top: 0; /* tarik ke atas */
+  margin-top: 0; 
 }
 
-/* Logo depan */
 .sidebar .logo-front {
   position: absolute;
-  top: 15px;   /* tarik logo ke atas */
+  top: 15px;   
   left: 55%;
   transform: translateX(-50%);
   width: 100px;
   height: auto;
 }
 
-/* Nav */
 .sidebar nav {
   display: flex;
   flex-direction: column;
   margin-top: 50px;
 }
 
-/* Submenu */
 .submenu {
   margin-left: 20px;
   display: flex;
@@ -110,7 +96,6 @@ body {
   font-weight: 600;
 }
 
-/* Logout tetap di bawah sidebar */
 .sidebar .logout {
   display: flex;
   align-items: center;
@@ -122,16 +107,13 @@ body {
   padding: 12px 15px;
   border-radius: 10px;
   transition: background 0.3s;
-  margin-bottom: 1px; /* jarak ke bawah */
+  margin-bottom: 1px; 
 }
 
 .sidebar .logout:hover {
   background: #003c7a;
 }
 
-/* ================================
-   HEADER MIRIP BERANDA
-   ================================ */
 .header {
   position: fixed;
   top: 0;
@@ -147,7 +129,6 @@ body {
   z-index: 9998;
 }
 
-/* Logo header */
 .header .logo-wrapper {
   position: relative;
   display: flex;
@@ -168,7 +149,6 @@ body {
   width: auto;
 }
 
-/* Judul tengah header */
 .header h2 {
   position: absolute;
   left: 50%;
@@ -178,7 +158,6 @@ body {
   color: #fff;
 }
 
-/* Profil header */
 .profile-icon {
   width: 45px;
   height: 45px;
@@ -202,7 +181,6 @@ body {
   transform: scale(1.05);
 }
 
-/* Konten utama supaya tidak ketutup header dan sidebar */
 .content {
   flex: 1;
   padding: 5px 40px;
@@ -214,12 +192,11 @@ body {
   margin-top: 90px;
 }
 
-/* Tombol Tambah Kecil di Pojok Kanan */
 .btn-tambah {
-  position: relative;   /* ubah dari absolute ke relative */
-  float: right;         /* geser ke kanan */
-  margin-top: -28px;     /* beri jarak sedikit dari atas */
-  margin-bottom: 15px;  /* beri jarak sebelum search bar */
+  position: relative;   
+  float: right;         
+  margin-top: -28px;    
+  margin-bottom: 15px;  
   background-color: #0056a6;
   color: #fff;
   font-weight: 500;
@@ -251,8 +228,6 @@ body {
   box-shadow: 0 4px 10px rgba(0, 86, 166, 0.35);
 }
 
-
-/* === SEARCH BAR === */
 .search-bar {
   margin-bottom: 20px;
 }
@@ -273,7 +248,6 @@ body {
   box-shadow: 0 0 4px rgba(0, 86, 166, 0.3);
 }
 
-/* ===== TABEL KLAIM PENEMUAN SEPERTI DAFTAR KEHILANGAN ===== */
 #dataTable {
   width: 100%;
   border-collapse: collapse;
@@ -284,41 +258,35 @@ body {
   background: #fff;
 }
 
-/* Header */
 #dataTable thead th {
   background: #9fcaed;
   font-weight: 600;
   padding: 12px 10px;
-  border: 1px solid #c2c0c0; /* garis semua sisi header */
+  border: 1px solid #c2c0c0; 
 }
 
-/* Body */
 #dataTable tbody td {
   font-size: 15px;
   padding: 12px 10px;
   vertical-align: middle;
   word-wrap: break-word;
-  border: 1px solid #c2c0c0; /* garis semua sisi sel */
+  border: 1px solid #c2c0c0; 
 }
 
-/* Hover */
 #dataTable tbody tr:hover {
   background-color: #f2f2f2;
 }
 
-/* Opsional: hapus double border di tepi tabel */
 #dataTable tr:last-child td {
   border-bottom: 1px solid #c2c0c0;
 }
 
-/* Lebar kolom sesuai isi */
-#dataTable thead th:nth-child(1) { width: 18%; }  /* Kode Klaim */
-#dataTable thead th:nth-child(2) { width: 24%; }  /* Nama Barang */
-#dataTable thead th:nth-child(3) { width: 20%; }  /* Jenis Laporan */
-#dataTable thead th:nth-child(4) { width: 22%; }  /* Status */
-#dataTable thead th:nth-child(5) { width: 16%; }  /* Aksi */
+#dataTable thead th:nth-child(1) { width: 18%; }  
+#dataTable thead th:nth-child(2) { width: 24%; } 
+#dataTable thead th:nth-child(3) { width: 20%; } 
+#dataTable thead th:nth-child(4) { width: 22%; } 
+#dataTable thead th:nth-child(5) { width: 16%; }  
 
-/* Select status tetap kotak browser */
 #dataTable select {
   width: 100%;
   box-sizing: border-box;
@@ -327,10 +295,9 @@ body {
   font-size: 15px;
   background-color: #fff;
   border-radius: 4px; 
-  border: 1px solid #ccc; /* biar kelihatan kotak */
+  border: 1px solid #ccc;
 }
 
-/* ===== TOMBOL AKSI ===== */
 .aksi {
   display: flex;
   justify-content: center;
@@ -363,27 +330,23 @@ body {
   transform: scale(1.1);
 }
 
-/* Ikon tombol vertikal center */
 .aksi button i,
 .aksi a i {
   display: inline-block;
   transform: translateY(6px);
 }
 
-/* Warna ikon */
 .btn-view i { color: #007bff; }
 .btn-edit i { color: #ffc107; }
 .btn-delete i { color: #dc3545; }
 .btn-verify i { color: #2ecc71; }
 
-/* Hilangkan border & padding di kolom aksi */
 #dataTable tbody td.aksi {
   border: none;
   padding: 8px 0;
   vertical-align: middle;
 }
 
-/* === TOMBOL KEMBALI === */
 .back-btn {
   margin-top: 25px;
 }
@@ -412,7 +375,6 @@ body {
   margin-bottom: 20px;
 }
 
-/* SEARCH */
 .search-box {
   flex: 1;
 }
@@ -432,7 +394,6 @@ body {
   box-shadow: 0 0 4px rgba(0, 86, 166, 0.3);
 }
 
-/* FILTER BULAN */
 .filter-box {
   width: 220px;
 }
@@ -483,7 +444,6 @@ body {
   color: #fff;
 }
 
-/* === RESPONSIF === */
 @media (max-width: 992px) {
   .header-klaim {
     flex-direction: column;
@@ -508,7 +468,7 @@ body {
   tbody td {
     padding: 10px 12px;
   }
-  /* === TOMBOL LOGOUT === */
+
 .logout {
   display: flex;
   align-items: center;
