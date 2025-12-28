@@ -6,9 +6,10 @@ import re
 import io
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
+from werkzeug.security import check_password_hash
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Image as RLImage
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
@@ -33,8 +34,6 @@ def get_db_connection():
         password='',         
         database='lostfound'  
     )
-    
-from werkzeug.security import check_password_hash
 
 @admin_bp.route('/login', methods=['GET', 'POST'])
 def login_admin():
@@ -189,70 +188,77 @@ def export_pdf():
     cursor = conn.cursor(dictionary=True)
 
     query = """
-        (
-            SELECT 
-                kode_kehilangan AS kode,
-                nama_barang,
-                'kehilangan' AS jenis,
-                status,
-                DATE_FORMAT(tanggal_kehilangan, '%d-%m-%Y') AS tanggal
-            FROM kehilangan
-            WHERE DATE_FORMAT(tanggal_kehilangan, '%Y-%m') = %s
-        )
+        SELECT kode_kehilangan AS kode, nama_barang, 'kehilangan' AS jenis,
+               status, deskripsi AS deskripsi_text, lokasi, DATE_FORMAT(tanggal_kehilangan, '%d-%m-%Y') AS tanggal,
+               foto AS foto_barang
+        FROM kehilangan
+        WHERE DATE_FORMAT(tanggal_kehilangan, '%Y-%m') = %s
         UNION ALL
-        (
-            SELECT 
-                kode_barang AS kode,
-                nama_barang,
-                'penemuan' AS jenis,
-                status,
-                DATE_FORMAT(tanggal_lapor, '%d-%m-%Y') AS tanggal
-            FROM penemuan
-            WHERE DATE_FORMAT(tanggal_lapor, '%Y-%m') = %s
-        )
+        SELECT kode_barang AS kode, nama_barang, 'penemuan' AS jenis,
+               status, deskripsi AS deskripsi_text, lokasi, DATE_FORMAT(tanggal_lapor, '%d-%m-%Y') AS tanggal,
+               gambar_barang AS foto_barang
+        FROM penemuan
+        WHERE DATE_FORMAT(tanggal_lapor, '%Y-%m') = %s
         UNION ALL
-        (
-            SELECT 
-                kode_laporan AS kode,
-                nama_barang,
-                'klaim' AS jenis,
-                status,
-                DATE_FORMAT(tanggal_lapor, '%d-%m-%Y') AS tanggal
-            FROM klaim_barang
-            WHERE DATE_FORMAT(tanggal_lapor, '%Y-%m') = %s
-        )
+        SELECT kode_laporan AS kode, nama_barang, 'klaim' AS jenis,
+               status, deskripsi_khusus AS deskripsi_text, '-' AS lokasi, DATE_FORMAT(tanggal_lapor, '%d-%m-%Y') AS tanggal,
+               foto_barang
+        FROM klaim_barang
+        WHERE DATE_FORMAT(tanggal_lapor, '%Y-%m') = %s
         ORDER BY tanggal ASC
     """
-
     cursor.execute(query, (bulan, bulan, bulan))
     data = cursor.fetchall()
     cursor.close()
     conn.close()
 
     buffer = io.BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=A4)
+    doc = SimpleDocTemplate(
+        buffer, pagesize=A4,
+        leftMargin=30, rightMargin=30, topMargin=40, bottomMargin=40
+    )
     styles = getSampleStyleSheet()
+    normal = styles['Normal']
 
-    elements = [
-        Paragraph(f"<b>Rekapan Laporan Bulan {bulan_label}</b>", styles['Title'])
-    ]
+    elements = [Paragraph(f"<b>Rekapan Laporan Bulan {bulan_label}</b>", styles['Title'])]
 
-    table_data = [["Kode", "Nama Barang", "Jenis", "Status", "Tanggal"]]
+    table_data = [["Kode", "Nama Barang", "Jenis", "Status", "Deskripsi", "Lokasi", "Tanggal", "Foto"]]
 
-    for d in data:
+    for row in data:
+        foto_cell = Paragraph("-", normal)
+        if row.get("foto_barang"):
+            foto_path = os.path.join(
+                current_app.root_path, "static", "uploads", row["foto_barang"]
+            )
+            if os.path.exists(foto_path):
+                foto_cell = RLImage(foto_path, width=50, height=50)
+
+        deskripsi = row.get("deskripsi_text") or "-"
+
         table_data.append([
-            d['kode'],
-            d['nama_barang'],
-            d['jenis'],
-            d['status'],
-            d['tanggal']
+            Paragraph(str(row.get('kode', '-')), normal),
+            Paragraph(str(row.get('nama_barang', '-')), normal),
+            Paragraph(str(row.get('jenis', '-')), normal),
+            Paragraph(str(row.get('status', '-')), normal),
+            Paragraph(deskripsi, normal),
+            Paragraph(str(row.get('lokasi', '-')), normal),
+            Paragraph(str(row.get('tanggal', '-')), normal),
+            foto_cell
         ])
 
-    table = Table(table_data, repeatRows=1)
+    col_widths = [50, 80, 60, 60, 120, 80, 60, 50]
+
+    table = Table(table_data, repeatRows=1, colWidths=col_widths)
     table.setStyle(TableStyle([
-        ('GRID', (0,0), (-1,-1), 1, colors.black),
+        ('GRID', (0,0), (-1,-1), 0.8, colors.black),
         ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
-        ('ALIGN', (0,0), (-1,-1), 'CENTER')
+        ('VALIGN', (0,0), (-1,-1), 'TOP'),
+        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+        ('ALIGN', (4,1), (4,-1), 'LEFT'),  
+        ('LEFTPADDING', (0,0), (-1,-1), 4),
+        ('RIGHTPADDING', (0,0), (-1,-1), 4),
+        ('TOPPADDING', (0,0), (-1,-1), 4),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 4),
     ]))
 
     elements.append(table)
@@ -281,41 +287,22 @@ def export_excel():
     cursor = conn.cursor(dictionary=True)
 
     query = """
-        (
-            SELECT 
-                kode_kehilangan AS kode,
-                nama_barang,
-                'kehilangan' AS jenis,
-                status,
-                tanggal_kehilangan AS tanggal
-            FROM kehilangan
-            WHERE DATE_FORMAT(tanggal_kehilangan, '%Y-%m') = %s
-        )
+        SELECT kode_kehilangan AS kode, nama_barang, 'kehilangan' AS jenis,
+               status, deskripsi AS deskripsi_text, lokasi, tanggal_kehilangan AS tanggal
+        FROM kehilangan
+        WHERE DATE_FORMAT(tanggal_kehilangan, '%Y-%m') = %s
         UNION ALL
-        (
-            SELECT 
-                kode_barang AS kode,
-                nama_barang,
-                'penemuan' AS jenis,
-                status,
-                tanggal_lapor AS tanggal
-            FROM penemuan
-            WHERE DATE_FORMAT(tanggal_lapor, '%Y-%m') = %s
-        )
+        SELECT kode_barang AS kode, nama_barang, 'penemuan' AS jenis,
+               status, deskripsi AS deskripsi_text, lokasi, tanggal_lapor AS tanggal
+        FROM penemuan
+        WHERE DATE_FORMAT(tanggal_lapor, '%Y-%m') = %s
         UNION ALL
-        (
-            SELECT 
-                kode_laporan AS kode,
-                nama_barang,
-                'klaim' AS jenis,
-                status,
-                tanggal_lapor AS tanggal
-            FROM klaim_barang
-            WHERE DATE_FORMAT(tanggal_lapor, '%Y-%m') = %s
-        )
+        SELECT kode_laporan AS kode, nama_barang, 'klaim' AS jenis,
+               status, deskripsi_khusus AS deskripsi_text, '-' AS lokasi, tanggal_lapor AS tanggal
+        FROM klaim_barang
+        WHERE DATE_FORMAT(tanggal_lapor, '%Y-%m') = %s
         ORDER BY tanggal ASC
     """
-
     cursor.execute(query, (bulan, bulan, bulan))
     data = cursor.fetchall()
     cursor.close()
@@ -325,7 +312,7 @@ def export_excel():
     ws = wb.active
     ws.title = "Rekap Laporan"
 
-    ws.append(["Kode", "Nama Barang", "Jenis", "Status", "Tanggal"])
+    ws.append(["Kode", "Nama Barang", "Jenis", "Status", "Deskripsi", "Lokasi", "Tanggal"])
 
     for d in data:
         ws.append([
@@ -333,6 +320,8 @@ def export_excel():
             d['nama_barang'],
             d['jenis'],
             d['status'],
+            d.get('deskripsi_text', '-'),
+            d.get('lokasi', '-'),
             d['tanggal']
         ])
 
@@ -362,11 +351,15 @@ def export_kehilangan_pdf():
     cursor = conn.cursor(dictionary=True)
 
     cursor.execute("""
-        SELECT 
-            kode_kehilangan AS kode,
+        SELECT
+            kode_kehilangan,
+            nama_pelapor,
             nama_barang,
+            lokasi,
             status,
-            DATE_FORMAT(tanggal_submit, '%d-%m-%Y') AS tanggal
+            deskripsi,
+            DATE_FORMAT(tanggal_submit, '%d-%m-%Y') AS tanggal,
+            foto
         FROM kehilangan
         WHERE DATE_FORMAT(tanggal_submit, '%Y-%m') = %s
         ORDER BY tanggal_submit ASC
@@ -377,32 +370,74 @@ def export_kehilangan_pdf():
     conn.close()
 
     buffer = io.BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=A4)
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=A4,
+        leftMargin=30,
+        rightMargin=30,
+        topMargin=40,
+        bottomMargin=40
+    )
+
     styles = getSampleStyleSheet()
+    normal = styles["Normal"]
 
     elements = [
-        Paragraph(
-            f"<b>Laporan Kehilangan Bulan {bulan_label}</b>",
-            styles['Title']
-        )
+        Paragraph(f"<b>Laporan Kehilangan Bulan {bulan_label}</b>", styles["Title"]),
+        Paragraph("<br/>", normal)
     ]
 
-    table_data = [["Kode", "Nama Barang", "Jenis Laporan", "Status", "Tanggal"]]
+    table_data = [[
+        Paragraph("Kode", normal),
+        Paragraph("Pelapor", normal),
+        Paragraph("Barang", normal),
+        Paragraph("Lokasi", normal),
+        Paragraph("Status", normal),
+        Paragraph("Deskripsi", normal),
+        Paragraph("Tanggal", normal),
+        Paragraph("Foto", normal)
+    ]]
 
-    for d in data:
+    for row in data:
+        foto_cell = Paragraph("-", normal)
+        if row["foto"]:
+            foto_path = os.path.join(
+                current_app.root_path,
+                "static",
+                "uploads",
+                row["foto"]
+            )
+            if os.path.exists(foto_path):
+                foto_cell = RLImage(foto_path, width=50, height=50)
+
         table_data.append([
-            d['kode'],
-            d['nama_barang'],
-            "Kehilangan",         
-            d['status'],
-            d['tanggal']
+            Paragraph(row["kode_kehilangan"], normal),
+            Paragraph(row["nama_pelapor"], normal),
+            Paragraph(row["nama_barang"], normal),
+            Paragraph(row["lokasi"], normal),
+            Paragraph(row["status"], normal),
+            Paragraph(row.get('deskripsi', '-'), normal),  
+            Paragraph(row["tanggal"], normal),
+            foto_cell
         ])
 
-    table = Table(table_data, repeatRows=1)
+    table = Table(
+        table_data,
+        repeatRows=1,
+        colWidths=[55, 70, 70, 90, 60, 100, 60, 50] 
+    )
+
     table.setStyle(TableStyle([
-        ('GRID', (0,0), (-1,-1), 1, colors.black),
+        ('GRID', (0,0), (-1,-1), 0.8, colors.black),
         ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
-        ('ALIGN', (0,0), (-1,-1), 'CENTER')
+        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+        ('VALIGN', (0,0), (-1,-1), 'TOP'),  
+        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+        ('ALIGN', (5,1), (5,-1), 'LEFT'),  
+        ('LEFTPADDING', (0,0), (-1,-1), 4),
+        ('RIGHTPADDING', (0,0), (-1,-1), 4),
+        ('TOPPADDING', (0,0), (-1,-1), 4),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 4),
     ]))
 
     elements.append(table)
@@ -415,7 +450,7 @@ def export_kehilangan_pdf():
         download_name=f"laporan_kehilangan_{bulan_label.replace(' ', '_').lower()}.pdf",
         mimetype="application/pdf"
     )
-
+    
 @admin_bp.route('/kehilangan/export/excel')
 def export_kehilangan_excel():
     if not session.get('admin_logged_in'):
@@ -433,9 +468,12 @@ def export_kehilangan_excel():
     cursor.execute("""
         SELECT 
             kode_kehilangan AS kode,
+            nama_pelapor,
             nama_barang,
+            lokasi,
             status,
-            tanggal_submit AS tanggal
+            deskripsi,
+            DATE_FORMAT(tanggal_submit, '%d-%m-%Y') AS tanggal
         FROM kehilangan
         WHERE DATE_FORMAT(tanggal_submit, '%Y-%m') = %s
         ORDER BY tanggal_submit ASC
@@ -449,16 +487,27 @@ def export_kehilangan_excel():
     ws = wb.active
     ws.title = "Laporan Kehilangan"
 
-    ws.append(["Kode", "Nama Barang", "Jenis Laporan", "Status", "Tanggal"])
+    ws.append(["Kode", "Pelapor", "Nama Barang", "Lokasi", "Status", "Deskripsi", "Tanggal"])
 
     for d in data:
         ws.append([
             d['kode'],
+            d['nama_pelapor'],
             d['nama_barang'],
-            "Kehilangan",      
+            d.get('lokasi', '-'),
             d['status'],
+            d.get('deskripsi', '-'),
             d['tanggal']
         ])
+
+    for row in ws.iter_rows(min_row=2, min_col=7, max_col=7):
+        for cell in row:
+            if cell.value:
+                cell.number_format = 'DD-MM-YYYY'
+
+    for column_cells in ws.columns:
+        length = max(len(str(cell.value)) for cell in column_cells)
+        ws.column_dimensions[column_cells[0].column_letter].width = length + 2
 
     output = io.BytesIO()
     wb.save(output)
@@ -486,11 +535,14 @@ def export_penemuan_pdf():
     cursor = conn.cursor(dictionary=True)
 
     cursor.execute("""
-        SELECT 
-            kode_barang AS kode,
+        SELECT
+            kode_barang,
             nama_barang,
+            lokasi,
             status,
-            DATE_FORMAT(tanggal_lapor, '%d-%m-%Y') AS tanggal
+            deskripsi,
+            DATE_FORMAT(tanggal_lapor, '%d-%m-%Y') AS tanggal,
+            gambar_barang
         FROM penemuan
         WHERE DATE_FORMAT(tanggal_lapor, '%Y-%m') = %s
         ORDER BY tanggal_lapor ASC
@@ -501,32 +553,72 @@ def export_penemuan_pdf():
     conn.close()
 
     buffer = io.BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=A4)
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=A4,
+        leftMargin=30,
+        rightMargin=30,
+        topMargin=40,
+        bottomMargin=40
+    )
+
     styles = getSampleStyleSheet()
+    normal = styles["Normal"]
 
     elements = [
-        Paragraph(
-            f"<b>Laporan Penemuan Bulan {bulan_label}</b>",
-            styles['Title']
-        )
+        Paragraph(f"<b>Laporan Penemuan Bulan {bulan_label}</b>", styles["Title"]),
+        Paragraph("<br/>", normal)
     ]
 
-    table_data = [["Kode", "Nama Barang", "Jenis Laporan", "Status", "Tanggal"]]
+    table_data = [[
+        "Kode",
+        "Barang",
+        "Lokasi",
+        "Status",
+        "Deskripsi",
+        "Tanggal",
+        "Foto"
+    ]]
 
-    for d in data:
+    for row in data:
+        foto_cell = Paragraph("-", normal)
+        if row["gambar_barang"]:
+            foto_path = os.path.join(
+                current_app.root_path,
+                "static",
+                "uploads",
+                row["gambar_barang"]
+            )
+            if os.path.exists(foto_path):
+                foto_cell = RLImage(foto_path, width=50, height=50)
+
         table_data.append([
-            d['kode'],
-            d['nama_barang'],
-            "Penemuan",
-            d['status'],
-            d['tanggal']
+            Paragraph(row["kode_barang"], normal),
+            Paragraph(row["nama_barang"], normal),
+            Paragraph(row["lokasi"], normal),
+            Paragraph(row["status"], normal),
+            Paragraph(row.get("deskripsi", "-"), normal), 
+            Paragraph(row["tanggal"], normal),
+            foto_cell
         ])
 
-    table = Table(table_data, repeatRows=1)
+    table = Table(
+        table_data,
+        repeatRows=1,
+        colWidths=[60, 100, 100, 70, 120, 60, 50]  
+    )
+
     table.setStyle(TableStyle([
-        ('GRID', (0,0), (-1,-1), 1, colors.black),
+        ('GRID', (0,0), (-1,-1), 0.8, colors.black),
         ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
-        ('ALIGN', (0,0), (-1,-1), 'CENTER')
+        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+        ('VALIGN', (0,0), (-1,-1), 'TOP'),  
+        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+        ('ALIGN', (4,1), (4,-1), 'LEFT'),   
+        ('LEFTPADDING', (0,0), (-1,-1), 4),
+        ('RIGHTPADDING', (0,0), (-1,-1), 4),
+        ('TOPPADDING', (0,0), (-1,-1), 4),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 4),
     ]))
 
     elements.append(table)
@@ -558,7 +650,9 @@ def export_penemuan_excel():
         SELECT 
             kode_barang AS kode,
             nama_barang,
+            lokasi,
             status,
+            deskripsi,
             tanggal_lapor AS tanggal
         FROM penemuan
         WHERE DATE_FORMAT(tanggal_lapor, '%Y-%m') = %s
@@ -573,14 +667,208 @@ def export_penemuan_excel():
     ws = wb.active
     ws.title = "Laporan Penemuan"
 
-    ws.append(["Kode", "Nama Barang", "Jenis Laporan", "Status", "Tanggal"])
+    ws.append(["Kode", "Nama Barang", "Lokasi", "Status", "Deskripsi", "Tanggal"])
 
     for d in data:
         ws.append([
             d['kode'],
             d['nama_barang'],
-            "Penemuan",
+            d.get('lokasi', '-'),
             d['status'],
+            d.get('deskripsi', '-'),
+            d['tanggal']
+        ])
+
+    for row in ws.iter_rows(min_row=2, min_col=6, max_col=6):
+        for cell in row:
+            if cell.value:
+                cell.number_format = 'DD-MM-YYYY'
+
+    for column_cells in ws.columns:
+        length = max(len(str(cell.value)) for cell in column_cells)
+        ws.column_dimensions[column_cells[0].column_letter].width = length + 2
+
+    output = io.BytesIO()
+    wb.save(output)
+    output.seek(0)
+
+    return send_file(
+        output,
+        as_attachment=True,
+        download_name=f"laporan_penemuan_{bulan_label.replace(' ', '_').lower()}.xlsx",
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    
+@admin_bp.route('/klaim/export/pdf')
+def export_klaim_pdf():
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_bp.login_admin'))
+
+    bulan = request.args.get('bulan')  
+    if not bulan:
+        return "Bulan tidak valid", 400
+
+    bulan_label = format_bulan_indonesia(bulan)
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT 
+            kode_laporan AS kode_klaim,
+            kode_laporan_kehilangan,
+            nama_barang,
+            nama_pelapor,
+            status,
+            deskripsi_khusus,
+            DATE_FORMAT(STR_TO_DATE(tanggal_lapor, '%Y-%m-%d'), '%d-%m-%Y') AS tanggal,
+            foto_barang
+        FROM klaim_barang
+        WHERE DATE_FORMAT(STR_TO_DATE(tanggal_lapor, '%Y-%m-%d'), '%Y-%m') = %s
+        ORDER BY STR_TO_DATE(tanggal_lapor, '%Y-%m-%d') ASC
+    """, (bulan,))
+
+    data = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=A4,
+        leftMargin=30,
+        rightMargin=30,
+        topMargin=40,
+        bottomMargin=40
+    )
+
+    styles = getSampleStyleSheet()
+    normal = styles["Normal"]
+
+    elements = [
+        Paragraph(f"<b>Laporan Klaim Barang Bulan {bulan_label}</b>", styles['Title']),
+        Paragraph("<br/>", normal)
+    ]
+
+    table_data = [[
+        Paragraph("Kode<br/>Klaim", normal),
+        Paragraph("Kode<br/>Kehilangan", normal),
+        Paragraph("Nama Barang", normal),
+        Paragraph("Nama Pengklaim", normal),
+        Paragraph("Status", normal),
+        Paragraph("Deskripsi", normal),
+        Paragraph("Tanggal", normal),
+        Paragraph("Foto", normal)
+    ]]
+
+    for row in data:
+        # Foto
+        foto_cell = Paragraph("-", normal)
+        if row.get("foto_barang"):
+            foto_path = os.path.join(
+                current_app.root_path,
+                "static",
+                "uploads",
+                row["foto_barang"]
+            )
+            if os.path.exists(foto_path):
+                foto_cell = RLImage(foto_path, width=50, height=50)
+
+        table_data.append([
+            Paragraph(str(row.get("kode_klaim", "-")), normal),
+            Paragraph(str(row.get("kode_laporan_kehilangan", "-")), normal),
+            Paragraph(str(row.get("nama_barang", "-")), normal),
+            Paragraph(str(row.get("nama_pelapor", "-")), normal),
+            Paragraph(str(row.get("status", "-")), normal),
+            Paragraph(str(row.get("deskripsi_khusus", "-")), normal),
+            Paragraph(str(row.get("tanggal", "-")), normal),
+            foto_cell
+        ])
+
+    table = Table(
+        table_data,
+        repeatRows=1,
+        colWidths=[60, 60, 80, 80, 60, 110, 60, 50]
+    )
+
+    table.setStyle(TableStyle([
+        ('GRID', (0,0), (-1,-1), 0.8, colors.black),
+        ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
+        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+        ('VALIGN', (0,0), (-1,-1), 'TOP'), 
+        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+        ('ALIGN', (5,1), (5,-1), 'LEFT'),  
+        ('LEFTPADDING', (0,0), (-1,-1), 4),
+        ('RIGHTPADDING', (0,0), (-1,-1), 4),
+        ('TOPPADDING', (0,0), (-1,-1), 4),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 4),
+    ]))
+
+    elements.append(table)
+    doc.build(elements)
+
+    buffer.seek(0)
+    return send_file(
+        buffer,
+        as_attachment=True,
+        download_name=f"laporan_klaim_{bulan_label.replace(' ', '_').lower()}.pdf",
+        mimetype="application/pdf"
+    )
+
+@admin_bp.route('/klaim/export/excel')
+def export_klaim_excel():
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_bp.login_admin'))
+
+    bulan = request.args.get('bulan')
+    if not bulan:
+        return "Bulan tidak valid", 400
+
+    bulan_label = format_bulan_indonesia(bulan)
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT 
+            kode_laporan AS kode_klaim,
+            kode_laporan_kehilangan AS kode_kehilangan,
+            nama_barang,
+            nama_pelapor,
+            status,
+            deskripsi_khusus,
+            DATE_FORMAT(STR_TO_DATE(tanggal_lapor, '%Y-%m-%d'), '%d-%m-%Y') AS tanggal
+        FROM klaim_barang
+        WHERE DATE_FORMAT(STR_TO_DATE(tanggal_lapor, '%Y-%m-%d'), '%Y-%m') = %s
+        ORDER BY STR_TO_DATE(tanggal_lapor, '%Y-%m-%d') ASC
+    """, (bulan,))
+
+    data = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Laporan Klaim"
+
+    ws.append([
+        "Kode Klaim",
+        "Kode Kehilangan",
+        "Nama Barang",
+        "Nama Pengklaim",
+        "Status",
+        "Deskripsi",
+        "Tanggal"
+    ])
+
+    for d in data:
+        ws.append([
+            d['kode_klaim'],
+            d['kode_kehilangan'],
+            d['nama_barang'],
+            d['nama_pelapor'],
+            d['status'],
+            d.get('deskripsi_khusus', '-'),
             d['tanggal']
         ])
 
@@ -591,7 +879,7 @@ def export_penemuan_excel():
     return send_file(
         output,
         as_attachment=True,
-        download_name=f"laporan_penemuan_{bulan_label.replace(' ', '_').lower()}.xlsx",
+        download_name=f"laporan_klaim_{bulan_label.replace(' ', '_').lower()}.xlsx",
         mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
 
@@ -1865,9 +2153,6 @@ def auto_arsip_laporan():
     for row in cur.fetchall():
         pindahkan_ke_arsip(row['kode_kehilangan'], 'kehilangan', tanggal_inactive)
 
-    # ======================
-    # PENEMUAN
-    # ======================
     cur.execute("""
         SELECT kode_barang
         FROM penemuan
@@ -1885,18 +2170,12 @@ def pindahkan_ke_arsip(kode, jenis_tabel, tanggal_inactive=None):
     db = get_db_connection()
     cur = db.cursor(dictionary=True)
 
-    # ======================
-    # CEK SUDAH ADA DI ARSIP
-    # ======================
     cur.execute("SELECT 1 FROM arsip WHERE kode=%s", (kode,))
     if cur.fetchone():
         cur.close()
         db.close()
         return False
 
-    # ======================
-    # AMBIL DATA
-    # ======================
     if jenis_tabel == "kehilangan":
         cur.execute("SELECT * FROM kehilangan WHERE kode_kehilangan=%s", (kode,))
         kolom_tanggal = "tanggal_kehilangan"
@@ -1935,9 +2214,6 @@ def pindahkan_ke_arsip(kode, jenis_tabel, tanggal_inactive=None):
             "Selesai", "Barang Tidak Ditemukan"
         ) else tanggal_inactive
 
-    # ======================
-    # INSERT KE ARSIP
-    # ======================
     cur.execute("""
         INSERT INTO arsip (
             kode, nama_barang, jenis, kategori, lokasi,
@@ -1960,9 +2236,6 @@ def pindahkan_ke_arsip(kode, jenis_tabel, tanggal_inactive=None):
         tanggal_inactive
     ))
 
-    # ======================
-    # TANDAI SEBAGAI ARSIP
-    # ======================
     if jenis_tabel == "kehilangan":
         cur.execute(
             "UPDATE kehilangan SET is_arsip=1 WHERE kode_kehilangan=%s",
@@ -2050,23 +2323,19 @@ def generate_kode_penemuan(cursor):
     return f"LF-F{max_num + 1:03d}"
 
 def generate_kode_klaim(cursor):
-
-    # Ambil kode dari tabel klaim_barang
     cursor.execute("SELECT kode_laporan FROM klaim_barang")
     main_codes = [row['kode_laporan'] for row in cursor.fetchall() if row['kode_laporan']]
 
-    # Ambil kode dari arsip untuk klaim
     cursor.execute("SELECT kode FROM arsip WHERE jenis IN ('klaim', 'klaim barang')")
     archive_codes = [row['kode'] for row in cursor.fetchall() if row['kode']]
 
     all_codes = main_codes + archive_codes
 
-    # Ambil semua nomor valid
     numbers = [int(re.search(r"LF-C(\d+)", code).group(1))
                for code in all_codes if re.search(r"LF-C(\d+)", code)]
 
     if not numbers:
-        return "LF-C001"  # default kalau belum ada kode sama sekali
+        return "LF-C001"  
 
     max_num = max(numbers)
     return f"LF-C{max_num + 1:03d}"

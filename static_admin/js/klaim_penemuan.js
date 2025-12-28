@@ -112,5 +112,36 @@ function openSurat(url) {
   window.open(url, "_blank");
 }
 
+const btnPdf = document.getElementById("btnExportPdf");
+const btnExcel = document.getElementById("btnExportExcel");
 
+function getSelectedMonth() {
+  const bulan = document.getElementById("filterBulan")?.value;
+  if (!bulan || bulan === "all") {
+    Swal.fire("Pilih Bulan", "Silakan pilih bulan terlebih dahulu", "warning");
+    return null;
+  }
+  return bulan;
+}
 
+if (btnPdf) {
+  btnPdf.addEventListener("click", () => {
+    const bulan = getSelectedMonth();
+    if (!bulan) return;
+
+    window.open(
+      `/admin/klaim/export/pdf?bulan=${bulan}`,
+      "_blank"
+    );
+  });
+}
+
+if (btnExcel) {
+  btnExcel.addEventListener("click", () => {
+    const bulan = getSelectedMonth();
+    if (!bulan) return;
+
+    window.location.href =
+      `/admin/klaim/export/excel?bulan=${bulan}`;
+  });
+}

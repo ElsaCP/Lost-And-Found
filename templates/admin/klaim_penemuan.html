@@ -53,7 +53,6 @@
     </a>
   </div>
 
-  <!-- HEADER -->
   <div class="header">
     <div class="logo-wrapper">
       <img src="{{ url_for('admin_bp.static', filename='image/rectangle2.png') }}" class="rectangle-bg">
@@ -74,23 +73,32 @@
       </div>
   </div>
 
-  <!-- MAIN CONTENT -->
   <div class="content">
+  <div class="action-row">
+    <div class="surat-actions">
+      <button class="btn-icon"
+        title="Surat Kuasa Ambil Sendiri"
+        onclick="openSurat('{{ url_for('admin_bp.static', filename='upload/surat_kuasa_ambil_sendiri.pdf') }}')">
+        <i class="bi bi-person-check"></i>
+      </button>
 
-<div class="surat-actions">
-  <button class="btn-icon"
-    title="Surat Kuasa Ambil Sendiri"
-    onclick="openSurat('{{ url_for('admin_bp.static', filename='upload/surat_kuasa_ambil_sendiri.pdf') }}')">
-    <i class="bi bi-person-check"></i>
-  </button>
+      <button class="btn-icon"
+        title="Surat Kuasa Diwakilkan"
+        onclick="openSurat('{{ url_for('admin_bp.static', filename='upload/surat_kuasa_diwakilkan.pdf') }}')">
+        <i class="bi bi-people-fill"></i>
+      </button>
+    </div>
 
-  <button class="btn-icon"
-    title="Surat Kuasa Diwakilkan"
-    onclick="openSurat('{{ url_for('admin_bp.static', filename='upload/surat_kuasa_diwakilkan.pdf') }}')">
-    <i class="bi bi-people-fill"></i>
-  </button>
-</div>
+    <div class="export-wrapper">
+      <button id="btnExportPdf" class="btn btn-danger">
+        <i class="bi bi-file-earmark-pdf"></i> Export PDF
+      </button>
 
+      <button id="btnExportExcel" class="btn btn-success">
+        <i class="bi bi-file-earmark-excel"></i> Export Excel
+      </button>
+    </div>
+  </div>
 
     <div class="mb-3">
       <div class="search-filter-wrapper">

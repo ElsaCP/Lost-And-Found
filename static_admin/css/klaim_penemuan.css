@@ -414,11 +414,16 @@ body {
   border-color: #0056a6;
   box-shadow: 0 0 4px rgba(0, 86, 166, 0.3);
 }
+.action-row {
+  display: flex;
+  gap: 12px;          
+  align-items: center;  
+  margin-bottom: 20px;
+}
 
 .surat-actions {
   display: flex;
   gap: 8px;
-  padding-bottom: 5px;
 }
 
 .btn-icon {
@@ -442,6 +447,41 @@ body {
 .btn-icon:hover {
   background: #0056a6;
   color: #fff;
+}
+
+.export-wrapper {
+  display: flex;
+  gap: 10px;
+}
+
+#btnExportPdf, #btnExportExcel {
+  padding: 8px 16px;
+  font-size: 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+#btnExportPdf {
+  background-color: #e53935;
+}
+
+#btnExportPdf:hover {
+  background-color: #c82333;
+  transform: scale(1.05);
+}
+
+#btnExportExcel {
+  background-color: #28a745;
+}
+
+#btnExportExcel:hover {
+  background-color: #218838;
+  transform: scale(1.05);
 }
 
 @media (max-width: 992px) {

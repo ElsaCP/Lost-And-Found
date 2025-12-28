@@ -374,38 +374,37 @@ font-size: 30px;
   cursor: pointer;
 }
 
-/* ===== Tambahan untuk tombol Export PDF & Excel ===== */
 .export-wrapper {
-  margin-top: 15px;    /* jarak dari search/filter di atas */
-  margin-bottom: 20px; /* jarak ke table di bawah */
+  margin-top: 15px;    
+  margin-bottom: 20px; 
   display: flex;
   gap: 10px;
 }
 
 #btnExportPdf, #btnExportExcel {
-  padding: 8px 16px;    /* dikurangi dari 10px 20px */
-  font-size: 14px;       /* dikurangi dari 16px */
-  border-radius: 6px;    /* sedikit lebih kecil */
+  padding: 8px 16px;    
+  font-size: 14px;      
+  border-radius: 6px;   
   cursor: pointer;
   transition: transform 0.2s, background-color 0.2s;
-  color: #fff;           /* teks putih */
+  color: #fff;         
 }
 
 #btnExportPdf {
-  background-color: #e53935 !important;  /* warna awal merah */
+  background-color: #e53935 !important;  
 }
 
 #btnExportPdf:hover {
-  background-color: #c82333 !important; /* versi gelap merah */
+  background-color: #c82333 !important;
   transform: scale(1.05);
 }
 
 #btnExportExcel {
-  background-color: #28a745 !important; /* warna awal hijau */
+  background-color: #28a745 !important; 
 }
 
 #btnExportExcel:hover {
-  background-color: #218838 !important; /* versi gelap hijau */
+  background-color: #218838 !important; 
   transform: scale(1.05);
 }
 
