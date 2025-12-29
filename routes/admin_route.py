@@ -1198,19 +1198,19 @@ def kirim_email_verifikasi(email_user, nama_pelapor, kode_kehilangan):
         )
 
         msg.body = f"""
-Halo {nama_pelapor},
+        Halo {nama_pelapor},
 
-Laporan kehilangan Anda dengan kode:
-{kode_kehilangan}
+        Laporan kehilangan Anda dengan kode:
+        {kode_kehilangan}
 
-Telah berhasil DIVERIFIKASI oleh petugas Lost & Found
-Bandara Internasional Juanda.
+        Telah berhasil DIVERIFIKASI oleh petugas Lost & Found
+        Bandara Internasional Juanda.
 
-Silakan pantau status laporan Anda secara berkala melalui website.
+        Silakan pantau status laporan Anda secara berkala melalui website.
 
-Terima kasih,
-Admin Lost & Found Juanda
-"""
+        Terima kasih,
+        Admin Lost & Found Juanda
+        """
         mail.send(msg)
         print("✅ EMAIL VERIFIKASI TERKIRIM KE:", email_user)
 

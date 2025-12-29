@@ -29,7 +29,43 @@ document.addEventListener("DOMContentLoaded", function () {
             status: newStatus
           })
         })
-        .then(res => res.json())
+        .then(res => {
+          if (!res.ok) throw new Error("error");
+          return res.json().catch(() => ({}));
+        })
+        .then(() => {
+
+          if (newStatus === "Selesai" || newStatus === "Ditolak") {
+            Swal.fire({
+              icon: "success",
+              title: "Dipindahkan ke Arsip",
+              timer: 1200,
+              showConfirmButton: false
+            }).then(() => {
+              window.location.replace("/admin/arsip");
+            });
+            return;
+          }
+
+          Swal.fire({
+            icon: "success",
+            title: "Berhasil!",
+            text: "Status klaim diperbarui",
+            timer: 1200,
+            showConfirmButton: false
+          });
+
+          this.dataset.prev = newStatus;
+        })
+        .catch(() => {
+          if (newStatus === "Selesai" || newStatus === "Ditolak") {
+            window.location.replace("/admin/arsip");
+          } else {
+            Swal.fire("Error", "Gagal memperbarui status", "error");
+            this.value = prevStatus;
+          }
+        })
+        
         .then(() => {
 
           if (newStatus === "Selesai" || newStatus === "Ditolak") {
