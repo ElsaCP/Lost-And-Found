@@ -1,4 +1,3 @@
-# routes/route.py
 from flask import Blueprint, request, jsonify, render_template,redirect, url_for, session
 from datetime import datetime
 from werkzeug.utils import secure_filename
@@ -46,45 +45,66 @@ def get_db_connection():
     )
 SIGN_SECRET = Config.SIGN_SECRET
 
-def compress_image(file_storage, output_path):
+def compress_image(file_storage, output_path, ext):
     img = Image.open(file_storage)
-<<<<<<< HEAD
-=======
 
->>>>>>> d004ec615cbe0975d35924435620527b982ed593
     if img.mode in ("RGBA", "P"):
-        img = img.convert("RGB")
+        if ext in ("jpg", "jpeg"):
+            img = img.convert("RGB")
+        else:
+            img = img.convert("RGBA")
 
-    quality = 85
+    max_width = 1920
+    if img.width > max_width:
+        ratio = max_width / float(img.width)
+        new_height = int(img.height * ratio)
+        img = img.resize((max_width, new_height), Image.LANCZOS)
+
     buffer = io.BytesIO()
 
-    while True:
-        buffer.seek(0)
-        buffer.truncate(0)
+    if ext in ("jpg", "jpeg"):
+        quality = 85
+        while True:
+            buffer.seek(0)
+            buffer.truncate(0)
 
+            img.save(
+                buffer,
+                format="JPEG",
+                quality=quality,
+                optimize=True
+            )
+
+            if buffer.tell() <= MAX_SIZE_BYTES or quality <= 30:
+                break
+
+            quality -= 5
+
+    elif ext == "png":
         img.save(
             buffer,
-            format="JPEG",
-            quality=quality,
-            optimize=True
+            format="PNG",
+            optimize=True,
+            compress_level=9
         )
 
-        if buffer.tell() <= MAX_SIZE_BYTES or quality <= 30:
-            break
-
-        quality -= 5
+    if buffer.tell() > MAX_SIZE_BYTES:
+        raise Exception("Gambar tidak dapat dikompres di bawah 5 MB")
 
     with open(output_path, "wb") as f:
         f.write(buffer.getvalue())
+
+        
 def simpan_foto_atau_pdf(file_obj):
     if not file_obj or not file_obj.filename:
         return None
 
     ext = file_obj.filename.rsplit(".", 1)[-1].lower()
 
-    filename = datetime.now().strftime("%Y%m%d%H%M%S_") + secure_filename(file_obj.filename)
     upload_dir = os.path.join("static", "uploads")
     os.makedirs(upload_dir, exist_ok=True)
+
+    filename = datetime.now().strftime("%Y%m%d%H%M%S_") + secure_filename(file_obj.filename)
     path = os.path.join(upload_dir, filename)
 
     file_obj.seek(0, os.SEEK_END)
@@ -95,7 +115,7 @@ def simpan_foto_atau_pdf(file_obj):
         raise Exception("Ukuran file terlalu besar (maks 10 MB sebelum diproses)")
 
     if ext in ALLOWED_IMAGE_EXT:
-        compress_image(file_obj, path)
+        compress_image(file_obj, path, ext)
 
     elif ext in ALLOWED_PDF_EXT:
         if size_awal > MAX_SIZE_BYTES:
@@ -103,7 +123,7 @@ def simpan_foto_atau_pdf(file_obj):
         file_obj.save(path)
 
     else:
-        raise Exception("Format file harus JPG / PNG / WEBP / PDF")
+        raise Exception("Format file harus JPG / JPEG / PNG / PDF")
 
     return filename
 
