@@ -48,6 +48,10 @@ SIGN_SECRET = Config.SIGN_SECRET
 
 def compress_image(file_storage, output_path):
     img = Image.open(file_storage)
+<<<<<<< HEAD
+=======
+
+>>>>>>> d004ec615cbe0975d35924435620527b982ed593
     if img.mode in ("RGBA", "P"):
         img = img.convert("RGB")
 
@@ -83,7 +87,6 @@ def simpan_foto_atau_pdf(file_obj):
     os.makedirs(upload_dir, exist_ok=True)
     path = os.path.join(upload_dir, filename)
 
-    # 🔒 Cek ukuran awal (anti file ekstrem)
     file_obj.seek(0, os.SEEK_END)
     size_awal = file_obj.tell()
     file_obj.seek(0)
@@ -91,15 +94,9 @@ def simpan_foto_atau_pdf(file_obj):
     if size_awal > 10 * 1024 * 1024:
         raise Exception("Ukuran file terlalu besar (maks 10 MB sebelum diproses)")
 
-    # =====================
-    # 📷 FOTO → KOMPRES
-    # =====================
     if ext in ALLOWED_IMAGE_EXT:
         compress_image(file_obj, path)
 
-    # =====================
-    # 📄 PDF → SIMPAN
-    # =====================
     elif ext in ALLOWED_PDF_EXT:
         if size_awal > MAX_SIZE_BYTES:
             raise Exception("Ukuran PDF maksimal 5 MB")
@@ -158,7 +155,6 @@ def statistik_bulanan():
 def verify_payload(payload: str, signature: str):
     return hmac.compare_digest(sign_payload(payload), signature)
 
-# Mapping bulan ke bahasa Indonesia
 BULAN_ID = {
     1: "Januari", 2: "Februari", 3: "Maret", 4: "April",
     5: "Mei", 6: "Juni", 7: "Juli", 8: "Agustus",
@@ -167,7 +163,7 @@ BULAN_ID = {
 
 @main.route("/download/surat-pengambilan/<kode_laporan>")
 def download_surat_pengambilan(kode_laporan):
-    tipe = request.args.get("tipe")  # sendiri / wakil
+    tipe = request.args.get("tipe")  
 
     if tipe not in ["sendiri", "wakil"]:
         return "Tipe pengambilan tidak valid", 400
@@ -188,9 +184,6 @@ def download_surat_pengambilan(kode_laporan):
         db.close()
         return "Data tidak ditemukan", 404
 
-    # =========================
-    # TANGGAL KLAIM (DB)
-    # =========================
     tanggal_db = data["tanggal_lapor"]
     tanggal_klaim = (
         datetime.strptime(tanggal_db, "%Y-%m-%d")
@@ -198,11 +191,7 @@ def download_surat_pengambilan(kode_laporan):
         else datetime.combine(tanggal_db, datetime.min.time())
     )
 
-    # =========================
-    # KUNCI TANGGAL PERTAMA
-    # =========================
     if data["tgl_pilih_pengambilan"] is None:
-        # ⬅️ PERTAMA KALI USER KLIK
         tgl_pilih = datetime.today().date()
 
         cursor.execute("""
@@ -212,7 +201,6 @@ def download_surat_pengambilan(kode_laporan):
         """, (tgl_pilih, kode_laporan))
         db.commit()
     else:
-        # ⬅️ KLIK ULANG → AMBIL DARI DB
         tgl_pilih = data["tgl_pilih_pengambilan"]
 
     cursor.close()
@@ -247,7 +235,6 @@ def buat_pdf_surat(path, data, tgl_klaim, tgl_maks, tipe):
 def pdf_pengambilan_sendiri(path, data, tgl_klaim, tgl_maks, tipe):
     styles = getSampleStyleSheet()
 
-    # ================= STYLES =================
     styles.add(ParagraphStyle(
         name="Judul",
         fontSize=10,
@@ -310,8 +297,6 @@ def pdf_pengambilan_sendiri(path, data, tgl_klaim, tgl_maks, tipe):
         styles["Judul"]
     ))
     el.append(Spacer(1, 10))
-
-    # ================= IDENTITAS =================
     el.append(Paragraph("Yang bertanda tangan di bawah ini:", styles["Isi"]))
     el.append(Spacer(1, 6))
 
@@ -331,7 +316,6 @@ def pdf_pengambilan_sendiri(path, data, tgl_klaim, tgl_maks, tipe):
     el.append(tabel_identitas)
     el.append(Spacer(1, 10))
 
-    # ================= DATA BARANG =================
     el.append(Paragraph(
         "Dengan ini menyatakan bahwa saya adalah <b>pemilik sah barang temuan</b> dengan data sebagai berikut:",
         styles["Isi"]
@@ -355,7 +339,6 @@ def pdf_pengambilan_sendiri(path, data, tgl_klaim, tgl_maks, tipe):
     el.append(tabel_barang)
     el.append(Spacer(1, 10))
 
-    # ================= PERNYATAAN =================
     el.append(Paragraph(
         "Saya bersedia mengambil barang tersebut <b>secara langsung</b> di unit "
         "<b>Lost & Found Bandara Internasional Juanda</b> serta menyatakan bahwa data "
@@ -377,7 +360,6 @@ def pdf_pengambilan_sendiri(path, data, tgl_klaim, tgl_maks, tipe):
 
     el.append(Spacer(1, 14))
 
-    # ================= TANGGAL (KANAN) =================
     el.append(Paragraph(
         "Surabaya, ..............................................",
         styles["Kanan"]
@@ -385,18 +367,17 @@ def pdf_pengambilan_sendiri(path, data, tgl_klaim, tgl_maks, tipe):
 
     el.append(Spacer(1, 18))
 
-    # ================= TTD KANAN + RUANG MATERAI =================
     ttd_table = Table([
         ["", Paragraph("Pemilik Barang", styles["TTD_Center"])],
-        ["", Spacer(1, 40)],                       # ⬅️ ruang tanda tangan
+        ["", Spacer(1, 40)],                   
         ["", Paragraph("Materai Rp10.000", styles["Materai"])],
-        ["", Spacer(1, 45)],                       # ⬅️ ruang tempel materai
+        ["", Spacer(1, 45)],                    
         ["", Paragraph("(___________________________)", styles["TTD_Center"])],
-    ], colWidths=[8*cm, 8*cm])                     # ⬅️ kolom kanan tetap
+    ], colWidths=[8*cm, 8*cm])                 
 
     ttd_table.setStyle(TableStyle([
-        ("ALIGN", (0,0), (0,0), "LEFT"),       # Materai di kiri
-        ("ALIGN", (0,1), (0,1), "LEFT"),       # tanda "(" juga di kiri
+        ("ALIGN", (0,0), (0,0), "LEFT"),       
+        ("ALIGN", (0,1), (0,1), "LEFT"),     
         ("TOPPADDING", (0,0), (-1,-1), 2),
         ("BOTTOMPADDING", (0,0), (-1,-1), 2),
     ]))
@@ -404,15 +385,12 @@ def pdf_pengambilan_sendiri(path, data, tgl_klaim, tgl_maks, tipe):
     el.append(ttd_table)
     el.append(Spacer(1, 10))
 
-    # ================= NB =================
     el.append(Paragraph(
         "<b><i>NB:</i></b><br/>"
         "<i>• Wajib membawa fotokopi KTP pemilik barang.<br/>"
         "• Pengambilan maksimal 7 (tujuh) hari sejak tanggal pemilihan cara pengambilan.</i>",
         styles["NB"]
     ))
-
-    # ================= BUILD =================
     doc.build(el)
 
 
@@ -491,8 +469,6 @@ def pdf_pengambilan_wakil(path, data, tgl_klaim, tgl_maks):
 
     el.append(tabel_pemberi)
     el.append(Spacer(1, 5))
-
-    # ================= DATA PENERIMA KUASA =================
     el.append(Paragraph("Dengan ini memberikan kuasa kepada:", styles["Isi"]))
     el.append(Spacer(1, 3))
 
@@ -512,7 +488,6 @@ def pdf_pengambilan_wakil(path, data, tgl_klaim, tgl_maks):
     el.append(tabel_penerima)
     el.append(Spacer(1, 5))
 
-    # ================= DATA BARANG =================
     el.append(Paragraph(
         "Dengan data barang Lost & Found Bandara Internasional Juanda sebagai berikut:",
         styles["Isi"]
@@ -535,7 +510,6 @@ def pdf_pengambilan_wakil(path, data, tgl_klaim, tgl_maks):
     el.append(tabel_barang)
     el.append(Spacer(1, 5))
 
-    # ================= PERNYATAAN =================
     el.append(Paragraph(
         "Dengan ini saya memberikan kuasa penuh kepada penerima kuasa untuk "
         "mengambil barang tersebut atas nama saya. Apabila barang tidak diambil "
@@ -545,14 +519,12 @@ def pdf_pengambilan_wakil(path, data, tgl_klaim, tgl_maks):
     ))
     el.append(Spacer(1, 5))
 
-    # ================= TANGGAL =================
     el.append(Paragraph(
         "Surabaya, ...................................................",
         styles["Kanan"]
     ))
     el.append(Spacer(1, 5))
 
-    # ================= TTD + NB (PASTI 1 HALAMAN) =================
     tabel_ttd = Table([
         ["Pemberi Kuasa", "", "Penerima Kuasa"],
         ["", "", ""],
@@ -590,8 +562,6 @@ def pdf_pengambilan_wakil(path, data, tgl_klaim, tgl_maks):
     ])
 
     el.append(bagian_akhir)
-
-    # ================= BUILD =================
     doc.build(el)
 
 import os
@@ -614,8 +584,7 @@ def upload_surat_pengambilan(kode_laporan):
 
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
-
-    # 🔒 CEGAH JIKA STATUS DITOLAK
+    
     cursor.execute("""
         SELECT status
         FROM klaim_barang
@@ -689,7 +658,6 @@ def barang_terbaru():
         print("Error mengambil data barang terbaru:", e)
         return jsonify([])
 
-# Halaman form kehilangan
 @main.route('/form-kehilangan')
 def form_kehilangan():
     return render_template('user/form_kehilangan.html')
@@ -795,7 +763,6 @@ Lost & Found Bandara Internasional Juanda
 """
             mail.send(msg_user)
 
-            # Email ke ADMIN
             msg_admin = Message(
                 subject=f"[LAPORAN BARU] {kode_kehilangan} - {nama_barang}",
                 recipients=[Config.ADMIN_EMAIL]
@@ -819,7 +786,6 @@ Silakan login admin untuk melakukan verifikasi.
         except Exception as e:
             print("❌ Gagal kirim email:", e)
 
-        # === Response sukses ===
         return jsonify({
             "success": True,
             "kode_kehilangan": kode_kehilangan,
@@ -903,7 +869,6 @@ def api_riwayat_klaim(email):
     cursor.close()
     db.close()
 
-    # Format gambar
     for item in data:
         if item.get("gambar_barang"):
             item["gambar_barang_url"] = f"/static/uploads/{item['gambar_barang']}"
@@ -1088,9 +1053,6 @@ def submit_klaim():
         db = get_db_connection()
         cursor = db.cursor()
 
-        # =========================
-        # 1️⃣ AMBIL DATA FORM
-        # =========================
         nama = request.form.get("nama")
         telp = request.form.get("telp")
         email = request.form.get("email")
@@ -1098,9 +1060,6 @@ def submit_klaim():
         kode_barang = request.form.get("kodeBarang")
         kode_laporan_kehilangan = request.form.get("kodeKehilangan")
 
-        # =========================
-        # 2️⃣ CEK STATUS BARANG (LOCK)
-        # =========================
         cursor.execute("""
             SELECT status_barang, nama_barang
             FROM penemuan
@@ -1120,9 +1079,6 @@ def submit_klaim():
                 "message": "Barang sudah diklaim atau tidak tersedia."
             })
 
-        # =========================
-        # 3️⃣ HANDLE FILE UPLOAD
-        # =========================
         identitas = request.files.get("fileIdentitas")
         bukti = request.files.get("fileLaporan")
         foto_barang = request.files.get("fotoBarang")
@@ -1131,9 +1087,6 @@ def submit_klaim():
         nama_bukti = simpan_foto_atau_pdf(bukti)
         nama_foto = simpan_foto_atau_pdf(foto_barang)
 
-        # =========================
-        # 4️⃣ GENERATE KODE KLAIM
-        # =========================
         cursor.execute("SELECT kode_laporan FROM klaim_barang ORDER BY id DESC LIMIT 1")
         last = cursor.fetchone()
         last_num = int(last[0].split("LF-C")[-1]) if last else 0
@@ -1143,9 +1096,6 @@ def submit_klaim():
         tanggal = now.date()
         waktu = now.strftime("%H:%M")
 
-        # =========================
-        # 5️⃣ INSERT KLAIM
-        # =========================
         cursor.execute("""
             INSERT INTO klaim_barang (
                 kode_laporan, kode_barang, kode_laporan_kehilangan, nama_barang,
@@ -1160,18 +1110,12 @@ def submit_klaim():
             tanggal, waktu
         ))
 
-        # =========================
-        # 6️⃣ UPDATE STATUS BARANG
-        # =========================
         cursor.execute("""
             UPDATE penemuan
             SET status_barang = 'Diklaim'
             WHERE kode_barang = %s
         """, (kode_barang,))
-        
-        # =========================
-        # 6️⃣b UPDATE STATUS LAPORAN KEHILANGAN
-        # =========================
+
         cursor.execute("""
             UPDATE kehilangan
             SET status = %s,
@@ -1188,20 +1132,13 @@ def submit_klaim():
         cursor.close()
         db.close()
 
-        # =========================
-        # 7️⃣ RIWAYAT STATUS
-        # =========================
         tambah_riwayat_status(
             kode_laporan,
             "Pending",
             "Menunggu verifikasi oleh admin"
         )
 
-        # =========================
-        # 📧 KIRIM EMAIL
-        # =========================
         try:
-            # EMAIL KE USER
             msg_user = Message(
                 subject="Konfirmasi Klaim Barang - Lost & Found Juanda",
                 recipients=[email]
@@ -1223,8 +1160,6 @@ Terima kasih,
 Lost & Found Bandara Internasional Juanda
 """
             mail.send(msg_user)
-
-            # EMAIL KE ADMIN
             msg_admin = Message(
                 subject=f"[KLAIM BARU] {kode_laporan} - {nama_barang}",
                 recipients=[Config.ADMIN_EMAIL]
@@ -1264,9 +1199,6 @@ Silakan login admin untuk memproses klaim ini.
             "message": str(e)
         })
 
-# ==========================
-# 🟦 CEK LAPORAN KEHILANGAN
-# ==========================
 @main.route('/cek-laporan')
 def cek_laporan():
     return render_template('user/cek_laporan.html')
@@ -1305,9 +1237,7 @@ def proses_cek_laporan():
         print("Error proses cek laporan:", e)
         return jsonify({"success": False})
 
-# ==========================
-# 🟩 HALAMAN HASIL CEK LAPORAN
-# ==========================
+
 @main.route('/hasil-cek')
 def hasil_cek():
     kode = request.args.get("kode")
@@ -1331,7 +1261,6 @@ def hasil_cek():
     if not laporan:
         return redirect(url_for("main.cek_laporan"))
 
-    # ===== FORMAT TANGGAL + WAKTU =====
     tgl_str = laporan.get("tanggal_submit")
     waktu_str = laporan.get("waktu_submit")
 
@@ -1399,7 +1328,6 @@ def detail_cek(kode_kehilangan):
     """, (kode_kehilangan,))
     riwayat = cursor.fetchall()
 
-    # FORMAT TANGGAL RIWAYAT
     for r in riwayat:
         try:
             r["waktu_update_fmt"] = datetime.strptime(
@@ -1427,7 +1355,6 @@ def update_status(kode_kehilangan):
         db = get_db_connection()
         cursor = db.cursor()
 
-        # Ambil status lama
         cursor.execute("SELECT status FROM kehilangan WHERE kode_kehilangan=%s", (kode_kehilangan,))
         old_status = cursor.fetchone()
 
@@ -1436,11 +1363,9 @@ def update_status(kode_kehilangan):
 
         old_status = old_status[0]
 
-        # Jika status tidak berubah, tidak perlu menambah riwayat
         if old_status == status_baru:
             return jsonify({"success": False, "message": "Status sama, tidak diubah"})
 
-        # Update status di tabel kehilangan
         cursor.execute("""
             UPDATE kehilangan 
             SET status=%s,
@@ -1449,7 +1374,6 @@ def update_status(kode_kehilangan):
             WHERE kode_kehilangan=%s
         """, (status_baru, catatan, kode_kehilangan))
 
-        # Tambahkan ke riwayat_status
         cursor.execute("""
             INSERT INTO riwayat_status (kode_kehilangan, status, catatan, waktu_update)
             VALUES (%s, %s, %s, ())

@@ -17,6 +17,7 @@ from openpyxl import Workbook
 from flask_mail import Message
 from extensions import mail
 from PIL import Image
+from config import Config
 
 
 admin_bp = Blueprint(
@@ -960,7 +961,6 @@ def tambah_kehilangan():
         kode_baru = generate_kode_kehilangan(cursor)
         cursor.close()
         conn.close()
-
         return render_template(
             'tambah_kehilangan.html',
             role=session.get('role'),
@@ -1062,19 +1062,59 @@ def tambah_kehilangan():
             status,
             foto_filename
         ))
-
         conn.commit()
-
     except Exception as ex:
         conn.rollback()
         cursor.close()
         conn.close()
-        print("❌ Error INSERT kehilangan:", ex)
         return f"Terjadi kesalahan saat menyimpan: {ex}", 500
+
+    try:
+        msg_user = Message(
+            subject="Laporan Kehilangan Anda Telah Dicatat - Lost & Found Juanda",
+            recipients=[email]
+        )
+        msg_user.body = f"""
+Halo {nama_pelapor},
+
+Kode Kehilangan : {kode_kehilangan}
+Nama Barang     : {nama_barang}
+Kategori        : {kategori}
+Lokasi          : {lokasi}
+Tanggal Hilang  : {tanggal_kehilangan}
+Status          : {status}
+
+Catatan Admin:
+{catatan_admin if catatan_admin else '-'}
+
+Silakan simpan kode kehilangan ini untuk mengecek status laporan Anda. Di link berikut xxx
+
+Terima kasih,
+Lost & Found Bandara Internasional Juanda
+"""
+        mail.send(msg_user)
+
+        msg_admin = Message(
+            subject=f"[ADMIN INPUT] {kode_kehilangan} - {nama_barang}",
+            recipients=[Config.ADMIN_EMAIL]
+        )
+        msg_admin.body = f"""
+Kode Kehilangan : {kode_kehilangan}
+Nama Pelapor    : {nama_pelapor}
+Email           : {email}
+No Telp         : {no_telp}
+Barang          : {nama_barang}
+Kategori        : {kategori}
+Lokasi          : {lokasi}
+Tanggal Hilang  : {tanggal_kehilangan}
+Status          : {status}
+"""
+        mail.send(msg_admin)
+    except Exception:
+        pass
 
     cursor.close()
     conn.close()
-
     return redirect(url_for('admin_bp.daftar_kehilangan'))
 
 @admin_bp.route('/kehilangan/detail')
