@@ -48,8 +48,6 @@ SIGN_SECRET = Config.SIGN_SECRET
 
 def compress_image(file_storage, output_path):
     img = Image.open(file_storage)
-
-    # Convert ke RGB (wajib untuk JPEG)
     if img.mode in ("RGBA", "P"):
         img = img.convert("RGB")
 
@@ -1045,10 +1043,8 @@ def detail_barang(kode):
     if not barang:
         return render_template('user/not_found.html'), 404
 
-    # 🔑 ambil dari query string
     kode_kehilangan = request.args.get("lost")
 
-    # simpan ke session (opsional tapi bagus)
     if kode_kehilangan:
         session['kode_kehilangan'] = kode_kehilangan
 
