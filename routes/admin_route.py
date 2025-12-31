@@ -1661,6 +1661,8 @@ def update_status_penemuan():
         cursor.close()
         conn.close()
 
+from flask_mail import Message
+
 @admin_bp.route('/klaim/baru', methods=['GET', 'POST'])
 def tambah_klaim_penemuan():
     conn = get_db_connection()
@@ -1713,7 +1715,6 @@ def tambah_klaim_penemuan():
     def simpan_file(file_obj):
         if not file_obj or not file_obj.filename:
             return None
-
         if not allowed_file(file_obj.filename):
             return None
 
@@ -1762,7 +1763,29 @@ def tambah_klaim_penemuan():
         ))
 
         conn.commit()
-        flash("Klaim berhasil ditambahkan", "success")
+
+        msg = Message(
+            subject="Pengajuan Klaim Barang Berhasil",
+            recipients=[email],
+            body=f"""Yth. {nama_pelapor},
+
+Pengajuan klaim barang Anda telah berhasil diterima.
+
+Kode Klaim   : {kode_baru}
+Nama Barang  : {nama_barang}
+Tanggal      : {tanggal_lapor}
+
+Status klaim masih dalam tahap Pending.
+Silakan simpan kode klaim ini untuk mengecek status laporan Anda. Di link berikut xxx
+
+Terima kasih,
+Lost & Found Bandara Internasional Juanda
+"""
+        )
+
+        mail.send(msg)
+
+        flash("Klaim berhasil ditambahkan dan email terkirim.", "success")
 
     except Exception as e:
         conn.rollback()
@@ -1954,7 +1977,7 @@ def update_status_klaim():
 
     data = request.get_json()
     kode = data.get("kode_laporan")
-    status_baru = data.get("status")
+    status_baru = data.get("status", "").strip().lower()
     catatan = data.get("catatan_admin") or ""
 
     if not kode or not status_baru:
@@ -1983,12 +2006,14 @@ def update_status_klaim():
                 catatan_admin = %s,
                 update_terakhir = NOW()
             WHERE kode_laporan = %s
-        """, (status_baru, catatan, kode))
+        """, (status_baru.capitalize(), catatan, kode))
 
-        if status_baru.lower() in ["pending", "ditolak"]:
+        if status_baru in ["pending", "ditolak"]:
             status_barang = "Tersedia"
-        elif status_baru.lower() in ["verifikasi", "siap diambil"]:
+        elif status_baru in ["verifikasi", "siap diambil"]:
             status_barang = "Diklaim"
+        elif status_baru == "selesai":
+            status_barang = "Selesai"
         else:
             status_barang = None
 
@@ -2000,85 +2025,47 @@ def update_status_klaim():
                 WHERE kode_barang = %s
             """, (status_barang, kode_barang))
 
-            if status_baru.lower() == "ditolak":
+        if status_baru == "ditolak":
+            if kode_kehilangan:
                 cursor.execute("""
-                    UPDATE kehilangan k
-                    JOIN klaim_barang c ON k.kode_kehilangan = c.kode_laporan_kehilangan
-                    SET k.status = 'Barang Tidak Ditemukan',
-                        k.catatan = 'Barang klaim Anda ditolak oleh admin',
-                        k.update_terakhir = NOW()
-                    WHERE c.kode_barang = %s
-                """, (kode_barang,))
+                    UPDATE kehilangan
+                    SET status = 'Barang Tidak Ditemukan',
+                        catatan = 'Barang klaim Anda ditolak oleh admin',
+                        update_terakhir = NOW()
+                    WHERE kode_kehilangan = %s
+                """, (kode_kehilangan,))
 
-                conn.commit()
+            conn.commit()
+            pindahkan_ke_arsip(kode, "klaim_barang")
+            if kode_kehilangan:
+                pindahkan_ke_arsip(kode_kehilangan, "kehilangan")
 
-                try:
-                    cursor.execute("""
-                        SELECT DISTINCT k.kode_kehilangan
-                        FROM kehilangan k
-                        JOIN klaim_barang c ON k.kode_kehilangan = c.kode_laporan_kehilangan
-                        WHERE c.kode_barang = %s
-                    """, (kode_barang,))
-                    semua_kehilangan = cursor.fetchall()
-                    for row in semua_kehilangan:
-                        pindahkan_ke_arsip(row['kode_kehilangan'], "kehilangan")
-                except Exception as e:
-                    print("❌ Error arsip kehilangan:", e)
+        elif status_baru == "selesai":
+            if kode_kehilangan:
+                cursor.execute("""
+                    UPDATE kehilangan
+                    SET status = 'Selesai',
+                        update_terakhir = NOW()
+                    WHERE kode_kehilangan = %s
+                """, (kode_kehilangan,))
 
-                try:
-                    pindahkan_ke_arsip(kode, "klaim_barang")
-                except Exception as e:
-                    print("❌ Error arsip klaim:", e)
+            cursor.execute("""
+                UPDATE penemuan
+                SET status = 'Selesai',
+                    update_terakhir = NOW()
+                WHERE kode_barang = %s
+            """, (kode_barang,))
 
-            elif kode_kehilangan:
-                if status_baru.lower() == "selesai":
-                    cursor.execute("""
-                        UPDATE kehilangan
-                        SET status = 'Selesai',
-                            update_terakhir = NOW()
-                        WHERE kode_kehilangan = %s
-                    """, (kode_kehilangan,))
+            conn.commit()
+            pindahkan_ke_arsip(kode, "klaim_barang")
+            if kode_kehilangan:
+                pindahkan_ke_arsip(kode_kehilangan, "kehilangan")
+            pindahkan_ke_arsip(kode_barang, "penemuan")
 
-                    conn.commit()
-                    try:
-                        pindahkan_ke_arsip(kode_kehilangan, "kehilangan")
-                    except Exception as e:
-                        print("❌ Error arsip kehilangan:", e)
+        else:
+            conn.commit()
 
-                else:
-                    cursor.execute("""
-                        UPDATE kehilangan
-                        SET status = 'Dalam Proses',
-                            update_terakhir = NOW()
-                        WHERE kode_kehilangan = %s
-                    """, (kode_kehilangan,))
-
-                if status_baru == "Selesai":
-                    cursor.execute("""
-                        UPDATE penemuan
-                        SET status = 'Selesai',
-                            status_barang = 'Selesai',
-                            update_terakhir = NOW()
-                        WHERE kode_barang = %s
-                    """, (kode_barang,))
-
-                    conn.commit()
-                    try:
-                        pindahkan_ke_arsip(kode_barang, "penemuan")
-                    except Exception as e:
-                        print("❌ Error arsip penemuan:", e)
-
-                elif status_baru == "Ditolak":
-                    conn.commit()
-                    try:
-                        pindahkan_ke_arsip(kode, "klaim_barang")
-                    except Exception as e:
-                        print("❌ Error arsip klaim:", e)
-
-                else:
-                    conn.commit()
-
-                return jsonify({"success": True})
+        return jsonify({"success": True})
 
     except Exception as e:
         conn.rollback()
