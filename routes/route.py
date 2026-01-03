@@ -131,13 +131,6 @@ def simpan_foto_atau_pdf(file_obj):
 def home():
     return render_template('user/indexx.html')
 
-def sign_payload(payload: str):
-    return hmac.new(
-        SIGN_SECRET.encode(),
-        payload.encode(),
-        hashlib.sha256
-    ).hexdigest()
-
 @main.route("/api/statistik-bulanan")
 def statistik_bulanan():
     query = text("""
@@ -174,6 +167,12 @@ def statistik_bulanan():
 
 def verify_payload(payload: str, signature: str):
     return hmac.compare_digest(sign_payload(payload), signature)
+def sign_payload(payload: str):
+    return hmac.new(
+        SIGN_SECRET.encode(),
+        payload.encode(),
+        hashlib.sha256
+    ).hexdigest()
 
 BULAN_ID = {
     1: "Januari", 2: "Februari", 3: "Maret", 4: "April",
@@ -821,7 +820,6 @@ Silakan login admin untuk melakukan verifikasi.
 @main.route('/riwayat-klaim')
 def riwayat_klaim():
     return render_template('user/riwayat_klaim.html')
-
 
 @main.route("/api/cek-riwayat-klaim", methods=["POST"])
 def api_cek_riwayat_klaim():
