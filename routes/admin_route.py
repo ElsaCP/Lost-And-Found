@@ -932,7 +932,9 @@ def hapus_laporan():
 def daftar_kehilangan():
     if not session.get('admin_logged_in'):
         return redirect(url_for('admin_bp.login_admin'))
-
+    
+    auto_arsip_laporan()
+    
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     cursor.execute("""
@@ -1472,7 +1474,9 @@ def hapus_kehilangan(id):
 def daftar_penemuan():
     if not session.get('admin_logged_in'):
         return redirect(url_for('admin_bp.login_admin'))
-
+    
+    auto_arsip_laporan()
+    
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     cursor.execute("""
