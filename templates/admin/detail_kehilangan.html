@@ -171,10 +171,6 @@
                 data-id="{{ f.kode_barang }}"
                 data-nama="{{ f.nama_barang|lower }}">
 
-              <input type="checkbox"
-                    class="select-foto"
-                    value="{{ f.kode_barang  }}">
-
               <img src="{{ url_for('static', filename='uploads/' ~ f.gambar_barang) }}"
                   alt="Foto Penemuan">
 

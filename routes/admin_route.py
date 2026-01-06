@@ -2188,7 +2188,10 @@ def auto_arsip_laporan():
         SELECT kode_barang
         FROM penemuan
         WHERE is_arsip = 0
-          AND tanggal_lapor < %s
+        AND (
+            tanggal_lapor < %s
+            OR status = 'Selesai'
+        )
     """, (batas_tanggal,))
 
     for row in cur.fetchall():

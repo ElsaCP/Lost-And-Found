@@ -1,8 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  // =========================
-  // ELEMENT DASAR
-  // =========================
   const btnUpdate = document.getElementById("btnUpdate");
   const btnKembali = document.getElementById("btnKembali");
   const btnExport = document.getElementById("btnExportPdf");
@@ -32,22 +29,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // panggil saat load halaman
   toggleFotoSection();
 
-  // jika status berubah, panggil lagi
   if (statusSelect) {
     statusSelect.addEventListener("change", toggleFotoSection);
   }
 
-  // =========================
-  // SEMBUNYIKAN SEMUA FOTO DEFAULT
-  // =========================
   fotoItems.forEach(item => item.style.display = "none");
 
-  // =========================
-  // LOAD REKOMENDASI YANG SUDAH DISIMPAN
-  // =========================
   async function loadRekomendasi() {
     if (!kodeKehilangan) return;
     try {
@@ -56,13 +45,15 @@ document.addEventListener("DOMContentLoaded", () => {
       if (data.success && Array.isArray(data.rekomendasi)) {
         fotoItems.forEach(item => {
           if (data.rekomendasi.includes(item.dataset.id)) {
-            // hanya tampilkan jika status bukan Pending
             if (statusSelect.value !== "Pending") {
               item.style.display = "block";
             }        
             item.classList.add("active");         
-            const checkbox = item.querySelector(".select-foto");
-            if (checkbox) checkbox.checked = true;
+            fotoItems.forEach(item => {
+            item.addEventListener("click", () => {
+              item.classList.toggle("active");
+            });
+          });
           }
         });
       }
@@ -73,9 +64,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   loadRekomendasi();
 
-  // =========================
-  // UPDATE STATUS + CATATAN
-  // =========================
   if (btnUpdate) {
     btnUpdate.addEventListener("click", async () => {
       const status = statusSelect.value;
@@ -117,12 +105,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-// =========================
-// KEMBALI
-// =========================
 if (btnKembali) {
   btnKembali.addEventListener("click", () => {
-    // Ambil parameter 'from' dari URL
     const urlParams = new URLSearchParams(window.location.search);
     const from = urlParams.get("from");
 
@@ -131,15 +115,11 @@ if (btnKembali) {
     } else if (from === "kehilangan") {
       window.location.href = "/admin/kehilangan/daftar";
     } else {
-      // default fallback
       window.location.href = "/admin/kehilangan/daftar";
     }
   });
 }
 
-  // =========================
-  // EXPORT PDF
-  // =========================
   if (btnExport) {
     btnExport.addEventListener("click", async () => {
       const { jsPDF } = window.jspdf;
@@ -167,9 +147,6 @@ if (btnKembali) {
     });
   }
 
-  // =========================
-  // CARI FOTO PENEMUAN (hanya jika status bukan Pending)
-  // =========================
   if (btnCari) {
     btnCari.addEventListener("click", () => {
       if (statusSelect.value === "Pending") return;
@@ -194,9 +171,6 @@ if (btnKembali) {
     });
   }
 
-  // =========================
-  // PILIH FOTO (KLIK CARD)
-  // =========================
   fotoItems.forEach(item => {
     item.addEventListener("click", (e) => {
       if (e.target.tagName === "INPUT") return;
@@ -206,9 +180,6 @@ if (btnKembali) {
     });
   });
 
-  // =========================
-  // SIMPAN REKOMENDASI (hanya jika status bukan Pending)
-  // =========================
   if (btnSimpan) {
     btnSimpan.addEventListener("click", async () => {
       if (statusSelect.value === "Pending") return;
