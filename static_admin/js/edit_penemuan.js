@@ -5,23 +5,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const lokasiLain = document.getElementById("lokasi_lain");
   const lokasiInput = document.getElementById("lokasi");
 
-  // =========================
-  // STATUS
-  // =========================
   const statusLaporanSelect = document.getElementById("status");
   const statusBarangSelect = document.getElementById("status_barang");
 
-  // =========================
-  // DATA LOKASI
-  // =========================
   const tempatData = {
     "Terminal 1": ["Gate A", "Gate B", "Waiting Area T1", "Bagasi", "Lainnya"],
     "Terminal 2": ["Gate C", "Gate D", "Waiting Area T2", "Bagasi", "Lainnya"],
   };
 
-  // =========================
-  // INIT DARI DATABASE
-  // =========================
   const lokasiDB = lokasiInput.value?.trim() || "";
 
   if (lokasiDB) {
@@ -59,9 +50,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // =========================
-  // UPDATE INPUT LOKASI
-  // =========================
   function updateLokasi() {
     const terminal = terminalSelect.value;
     const tempat = tempatSelect.value;
@@ -104,9 +92,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   lokasiLain.addEventListener("input", updateLokasi);
 
-  // =========================
-  // STATUS BARANG → STATUS LAPORAN (SAMA KAYAK DETAIL)
-  // =========================
   function syncStatus() {
     if (statusBarangSelect.value === "Selesai") {
       statusLaporanSelect.value = "Selesai";
@@ -116,15 +101,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // trigger saat ganti
   statusBarangSelect.addEventListener("change", syncStatus);
 
-  // trigger saat halaman dibuka (INIT dari DB)
   syncStatus();
 
-  // =========================
-  // KEMBALI
-  // =========================
   const btnKembali = document.getElementById("btnKembali");
   if (btnKembali) {
     btnKembali.addEventListener("click", function () {
@@ -133,14 +113,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// =========================
-// SUBMIT → ALERT SUCCESS
-// =========================
 const formEdit = document.querySelector("form");
 
 if (formEdit) {
   formEdit.addEventListener("submit", function (e) {
-    e.preventDefault(); // tahan submit dulu
+    e.preventDefault(); 
 
     Swal.fire({
       icon: "success",
@@ -148,7 +125,7 @@ if (formEdit) {
       showConfirmButton: false,
       timer: 1300
     }).then(() => {
-      formEdit.submit(); // submit ke backend SETELAH alert
+      formEdit.submit(); 
     });
   });
 }

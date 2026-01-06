@@ -26,7 +26,6 @@ body {
   z-index: 9999;
 }
 
-/* Logo sidebar */
 .logo-wrapper {
   position: relative;
   display: flex;
@@ -51,7 +50,6 @@ body {
   width: 100px;
 }
 
-/* Nav dan submenu */
 .sidebar nav {
   display: flex;
   flex-direction: column;
@@ -78,7 +76,6 @@ body {
   font-weight: 600;
 }
 
-/* SUBMENU DETAIL PENEMUAN STYLE */
 .submenu {
   display: flex;
   flex-direction: column;
@@ -124,9 +121,6 @@ body {
   background: #003c7a;
 }
 
-/* ================================
-   HEADER MIRIP BERANDA
-   ================================ */
 .header {
   position: fixed;
   top: 0;
@@ -142,7 +136,6 @@ body {
   z-index: 9998;
 }
 
-/* Logo header */
 .header .logo-wrapper {
   position: relative;
   display: flex;
@@ -163,7 +156,6 @@ body {
   width: auto;
 }
 
-/* Judul tengah header */
 .header h2 {
   position: absolute;
   left: 50%;
@@ -173,7 +165,6 @@ body {
   color: #fff;
 }
 
-/* Profil header */
 .profile-icon {
   width: 45px;
   height: 45px;
@@ -197,9 +188,6 @@ body {
   transform: scale(1.05);
 }
 
-/* =========================================
-   KONTEN TURUN SUPAYA TIDAK KETUTUP HEADER
-   ========================================= */
 .content {
   flex: 1;
   padding: 30px 40px 140px 40px;
@@ -213,9 +201,6 @@ body {
   box-sizing: border-box;
 }
 
-/* ==========================================================
-   FORM TAMBAH KLAIM SESUAI DETAIL KEHILANGAN
-   ========================================================== */
 .tambah-klaim-container {
   background: #fefefe;
   border-radius: 15px;
@@ -257,7 +242,6 @@ body {
   gap: 15px;
 }
 
-/* SECTION TITLES */
 .section-title {
   font-weight: 700;
   margin-bottom: 10px;
@@ -267,7 +251,6 @@ body {
   padding-left: 8px;
 }
 
-/* FORM ROWS */
 .data-row,
 .form-row {
   display: flex;
@@ -305,7 +288,6 @@ input[readonly] {
   font-weight: 500;
 }
 
-/* LOKASI TAMBAHAN */
 #lokasiLainContainer {
   display: flex;
   align-items: center;
@@ -319,7 +301,6 @@ input[readonly] {
   display: inline-block;
 }
 
-/* BUTTONS */
 .button-group {
   display: flex;
   justify-content: flex-end;
@@ -375,7 +356,6 @@ input[readonly] {
   color: #007bff;
 }
 
-/* RESPONSIVE */
 @media (max-width: 1100px) {
   .klaim-wrapper {
     flex-direction: column;
@@ -398,11 +378,7 @@ input[readonly] {
     width: 100%;
   }
 }
-/* ============================================================
-   BOOTSTRAP-LITE - Pengganti Bootstrap untuk halaman ini
-   ============================================================ */
 
-/* ---- GRID ---- */
 .row {
   display: flex;
   flex-wrap: wrap;
@@ -422,7 +398,6 @@ input[readonly] {
   }
 }
 
-/* ---- SPACING ---- */
 .mb-2 { margin-bottom: 0.5rem; }
 .mb-3 { margin-bottom: 1rem; }
 .mb-4 { margin-bottom: 1.5rem; }
@@ -435,17 +410,14 @@ input[readonly] {
 .px-4 { padding-left: 1.5rem; padding-right: 1.5rem; }
 .me-2 { margin-right: 0.5rem; }
 
-/* ---- TEXT ---- */
 .fw-bold { font-weight: 700; }
 .text-end { text-align: end; }
 
-/* ---- CARD / WRAPPER ---- */
 .bg-white { background:#fff; }
 .border { border:1px solid #dee2e6; }
 .shadow-sm { box-shadow: 0 .125rem .25rem rgba(0,0,0,.075); }
 .rounded-4 { border-radius: 12px; }
 
-/* ---- FORM CONTROL ---- */
 .form-label {
   display: inline-block;
   margin-bottom: 0.5rem;
@@ -478,7 +450,6 @@ input.form-control[type="file"] {
   padding: 6px;
 }
 
-/* ---- BUTTONS ---- */
 .btn {
   display: inline-block;
   padding: 0.45rem 1.3rem;
@@ -505,25 +476,18 @@ input.form-control[type="file"] {
   background: #bfc4cb;
 }
 
-/* ================================
-   BOOTSTRAP TYPOGRAPHY REPLACEMENT
-   ================================ */
-
-/* H5 mirip Bootstrap */
 h5 {
-  font-size: 1.25rem;     /* 20px */
+  font-size: 1.25rem;     
   font-weight: 600;
   margin-bottom: 0.75rem;
   color: #212529;
 }
 
-/* Small mirip Bootstrap */
 small {
-  font-size: 0.875rem;    /* 14px */
-  color: #f00a0a;         /* abu-abu khas Bootstrap */
+  font-size: 0.875rem;  
+  color: #f00a0a;        
 }
 
-/* Label heading seperti “Data Diri”, “Dokumen Pendukung” */
 .section-title {
   font-size: 1rem;
   font-weight: 600;
@@ -531,8 +495,6 @@ small {
   margin-bottom: 0.25rem;
 }
 
-/* Jika kamu pakai <small class="text-muted"> */
 .text-muted {
   color: #6c757d !important;
 }
-
