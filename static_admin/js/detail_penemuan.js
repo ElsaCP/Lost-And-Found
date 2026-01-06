@@ -53,9 +53,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // ==========================
-  // KLAIM BARANG (TETAP)
-  // ==========================
   const btnKlaim = document.getElementById("btnKlaim");
   if (btnKlaim) {
     btnKlaim.addEventListener("click", () => {
@@ -67,9 +64,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ==========================
-  // KEMBALI
-  // ==========================
   const btnKembali = document.getElementById("btnKembali");
   if (btnKembali) {
     btnKembali.addEventListener("click", () => {
