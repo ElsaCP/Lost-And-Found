@@ -75,9 +75,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ==========================
-  // EXPORT PDF (TIDAK DIUBAH)
-  // ==========================
   const btnExport = document.getElementById("btnExportPdf");
 
   if (btnExport) {
