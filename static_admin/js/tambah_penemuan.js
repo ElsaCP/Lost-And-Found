@@ -1,25 +1,19 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  // FORM
   const form = document.getElementById("formPenemuan");
   const btnCancel = document.querySelector(".btn-cancel");
-  
-  // LOKASI
+
   const terminalSelect = document.getElementById("terminal_penemuan");
   const tempatSelect = document.getElementById("tempat_penemuan");
   const lokasiLainContainer = document.getElementById("lokasiLainContainerPenemuan");
   const lokasiLain = document.getElementById("lokasi_lain_penemuan");
   const lokasiInput = document.getElementById("lokasi_penemuan");
 
-  // DATA TEMPAT
   const tempatData = {
     "Terminal 1": ["Gate A", "Gate B", "Waiting Area T1", "Bagasi", "Lainnya"],
     "Terminal 2": ["Gate C", "Gate D", "Waiting Area T2", "Bagasi", "Lainnya"]
   };
 
-  // =========================
-  // UPDATE LOKASI OTOMATIS
-  // =========================
   function updateLokasi() {
     const terminal = terminalSelect.value;
     const tempat = tempatSelect.value;
@@ -32,7 +26,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Terminal berubah
   terminalSelect.addEventListener("change", () => {
     const selected = terminalSelect.value;
 
@@ -52,18 +45,13 @@ document.addEventListener("DOMContentLoaded", () => {
     updateLokasi();
   });
 
-  // Tempat berubah
   tempatSelect.addEventListener("change", () => {
     lokasiLainContainer.style.display = tempatSelect.value === "Lainnya" ? "block" : "none";
     updateLokasi();
   });
 
-  // Lokasi lainnya
   lokasiLain.addEventListener("input", updateLokasi);
 
-  // =========================
-  // VALIDASI SUBMIT
-  // =========================
   form.addEventListener("submit", function (e) {
     e.preventDefault();
 
@@ -76,7 +64,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // CEK FIELD WAJIB
     cek("nama_pelapor", "Nama Pelapor");
     cek("no_telp", "Nomor Telepon");
     cek("email", "Email");
@@ -86,20 +73,17 @@ document.addEventListener("DOMContentLoaded", () => {
     cek("tanggal_lapor", "Tanggal Penemuan");
     cek("deskripsi", "Deskripsi");
 
-    // LOKASI
     if (!terminalSelect.value.trim()) errors.push("Terminal");
     if (!tempatSelect.value.trim()) errors.push("Tempat");
     if (tempatSelect.value === "Lainnya" && !lokasiLain.value.trim()) {
       errors.push("Lokasi Lainnya");
     }
 
-    // Foto
     const foto = form.querySelector('[name="foto"]');
     if (!foto || !foto.files.length) {
       errors.push("Foto Barang");
     }
 
-    // TAMPILAN ERROR
     if (errors.length > 0) {
       Swal.fire({
         icon: "warning",
@@ -110,7 +94,6 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // SUBMIT
     Swal.fire({
       icon: "success",
       title: "Data berhasil disimpan",
@@ -122,9 +105,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // =========================
-  // CANCEL
-  // =========================
   btnCancel.addEventListener("click", () => {
     Swal.fire({
       icon: "question",

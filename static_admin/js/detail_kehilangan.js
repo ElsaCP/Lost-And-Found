@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const infoCari = document.getElementById("infoCari");
   const btnSimpan = document.getElementById("btnSimpanRekomendasi");
   const kodeKehilangan = document.getElementById("kodeLaporan")?.innerText.trim() || null;
-  const catatanInput = document.getElementById("catatanAdmin"); // textarea catatan
+  const catatanInput = document.getElementById("catatanAdmin"); 
   const updateTerakhirEl = document.getElementById("updateTerakhir");
   const statusSelect = document.getElementById("status");
   const fotoSection = document.querySelector(".foto-penemuan-section");
@@ -22,10 +22,10 @@ document.addEventListener("DOMContentLoaded", () => {
     
     if (hideStatus.includes(statusSelect.value)) {
       fotoSection.style.display = "none";
-      btnSimpan.style.display = "none"; // sembunyikan tombol simpan
+      btnSimpan.style.display = "none"; 
     } else {
       fotoSection.style.display = "block";
-      btnSimpan.style.display = "inline-block"; // tampilkan tombol simpan
+      btnSimpan.style.display = "inline-block";
     }
   }
 
