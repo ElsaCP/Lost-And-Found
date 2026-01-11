@@ -2046,12 +2046,17 @@ def update_status_klaim():
 
         elif status_baru == "selesai":
             if kode_kehilangan:
+                # Update kehilangan + pesan ke user
                 cursor.execute("""
                     UPDATE kehilangan
                     SET status = 'Selesai',
+                        catatan = %s,
                         update_terakhir = NOW()
                     WHERE kode_kehilangan = %s
-                """, (kode_kehilangan,))
+                """, (
+                    "Barang hilang Anda telah ditemukan dan telah diambil",
+                    kode_kehilangan
+                ))
 
             cursor.execute("""
                 UPDATE penemuan
