@@ -2028,6 +2028,16 @@ def update_status_klaim():
                     update_terakhir = NOW()
                 WHERE kode_barang = %s
             """, (status_barang, kode_barang))
+            
+        if status_baru in ["verifikasi", "siap diambil"]:
+            if kode_kehilangan:
+                cursor.execute("""
+                    UPDATE kehilangan
+                    SET status = 'Dalam Proses',
+                        catatan = 'Barang ditemukan dan sedang dalam proses klaim',
+                        update_terakhir = NOW()
+                    WHERE kode_kehilangan = %s
+                """, (kode_kehilangan,))
 
         if status_baru == "ditolak":
             if kode_kehilangan:
@@ -2046,7 +2056,6 @@ def update_status_klaim():
 
         elif status_baru == "selesai":
             if kode_kehilangan:
-                # Update kehilangan + pesan ke user
                 cursor.execute("""
                     UPDATE kehilangan
                     SET status = 'Selesai',
