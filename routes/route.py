@@ -937,7 +937,6 @@ def detail_klaim(kode_laporan):
     if not data:
         return render_template("user/not_found.html"), 404
 
-    # Format foto
     if data.get("foto_barang"):
         data["foto_barang"] = f"/static/uploads/{data['foto_barang']}"
     if data.get("gambar_penemuan"):
