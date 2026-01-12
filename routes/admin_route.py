@@ -190,22 +190,33 @@ def export_pdf():
 
     query = """
         SELECT kode_kehilangan AS kode, nama_barang, 'kehilangan' AS jenis,
-               status, deskripsi AS deskripsi_text, lokasi, DATE_FORMAT(tanggal_kehilangan, '%d-%m-%Y') AS tanggal,
-               foto AS foto_barang
+            status, deskripsi AS deskripsi_text, lokasi,
+            DATE_FORMAT(tanggal_kehilangan, '%d-%m-%Y') AS tanggal,
+            foto AS foto_barang
         FROM kehilangan
-        WHERE DATE_FORMAT(tanggal_kehilangan, '%Y-%m') = %s
+        WHERE is_arsip = 0
+        AND DATE_FORMAT(tanggal_kehilangan, '%Y-%m') = %s
+
         UNION ALL
+
         SELECT kode_barang AS kode, nama_barang, 'penemuan' AS jenis,
-               status, deskripsi AS deskripsi_text, lokasi, DATE_FORMAT(tanggal_lapor, '%d-%m-%Y') AS tanggal,
-               gambar_barang AS foto_barang
+            status, deskripsi AS deskripsi_text, lokasi,
+            DATE_FORMAT(tanggal_lapor, '%d-%m-%Y') AS tanggal,
+            gambar_barang AS foto_barang
         FROM penemuan
-        WHERE DATE_FORMAT(tanggal_lapor, '%Y-%m') = %s
+        WHERE is_arsip = 0
+        AND DATE_FORMAT(tanggal_lapor, '%Y-%m') = %s
+
         UNION ALL
+
         SELECT kode_laporan AS kode, nama_barang, 'klaim' AS jenis,
-               status, deskripsi_khusus AS deskripsi_text, '-' AS lokasi, DATE_FORMAT(tanggal_lapor, '%d-%m-%Y') AS tanggal,
-               foto_barang
+            status, deskripsi_khusus AS deskripsi_text, '-' AS lokasi,
+            DATE_FORMAT(tanggal_lapor, '%d-%m-%Y') AS tanggal,
+            foto_barang
         FROM klaim_barang
-        WHERE DATE_FORMAT(tanggal_lapor, '%Y-%m') = %s
+        WHERE is_arsip = 0
+        AND DATE_FORMAT(tanggal_lapor, '%Y-%m') = %s
+
         ORDER BY tanggal ASC
     """
     cursor.execute(query, (bulan, bulan, bulan))
@@ -289,19 +300,27 @@ def export_excel():
 
     query = """
         SELECT kode_kehilangan AS kode, nama_barang, 'kehilangan' AS jenis,
-               status, deskripsi AS deskripsi_text, lokasi, tanggal_kehilangan AS tanggal
+            status, deskripsi AS deskripsi_text, lokasi, tanggal_kehilangan AS tanggal
         FROM kehilangan
-        WHERE DATE_FORMAT(tanggal_kehilangan, '%Y-%m') = %s
+        WHERE is_arsip = 0
+        AND DATE_FORMAT(tanggal_kehilangan, '%Y-%m') = %s
+
         UNION ALL
+
         SELECT kode_barang AS kode, nama_barang, 'penemuan' AS jenis,
-               status, deskripsi AS deskripsi_text, lokasi, tanggal_lapor AS tanggal
+            status, deskripsi AS deskripsi_text, lokasi, tanggal_lapor AS tanggal
         FROM penemuan
-        WHERE DATE_FORMAT(tanggal_lapor, '%Y-%m') = %s
+        WHERE is_arsip = 0
+        AND DATE_FORMAT(tanggal_lapor, '%Y-%m') = %s
+
         UNION ALL
+
         SELECT kode_laporan AS kode, nama_barang, 'klaim' AS jenis,
-               status, deskripsi_khusus AS deskripsi_text, '-' AS lokasi, tanggal_lapor AS tanggal
+            status, deskripsi_khusus AS deskripsi_text, '-' AS lokasi, tanggal_lapor AS tanggal
         FROM klaim_barang
-        WHERE DATE_FORMAT(tanggal_lapor, '%Y-%m') = %s
+        WHERE is_arsip = 0
+        AND DATE_FORMAT(tanggal_lapor, '%Y-%m') = %s
+
         ORDER BY tanggal ASC
     """
     cursor.execute(query, (bulan, bulan, bulan))
@@ -362,7 +381,8 @@ def export_kehilangan_pdf():
             DATE_FORMAT(tanggal_submit, '%d-%m-%Y') AS tanggal,
             foto
         FROM kehilangan
-        WHERE DATE_FORMAT(tanggal_submit, '%Y-%m') = %s
+        WHERE is_arsip = 0
+        AND DATE_FORMAT(tanggal_kehilangan, '%Y-%m') = %s
         ORDER BY tanggal_submit ASC
     """, (bulan,))
 
@@ -476,7 +496,8 @@ def export_kehilangan_excel():
             deskripsi,
             DATE_FORMAT(tanggal_submit, '%d-%m-%Y') AS tanggal
         FROM kehilangan
-        WHERE DATE_FORMAT(tanggal_submit, '%Y-%m') = %s
+        WHERE is_arsip = 0
+        AND DATE_FORMAT(tanggal_kehilangan, '%Y-%m') = %s
         ORDER BY tanggal_submit ASC
     """, (bulan,))
 
@@ -545,7 +566,8 @@ def export_penemuan_pdf():
             DATE_FORMAT(tanggal_lapor, '%d-%m-%Y') AS tanggal,
             gambar_barang
         FROM penemuan
-        WHERE DATE_FORMAT(tanggal_lapor, '%Y-%m') = %s
+        WHERE is_arsip = 0
+        AND DATE_FORMAT(tanggal_lapor, '%Y-%m') = %s
         ORDER BY tanggal_lapor ASC
     """, (bulan,))
 
@@ -656,7 +678,8 @@ def export_penemuan_excel():
             deskripsi,
             tanggal_lapor AS tanggal
         FROM penemuan
-        WHERE DATE_FORMAT(tanggal_lapor, '%Y-%m') = %s
+        WHERE is_arsip = 0
+        AND DATE_FORMAT(tanggal_lapor, '%Y-%m') = %s
         ORDER BY tanggal_lapor ASC
     """, (bulan,))
 
@@ -725,7 +748,8 @@ def export_klaim_pdf():
             DATE_FORMAT(STR_TO_DATE(tanggal_lapor, '%Y-%m-%d'), '%d-%m-%Y') AS tanggal,
             foto_barang
         FROM klaim_barang
-        WHERE DATE_FORMAT(STR_TO_DATE(tanggal_lapor, '%Y-%m-%d'), '%Y-%m') = %s
+        WHERE is_arsip = 0
+        AND DATE_FORMAT(STR_TO_DATE(tanggal_lapor, '%Y-%m-%d'), '%Y-%m') = %s
         ORDER BY STR_TO_DATE(tanggal_lapor, '%Y-%m-%d') ASC
     """, (bulan,))
 
@@ -840,7 +864,8 @@ def export_klaim_excel():
             deskripsi_khusus,
             DATE_FORMAT(STR_TO_DATE(tanggal_lapor, '%Y-%m-%d'), '%d-%m-%Y') AS tanggal
         FROM klaim_barang
-        WHERE DATE_FORMAT(STR_TO_DATE(tanggal_lapor, '%Y-%m-%d'), '%Y-%m') = %s
+        WHERE is_arsip = 0
+        AND DATE_FORMAT(STR_TO_DATE(tanggal_lapor, '%Y-%m-%d'), '%Y-%m') = %s
         ORDER BY STR_TO_DATE(tanggal_lapor, '%Y-%m-%d') ASC
     """, (bulan,))
 
